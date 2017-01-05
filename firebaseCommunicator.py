@@ -14,8 +14,8 @@ import datetime
 #(superSecret, url) = ('hL8fStivTbHUXM8A0KXBYPg2cMsl80EcD7vgwJ1u', 'https://1678-dev2-2016.firebaseio.com/')
 #(superSecret, url) = ('AEduO6VFlZKD4v10eW81u9j3ZNopr5h2R32SPpeq', 'https://1678-dev3-2016.firebaseio.com/')
 #(superSecret, url) = ('IMXOxXD3FjOOUoMGJlkAK5pAtn89mGIWAEnaKJhP', 'https://1678-strat-dev-2016.firebaseio.com/')
-# (superSecret, url) = ('lGufYCifprPw8p1fiVOs7rqYV3fswHHr9YLwiUWh', 'https://1678-extreme-testing.firebaseio.com/') 
-(superSecret, url) = ('qVIARBnAD93iykeZSGG8mWOwGegminXUUGF2q0ee', 'https://1678-scouting-2016.firebaseio.com/') 
+# (superSecret, url) = ('lGufYCifprPw8p1fiVOs7rqYV3fswHHr9YLwiUWh', 'https://1678-extreme-testing.firebaseio.com/')
+(superSecret, url) = ('qVIARBnAD93iykeZSGG8mWOwGegminXUUGF2q0ee', 'https://1678-scouting-2016.firebaseio.com/')
 
 
 auth = fb.FirebaseAuthentication(superSecret, "1678programming@gmail.com", True, True)
@@ -53,7 +53,7 @@ class FirebaseCommunicator(object):
 	def addCalculatedTeamDataToFirebase(self, team):
 		print "Writing team " + str(team.number) + " to Firebase..."
 		calculatedTeamDataDict = utils.makeDictFromCalculatedData(team.calculatedData)
-		FBLocation = "/Teams/" + str(team.number) 
+		FBLocation = "/Teams/" + str(team.number)
 		try: firebase.put(FBLocation, 'calculatedData', calculatedTeamDataDict)
 		except requests.exceptions.RequestException as e: print e
 
@@ -63,7 +63,7 @@ class FirebaseCommunicator(object):
 		FBLocation = "/TeamInMatchDatas/" + str(timd.teamNumber) + "Q" + str(timd.matchNumber)
 		try: firebase.put(FBLocation, 'calculatedData', calculatedTIMDataDict)
 		except requests.exceptions.RequestException as e: print e
-	
+
 	def addCalculatedMatchDataToFirebase(self, match):
 		print "Writing match " + str(match.number) + " to Firebase..."
 		calculatedMatchDataDict = utils.makeDictFromCalculatedData(match.calculatedData)
@@ -71,22 +71,16 @@ class FirebaseCommunicator(object):
 		try: firebase.put(FBLocation, 'calculatedData', calculatedMatchDataDict)
 		except requests.exceptions.RequestException as e: print e
 
-	def addTeamsToFirebase(self): 
+	def addTeamsToFirebase(self):
 		print "\nDoing Teams..."
 		map(lambda t: self.updateFirebaseWithTeam(utils.setDataForTeam(t)), self.JSONteams)
-		
+
 	def addMatchesToFirebase(self):
 		print "\nDoing Matches..."
 		matches = filter(lambda m: m["comp_level"] == 'qm', self.JSONmatches)
 		map(lambda m: self.updateFirebaseWithMatch(utils.setDataForMatch(m)), matches)
 
-	def addScorelessMatchesToFirebase(self):
-		print "\nDoing Matches..."
-		matches = filter(lambda m: m["comp_level"] == 'qm', self.JSONmatches)
-		map(lambda m: self.updateFirebaseWithMatch(utils.setDataForMatch(m, True)), matches)
-		
-
-	def addTIMDsToFirebase(self, matches): #addTIMD function get all team numbers in a given match and updates firebase with the 
+	def addTIMDsToFirebase(self, matches): #addTIMD function get all team numbers in a given match and updates firebase with the
 		print "\nDoing TIMDs..."																				#corresponding TIMD
 		timdFunc = lambda t, m: self.updateFirebaseWithTIMD(utils.makeTIMDFromTeamNumberAndMatchNumber(t, m.number))
 		addTIMD = lambda m: map(lambda t: timdFunc(t, m), m.redAllianceTeamNumbers + m.blueAllianceTeamNumbers)
@@ -115,10 +109,7 @@ class FirebaseCommunicator(object):
 					break
 			except: pass
 
-	
+
 
 def getPythonObjectForFirebaseDataAtLocation(location):
 	return utils.makeASCIIFromJSON((firebase.get(location, None)))
-
-
-
