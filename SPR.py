@@ -44,8 +44,6 @@ class ScoutPrecision(object):
 		differenceFromCommonValue = map(lambda v: abs(v - commonValue), values)
 		self.sprs = {scouts[c] : (self.sprs.get(scouts[c]) or 0) + differenceFromCommonValue[c] for c in range(len(differenceFromCommonValue))}
 
-<<<<<<< HEAD
-=======
 	def calculateSPRs(self, temp):
 		g = self.consolidateTIMDs(temp)
 		[self.findOddScoutForDataPoint(v, key) for v in g.values() for key in v.keys() if key in v.keys()]
@@ -53,8 +51,7 @@ class ScoutPrecision(object):
 			for key in v.keys():
 				if key in self.keysToPointValues.keys():
 					findOddScoutForDataPoint(v, key)
-	
->>>>>>> 6e0af300f01571a06ff1111f89dd3f7eff93576d
+
 	def calculateScoutPrecisionScores(self, temp, available):
 		self.calculateSPRs()
 		self.sprs = {k:(v/float(self.cycle)/float(self.getTotalTIMDsForScoutName(k))) for (k,v) in self.sprs.items()}
@@ -104,11 +101,6 @@ class ScoutPrecision(object):
 	def getScoutNumFromName(self, name, scoutsInRotation):
 		return filter(lambda k: scoutsInRotation[k].get('mostRecentUser') == name, scoutsInRotation.keys())[0]
 
-<<<<<<< HEAD
-	def assignScoutToRobot(self, scout, scoutRotatorDict):
-		if scout in filter(lambda v: v.get('currentUser') != "", scoutRotatorDict.values()):
-			scoutsInRotation[getScoutNumFromName(scout, scoutRotatorDict)].update({'team' : 1})
-=======
 	def getOutOfRotationSpot(self, scoutRotatorDict, available):
 		return filter(lambda k: scoutRotatorDict[k]["mostRecentUser"] in available, scoutRotatorDict.keys())[0]
 
@@ -126,12 +118,3 @@ class ScoutPrecision(object):
 		else:
 			num = self.findFirstEmptySpotForScout(scout, scoutRotatorDict, available)
 			scoutRotatorDict[num].update({'team' : teams[scout], currentUser : 'scout'})
-
-
-
-
-
-
-
-
->>>>>>> 6e0af300f01571a06ff1111f89dd3f7eff93576d
