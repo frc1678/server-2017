@@ -40,9 +40,9 @@ class ScoutPrecision(object):
 		return consolidationGroups
 
 	def findOddScoutForDataPoint(self, tempTIMDs, key):
-		#finds scout names in tempTIMDs that aren't none
+		#finds scout names in tempTIMDs that aren't None
 		scouts = filter(lambda v: v != None, map(lambda k: k.get('scoutName'), tempTIMDs))
-		#finds values (at an inputted key) that aren't none frome scouts that aren't none in tempTIMDs
+		#finds values (at an inputted key) that aren't None frome scouts that aren't None in tempTIMDs
 		values = filter(lambda v: v != None, map(lambda t: t[key] if t.get('scoutName') != None else None, tempTIMDs))
 		#gets the most common value in the list previously generated
 		commonValue = max(map(lambda v: values.count(v), values)) if len(map(lambda v: values.count(v), values)) != 0 else 0
@@ -53,30 +53,38 @@ class ScoutPrecision(object):
 		#adds the difference from this tempTIMDs to each scout's previous differences
 		self.sprs = {scouts[c] : (self.sprs.get(scouts[c]) or 0) + differenceFromCommonValue[c] for c in range(len(differenceFromCommonValue))}
 
+	#puts together tempTIMDs, and does the difference calculations for them
 	def calculateSPRs(self, temp):
 		g = self.consolidateTIMDs(temp)
-		[self.findOddScoutForDataPoint(v, key) for v in g.values() for key in v.keys() if key in v.keys()]
 		for v in g.values():
 			for key in v.keys():
 				if key in self.keysToPointValues.keys():
-					findOddScoutForDataPoint(v, key)
+					self.findOddScoutForDataPoint(v, key)
 
 	def calculateScoutPrecisionScores(self, temp, available):
+		#puts together tempTIMDs and does difference calculations
 		self.calculateSPRs()
+		#divides values for scouts by cycle, and then by number of TIMDs
 		self.sprs = {k:(v/float(self.cycle)/float(self.getTotalTIMDsForScoutName(k))) for (k,v) in self.sprs.items()}
+		#for the first 18 available keys
 		for a in available.keys()[:18]:
+			#If their values in available are 1 and they are not in use in sprs
 			if a not in self.sprs.keys() and available.get(a) == 1:
+				#They are now set to the average value
 				self.sprs[a] = np.mean(self.sprs.values())
 
+	#sorts scouts by sprs score
 	def rankScouts(self, available):
 		return sorted(self.sprs.keys(), key=lambda k: self.sprs[k])
 
+	#orders available scouts by spr ranking, then 
 	def getScoutFrequencies(self, available):
 		rankedScouts = self.rankScouts(available)
-		func = lambda s: [s] * rankedScouts.index(i) * (100/(len(rankedScouts) - 1)) + 1
-		return self.extendList(map(func, available))
+		func = lambda s: [s] * rankedScouts.index(s) * (100/(len(rankedScouts) - 1)) + 1
+		return utils.extendList(map(func, available))
 
 	def organizeScouts(self, available, currentTeams):
+		#picks a random member of the inputted group
 		groupFunc = lambda l: l[random.randint(0, len(l) - 1)]
 		scoutsPGrp = groupFunc(sum_to_n(len(available)))
 		indScouts = self.getIndividualScouts(self.getScoutFrequencies(), len(filter(lambda x: x == 1, scoutsPGrp)))
