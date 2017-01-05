@@ -17,24 +17,24 @@ class ScoutPrecision(object):
 		super(ScoutPrecision, self).__init__()
 		self.sprs = {}
 		self.cycle = 0
-		self.robotNumToScouts = {}
+		self.robotNumToScouts = []
 		self.TBAC = TBACommunicator.TBACommunicator()
-		self.keysToPointValues = {
-			"numHighShotsMadeAuto" : 1,
-			"numLowShotsMadeAuto" : 1,
-			"numHighShotsMadeTele" : 1,
-			"numLowShotsMadeTele" : 1,
-		}
-		self.k = ["timesSuccessfulCrossedDefensesTele", 'timesSuccessfulCrossedDefensesAuto', 'timesFailedCrossedDefensesTele', 'timesFailedCrossedDefensesAuto']
 
 	def filterToMultiScoutTIMDs(self):
 		return filter(lambda tm: type(tm.scoutName) == list, self.comp.timds)
 
-	def getAllScoutNames(self):
-		return list(set([scout for array in map(lambda t: t.scoutName, filterToMultiScoutTIMDs()) for scout in array]))
-
 	def getTotalTIMDsForScoutName(self, scoutName):
 		return len(map(lambda v: v["scoutName"] == scoutName, tempTIMDs.values()))
+
+	def consolidateTIMDs(self, temp):
+		consolidationGroups = {}
+		for k, v in temp.items():
+			key = k.split('-')[0]
+			if key in consolidationGroups.keys():
+				consolidationGroups[key].append(v)
+			else:
+				consolidationGroups[key] = [v]
+		return consolidationGroups
 
 	def findOddScoutForDataPoint(self, tempTIMDs, key):
 		scouts = filter(lambda v: v != None, map(lambda k: k.get('scoutName'), tempTIMDs))
@@ -43,10 +43,19 @@ class ScoutPrecision(object):
 		if not values.count(commonValue) > len(values) / 2: commonValue = np.mean(values)
 		differenceFromCommonValue = map(lambda v: abs(v - commonValue), values)
 		self.sprs = {scouts[c] : (self.sprs.get(scouts[c]) or 0) + differenceFromCommonValue[c] for c in range(len(differenceFromCommonValue))}
+
+	def calculateSPRs(self, temp):
+		g = self.consolidateTIMDs(temp)
+		[self.findOddScoutForDataPoint(v, key) for v in g.values() for key in v.keys() if key in v.keys()]
+		for v in g.values():
+			for key in v.keys():
+				if key in self.keysToPointValues.keys():
+					findOddScoutForDataPoint(v, key)
 	
 	def calculateScoutPrecisionScores(self, temp, available):
+		self.calculateSPRs()
 		self.sprs = {k:(v/float(self.cycle)/float(self.getTotalTIMDsForScoutName(k))) for (k,v) in self.sprs.items()}
-		for a in available.keys()[:16]:
+		for a in available.keys()[:18]:
 			if a not in self.sprs.keys() and available.get(a) == 1:
 				self.sprs[a] = np.mean(self.sprs.values())
 	
@@ -58,16 +67,17 @@ class ScoutPrecision(object):
 		func = lambda s: [s] * rankedScouts.index(i) * (100/(len(rankedScouts) - 1)) + 1
 		return self.extendList(map(func, available))
 
-	def organizeScouts(self, available, currentTeams, scoutsInRotation):
+	def organizeScouts(self, available, currentTeams):
 		groupFunc = lambda l: l[random.randint(0, len(l) - 1)]
 		scoutsPGrp = groupFunc(sum_to_n(len(available)))
 		indScouts = self.getIndividualScouts(self.getScoutFrequencies(), len(filter(lambda x: x == 1, scoutsPGrp)))
 		scouts = indScouts + map(lambda c: group(filter(lambda n: n in indScouts, available), scoutsPGrp[c]), c[len(indScouts):len(c)])
-		scoutsToRobotNums(scouts, currentTeams)
+		return scoutsToRobotNums(scouts, currentTeams)
 
 	def scoutToRobotNums(self, scouts, currentTeams):
-		f = lambda s: {scouts[s] : currentTeams[s]} if type(s) != list else mapKeysToValue(s, currentTeams[s])
+		f = lambda s: {scouts[s] : currentTeams[s]} if type(s) != list else self.mapKeysToValue(scouts[s], currentTeams[s])
 		scoutAndNums  = map(f, range(len(scouts)))
+		return {k : v for l in scoutAndNums for k, v in l.items()}
 
 	def mapKeysToValue(self, keys, value):
 		return {k : value for k in keys}
@@ -91,9 +101,23 @@ class ScoutPrecision(object):
 	def getScoutNumFromName(self, name, scoutsInRotation):
 		return filter(lambda k: scoutsInRotation[k].get('mostRecentUser') == name, scoutsInRotation.keys())[0]
 
-	def assignScoutToRobot(self, scout, scoutRotatorDict):
-		if scout in filter(lambda v: v.get('currentUser') != "", scoutRotatorDict.values()):
-			scoutsInRotation[getScoutNumFromName(scout, scoutRotatorDict)].update({'team' : 1})
+	def getOutOfRotationSpot(self, scoutRotatorDict, available):
+		return filter(lambda k: scoutRotatorDict[k]["mostRecentUser"] in available, scoutRotatorDict.keys())[0]
+
+	def findFirstEmptySpotForScout(self, scout, scoutRotatorDict, available):
+		emptyScouts = filter(lambda k: scoutRotatorDict[k]['mostRecentUser'] == '', scoutRotatorDict.keys())
+		return emptyScouts if len(emptyScouts) > 0 else self.getOutOfRotationSpot(scoutRotatorDict, available)
+
+	def assignScoutsToRobots(self, scouts, available, currentTeams, scoutRotatorDict):
+		teams = self.organizeScouts(available, currentTeams)
+		map(lambda s: self.assignScoutToRobot(s, available, teams, scoutRotatorDict))
+
+	def assignScoutToRobot(self, scout, available, teams, scoutRotatorDict):
+		if scout in filter(lambda v: v.get('mostRecentUser') != "", scoutRotatorDict.values()):
+			scoutRotatorDict[self.getScoutNumFromName(scout, scoutRotatorDict)].update({'team' : teams[scout]})
+		else:
+			num = self.findFirstEmptySpotForScout(scout, scoutRotatorDict, available)
+			scoutRotatorDict[num].update({'team' : teams[scout], currentUser : 'scout'})
 
 
 
