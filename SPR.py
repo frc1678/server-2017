@@ -20,12 +20,15 @@ class ScoutPrecision(object):
 		self.robotNumToScouts = []
 		self.TBAC = TBACommunicator.TBACommunicator()
 
+	#outputs list of TIMDs that have multiple scouts
 	def filterToMultiScoutTIMDs(self):
 		return filter(lambda tm: type(tm.scoutName) == list, self.comp.timds)
 
+	#outputs list of TIMDs that an inputted scout was involved in
 	def getTotalTIMDsForScoutName(self, scoutName):
 		return len(map(lambda v: v["scoutName"] == scoutName, tempTIMDs.values()))
 
+	#finds keys that start the same way and groups their values
 	def consolidateTIMDs(self, temp):
 		consolidationGroups = {}
 		for k, v in temp.items():
@@ -37,11 +40,17 @@ class ScoutPrecision(object):
 		return consolidationGroups
 
 	def findOddScoutForDataPoint(self, tempTIMDs, key):
+		#finds scout names in tempTIMDs that aren't none
 		scouts = filter(lambda v: v != None, map(lambda k: k.get('scoutName'), tempTIMDs))
+		#finds values (at an inputted key) that aren't none frome scouts that aren't none in tempTIMDs
 		values = filter(lambda v: v != None, map(lambda t: t[key] if t.get('scoutName') != None else None, tempTIMDs))
+		#gets the most common value in the list previously generated
 		commonValue = max(map(lambda v: values.count(v), values)) if len(map(lambda v: values.count(v), values)) != 0 else 0
+		#If less than half of the values agree, the best estimate is the average
 		if not values.count(commonValue) > len(values) / 2: commonValue = np.mean(values)
+		#makes a list of the differences from the common value
 		differenceFromCommonValue = map(lambda v: abs(v - commonValue), values)
+		#adds the difference from this tempTIMDs to each scout's previous differences
 		self.sprs = {scouts[c] : (self.sprs.get(scouts[c]) or 0) + differenceFromCommonValue[c] for c in range(len(differenceFromCommonValue))}
 
 	def calculateSPRs(self, temp):
