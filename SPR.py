@@ -43,13 +43,13 @@ class ScoutPrecision(object):
 		if not values.count(commonValue) > len(values) / 2: commonValue = np.mean(values)
 		differenceFromCommonValue = map(lambda v: abs(v - commonValue), values)
 		self.sprs = {scouts[c] : (self.sprs.get(scouts[c]) or 0) + differenceFromCommonValue[c] for c in range(len(differenceFromCommonValue))}
-	
+
 	def calculateScoutPrecisionScores(self, temp, available):
 		self.sprs = {k:(v/float(self.cycle)/float(self.getTotalTIMDsForScoutName(k))) for (k,v) in self.sprs.items()}
 		for a in available.keys()[:16]:
 			if a not in self.sprs.keys() and available.get(a) == 1:
 				self.sprs[a] = np.mean(self.sprs.values())
-	
+
 	def rankScouts(self, available):
 		return sorted(self.sprs.keys(), key=lambda k: self.sprs[k])
 
@@ -94,11 +94,3 @@ class ScoutPrecision(object):
 	def assignScoutToRobot(self, scout, scoutRotatorDict):
 		if scout in filter(lambda v: v.get('currentUser') != "", scoutRotatorDict.values()):
 			scoutsInRotation[getScoutNumFromName(scout, scoutRotatorDict)].update({'team' : 1})
-
-
-
-
-
-
-
-
