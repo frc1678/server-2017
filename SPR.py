@@ -77,25 +77,30 @@ class ScoutPrecision(object):
 	def rankScouts(self, available):
 		return sorted(self.sprs.keys(), key=lambda k: self.sprs[k])
 
-	#orders available scouts by spr ranking, then 
+	#orders available scouts by spr ranking, then makes a list of how frequently each scout should be selected (better scouts more frequently)
 	def getScoutFrequencies(self, available):
 		rankedScouts = self.rankScouts(available)
 		func = lambda s: [s] * rankedScouts.index(s) * (100/(len(rankedScouts) - 1)) + 1
 		return utils.extendList(map(func, available))
 
+	#Somehow creates a list of scouts to use in a given match and assigns them to robots
+	#I don't understand this function, and I am not sure it works
 	def organizeScouts(self, available, currentTeams):
 		#picks a random member of the inputted group
 		groupFunc = lambda l: l[random.randint(0, len(l) - 1)]
+		#sum_to_n should take 2-3 inputs, while here it takes 1
 		scoutsPGrp = groupFunc(sum_to_n(len(available)))
 		indScouts = self.getIndividualScouts(self.getScoutFrequencies(), len(filter(lambda x: x == 1, scoutsPGrp)))
 		scouts = indScouts + map(lambda c: group(filter(lambda n: n in indScouts, available), scoutsPGrp[c]), c[len(indScouts):len(c)])
 		return scoutsToRobotNums(scouts, currentTeams)
 
+	#assigns a list of scouts to a list of robots in order, and returns as a single dict
 	def scoutToRobotNums(self, scouts, currentTeams):
 		f = lambda s: {scouts[s] : currentTeams[s]} if type(s) != list else self.mapKeysToValue(scouts[s], currentTeams[s])
 		scoutAndNums  = map(f, range(len(scouts)))
 		return {k : v for l in scoutAndNums for k, v in l.items()}
 
+	#Makes a dict with an inputted key attached to a value
 	def mapKeysToValue(self, keys, value):
 		return {k : value for k in keys}
 
@@ -106,12 +111,14 @@ class ScoutPrecision(object):
 		availableForGroup = availableForGroup.filter(lambda n: n == item, availableForGroup)
 		return item
 
+	#I don't get this function: one of the parameters is adjusted in the function
 	def getRandomIndividuals(self, freqs):
-		index = random.randint(0, len(freqs), 1)
+		index = random.randint(0, len(freqs))
 		scout = freqs[index]
 		freqs = filter(lambda name: name == freqs[index], freqs)
 		return scout
 
+	#Gets the right number of random scout numbers
 	def getIndividualScouts(self, ind, count):
 		return map(lambda k: getRandomIndividuals(ind), range(count))
 
