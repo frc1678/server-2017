@@ -23,7 +23,7 @@ def TSVExportAll(comp):
 
 def TSVExportCVR(comp):
 	s = ""
-	CVRKeys = ["RScoreDrivingAbility",	"disabledPercentage",	"numAutoPoints",	"sdLowShotsTele",	"sdHighShotsTele",	"actualSeed",	"incapacitatedPercentage",	"avgShotsBlocked",	"highShotAccuracyTele",	"sdShotsBlocked",	"siegeConsistency",	"disfunctionalPercentage",	"sdSiegeAbility",	"overallSecondPickAbility"]
+	CVRKeys = []
 	firstTeam = True
 	with open('./dataExportCVR.tsv', 'w') as file:
 		for team in comp.teams:
@@ -43,7 +43,7 @@ def TSVExportCVR(comp):
 
 def TSVExportMini(comp):
 	s = ""
-	MiniKeys = ["numAutoPoints", "actualSeed",	"siegeConsistency",	"disfunctionalPercentage", "avgDrivingAbility", "defensesCrossableAuto", "avgGroundIntakes", "pitNumberOfWheels"]
+	MiniKeys = []
 	firstTeam = True
 	with open('./dataExportMini.tsv', 'w') as file:
 		for team in comp.teams:
@@ -91,9 +91,9 @@ def TSVExport(comp, keys, name):
 		file.write(s)
 		file.close()
 def TSVExportSAC(comp):
-	keys = ["disfunctionalPercentage","disabledPercentage", "incapacitatedPercentage", "firstPickAbility","overallSecondPickAbility","siegeAbility","siegeConsistency","challengePercentage","scalePercentage","RScoreDrivingAbility","avgDrivingAbility", "RScoreDefense","avgDefense", 'RScoreBallControl',"avgBallControl", "RScoreSpeed", "avgSpeed", "RScoreAgility", "avgAgility","RScoreTorque","avgTorque","autoAbility", "sdAutoAbility", "highShotAccuracyAuto", "avgLowShotsTele","avgHighShotsTele", "sdHighShotsTele","highShotAccuracyTele", "teleopShotAbility", "crossingsSuccessRateForDefenseTele","avgTimeForDefenseCrossTele", "crossingsSuccessRateForDefenseAuto"]
+	keys = []
 	TSVExport(comp, keys, "SAC")
 
 def TSVExportCMP(comp): 
-	keys = ["overallSecondPickAbility", "firstPickAbility", 	"actualSeed",	"actualNumRPs", "numAutoPoints", "RScoreDrivingAbility", "siegeAbility", 	"disfunctionalPercentage",	"defensesCrossableAuto","defensesCrossableTele","avgGroundIntakes", "RScoreSpeed", "RScoreAgility", "RScoreBallControl", "avgDrivingAbility", "avgSpeed", "avgAgility", "avgTorque", "avgDefense", "avgLowShotsAttemptedTele", "teleopShotAbility", "avgLowShotsAuto", "avgLowShotsTele", "avgHighShotsTele", 	"highShotAccuracyTele",	"breachPercentage",	"siegeConsistency",	"challengePercentage","pitProgrammingLanguage", "avgTimeForDefenseCrossTele", "avgTimeForDefenseCrossAuto", "autoAbility","autoAbilityExcludeD","autoAbilityExcludeLB","highShotAccuracyAuto","avgHighShotsAuto",  "RScoreDefense" 	 ,"RScoreTorque", "sdAutoAbility",	"avgFailedTimesCrossedDefensesTele",	"sdHighShotsTele",	"predictedNumRPs",	"sdMidlineBallsIntakedAuto",  "avgFailedTimesCrossedDefensesAuto", 	 "lowShotAccuracyAuto", 	 "avgHighShotsAttemptedTele", 	 "incapacitatedPercentage", 	 "predictedSeed",  "twoBallAutoAttemptedPercentage", 	 "predictedSuccessfulCrossingsForDefenseTele", 	 "avgNumTimesUnaffected", 	 "reachPercentage", 	 "crossingsSuccessRateForDefenseTele", 	 "slowedPercentage", 	 "avgBallsKnockedOffMidlineAuto", 	 "avgMidlineBallsIntakedAuto", 	 "crossingsSuccessRateForDefenseAuto", 	 "sdGroundIntakes", 	 "avgBallControl", "avgNumTimesBeached","sdHighShotsAuto",	"sdFailedDefenseCrossesTele",	"avgNumTimesSlowed",	"sdSiegeAbility",	"twoBallAutoAccuracy",	"lowShotAccuracyTele",	"sdTeleopShotAbility",	"sdFailedDefenseCrossesAuto",	"siegeAbility",	"sdSuccessfulDefenseCrossesTele",	"avgSuccessfulTimesCrossedDefensesTele",	"scalePercentage",	"disabledPercentage",		"avgShotsBlocked",	"sdBallsKnockedOffMidlineAuto",	"sdShotsBlocked",	"sdSuccessfulDefenseCrossesAuto",	"blockingAbility",	"twoBallAutoAttemptedPercentage",	"sdLowShotsTele",	"beachedPercentage",	"sdLowShotsAuto",	"unaffectedPercentage",	"avgSuccessfulTimesCrossedDefensesAuto"]
+	keys = []
 	TSVExport(comp, keys, "CHAMPS")

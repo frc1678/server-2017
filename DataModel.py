@@ -10,8 +10,6 @@ class Competition(object):
 		self.teams = []
 		self.matches = []
 		self.TIMDs = []
-		self.predictedSeeding = []
-		self.actualSeeding = []
 		self.currentMatchNum = 0
 	
 	def updateTeamsAndMatchesFromFirebase(self):
@@ -31,8 +29,25 @@ class CalculatedTeamData(object):
 		self.incapacitatedPercentage = None
 		self.predictedSeed = None
 		self.actualSeed = None
+		self.avgHighShotsTele = None
+		self.avgLowShotsTele = None
+		self.avgHighShotsAuto = None
+		self.avgLowShotsAuto = None
+		self.avgGearsPlacedAuto = None
+		self.avgGearsPlacedTele = None
+		self.sdGearsPlacedTele = None
+		self.sdGearsPlacedAuto = None
+		self.sdHighShotsAuto = None
+		self.sdHighShotsTele = None
+		self.sdLowShotsAuto = None
+		self.sdLowShotsTele = None
+		self.avgKeyShotTime = None
+		self.avgAgility = None
+		self.avgSpeed = None
+		self.avgBallControl = None
+		self.avgGearControl = None
+		# self.
 		self.__dict__.update(args)
-
 		
 class Team(object):
 	"""An FRC Team object"""
@@ -41,14 +56,14 @@ class Team(object):
 		self.name = None
 		self.number = None
 		self.calculatedData = CalculatedTeamData()
-		self.selectedImageUrl = None
-		self.otherImageUrls = {
+		self.pitSelectedImageUrl = None
+		self.pitOtherImageUrls = {
 			 'not0' : None
 		}
-		self.pitCheesecakeAbility = None
+		self.pitAvailableWeight = None
 		self.pitNotes = None
 		self.pitOrganization = None
-		self.pitNumberOfWheels = None
+		self.pitDidTankTread = None
 		self.pitProgrammingLanguage = None
 		self.__dict__.update(args)
 
@@ -62,15 +77,15 @@ class CalculatedMatchData(object):
 		self.sdPredictedRedScore = None
 		self.sdPredictedBlueScore = None
 		self.redWinChance = None
-		self.redBreachChance = None
-		self.redCaptureChance = None
 		self.blueWinChance = None
-		self.blueBreachChance = None
-		self.blueCaptureChance = None
 		self.predictedBlueRPs = None
 		self.actualBlueRPs = None
 		self.predictedRedRPs = None
-		self.actualRedRPs = None		
+		self.actualRedRPs = None
+		self.fortykPAChanceRed = None
+		self.fortykPAChanceBlue = None		
+		self.allRotorsTurningChanceRed = None
+		self.allRotorsTurningChanceBlue = None
 		self.__dict__.update(args)
 
 
@@ -82,6 +97,8 @@ class Match(object):
 		self.calculatedData = CalculatedMatchData()
 		self.redAllianceTeamNumbers = None
 		self.blueAllianceTeamNumbers = None
+		self.didStartAllRotors = None
+		self.didReach40kPA = None
 		self.redScore = None
 		self.blueScore = None
 		self.__dict__.update(args)
@@ -90,12 +107,57 @@ class TeamInMatchData(object):
 	"""An FRC TeamInMatchData Object"""
 	def __init__(self, **args):
 		super(TeamInMatchData, self).__init__()
-		
 		self.calculatedData = CalculatedTeamInMatchData()
 		self.teamNumber = None
 		self.matchNumber = None
 		self.scoutName = None
-		self.superNotes = None
+		self.gearsPlacedAuto = None
+		self.didReachBaselineAuto = None
+		self.didPotentiallyConflictingAuto = None
+		self.numHoppersPunkedAuto = None
+		self.numGearsPlacedTele = None
+		self.numHoppersPunkedTele = None
+		self.numGearGroundIntakesTele = None
+		self.numGearHumanIntakesTele = None
+		self.didLiftoff = None
+		self.didStartDisabled = None
+		self.didBecomeIncapacitated = None
+		self.rankSpeed = None
+		self.rankAgility = None
+		self.rankGearControl = None
+		self.rankBallControl = None
+		self.numHighShotsTele = None
+		self.numHighShotsAuto = None
+		self.numLowShotsTele = None
+		self.numLowShotsAuto = None
+		self.highShotTimesForBoilerAuto = [
+			{
+				'time' : None,
+				'numShots' : None,
+				'position' : None
+			}
+		]
+		self.lowShotTimesForBoilerAuto = [
+			{
+				'time' : None,
+				'numShots' : None,
+				'position' : None
+			}
+		]
+		self.highShotTimesForBoilerTele = [
+			{
+				'time' : None,
+				'numShots' : None,
+				'position' : None
+			}
+		]
+		self.lowShotTimesForBoilerTele = [
+			{
+				'time' : None,
+				'numShots' : None,
+				'position' : None
+			}
+		]
 		self.__dict__.update(args)		
 
 class CalculatedTeamInMatchData(object):
@@ -103,4 +165,5 @@ class CalculatedTeamInMatchData(object):
 	def __init__(self, **args):
 		super(CalculatedTeamInMatchData, self).__init__()
 		self.__dict__.update(args)
+		
 

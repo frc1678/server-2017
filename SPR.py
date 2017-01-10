@@ -69,7 +69,7 @@ class ScoutPrecision(object):
 
 	def organizeScouts(self, available, currentTeams):
 		groupFunc = lambda l: l[random.randint(0, len(l) - 1)]
-		scoutsPGrp = groupFunc(sum_to_n(len(available)))
+		scoutsPGrp = groupFunc(utils.sum_to_n(len(available), ))
 		indScouts = self.getIndividualScouts(self.getScoutFrequencies(), len(filter(lambda x: x == 1, scoutsPGrp)))
 		scouts = indScouts + map(lambda c: group(filter(lambda n: n in indScouts, available), scoutsPGrp[c]), c[len(indScouts):len(c)])
 		return scoutsToRobotNums(scouts, currentTeams)
