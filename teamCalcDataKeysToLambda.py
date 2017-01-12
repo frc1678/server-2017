@@ -10,5 +10,8 @@ def firstCalculationDict(team):
 	        'incapacitatedPercentage' : lambda : self.getAverageForDataFunctionForTeam(team, lambda tm: utils.convertFirebaseBoolean(tm.didBecomeIncapacitated)),
 	        'avgGearsPlacedTele' : lambda : self.getAverageForDataFunctionForTeam(team, lambda tm: tm.numGearsPlacedTele),
 	        'avgGearsPlacedAuto' : lambda : self.getAverageForDataFunctionForTeam(team, lambda tm: tm.numGearsPlacedAuto)
+			'avgAgility' : lambda : self.getAverageForDataFunctionForTeam(team, lambda tm: tm.rankAgility)
+			'avgSpeed' : lambda : self.getAverageForDataFunctionForTeam(team, lambda tm: tm.rankSpeed)
+			'avgBallControl' : lambda : self.getAverageForDataFunctionForTeam(team, lambda tm: tm.rankBallControl)
+			'avgGearControl' : lambda : self.getAverageForDataFunctionForTeam(team, lambda tm: tm.rankGearControl)
         }
-	

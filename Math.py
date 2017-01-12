@@ -193,7 +193,7 @@ class Calculator(object):
     def getTotalAverageGearPointsForTeam(self, team):
         return getAverageAutoRotorsStartedForTeam(team) * 60 + getAverageTeleRotorsStartedForTeam(team) * 40
 
-    def get StandardDevGearPointsForTeam(self, team):
+    def getStandardDevGearPointsForTeam(self, team):
         autoGearValue = getAverageAutoRotorsStartedForTeam(team) * 60 / team.calculatedData.avgGearsPlacedAuto
         autoGearSD = autoGearValue * sdGearsPlacedAuto
         teleGearValue = getAverageTeleRotorsStartedForTeam(team) * 40 / team.calculatedData.avgGearsPlacedTele
