@@ -11,7 +11,7 @@ class Competition(object):
 		self.matches = []
 		self.TIMDs = []
 		self.currentMatchNum = 0
-	
+
 	def updateTeamsAndMatchesFromFirebase(self):
 		self.teams = utils.makeTeamsFromDicts(firebaseCommunicator.getPythonObjectForFirebaseDataAtLocation("/Teams"))
 		self.matches = utils.makeMatchesFromDicts(firebaseCommunicator.getPythonObjectForFirebaseDataAtLocation("/Matches"))
@@ -46,9 +46,10 @@ class CalculatedTeamData(object):
 		self.avgSpeed = None
 		self.avgBallControl = None
 		self.avgGearControl = None
-		# self.
+		self.liftoffAbility = None
+		self.sdLiftoffAbility = None
 		self.__dict__.update(args)
-		
+
 class Team(object):
 	"""An FRC Team object"""
 	def __init__(self, **args):
@@ -83,7 +84,7 @@ class CalculatedMatchData(object):
 		self.predictedRedRPs = None
 		self.actualRedRPs = None
 		self.fortykPAChanceRed = None
-		self.fortykPAChanceBlue = None		
+		self.fortykPAChanceBlue = None
 		self.allRotorsTurningChanceRed = None
 		self.allRotorsTurningChanceBlue = None
 		self.__dict__.update(args)
@@ -102,7 +103,7 @@ class Match(object):
 		self.redScore = None
 		self.blueScore = None
 		self.__dict__.update(args)
-		
+
 class TeamInMatchData(object):
 	"""An FRC TeamInMatchData Object"""
 	def __init__(self, **args):
@@ -158,12 +159,10 @@ class TeamInMatchData(object):
 				'position' : None
 			}
 		]
-		self.__dict__.update(args)		
+		self.__dict__.update(args)
 
 class CalculatedTeamInMatchData(object):
 	"""docstring for CalculatedTeamInMatchData"""
 	def __init__(self, **args):
 		super(CalculatedTeamInMatchData, self).__init__()
 		self.__dict__.update(args)
-		
-
