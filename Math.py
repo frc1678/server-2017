@@ -32,17 +32,9 @@ class Calculator(object):
         self.comp = competition
         self.TBAC = TBACommunicator.TBACommunicator()
         self.TBAC.eventCode = self.comp.code
-        self.categories = ['a', 'b', 'c', 'd', 'e']
         self.ourTeamNum = 1678
         self.monteCarloIterations = 100
-        self.defenseList = ['pc', 'cdf', 'mt', 'rt', 'rw', 'lb', 'rp', 'sp', 'db']
-        self.defenseDictionary = {'a': ['pc', 'cdf'],
-                                  'b': ['mt', 'rp'],
-                                  'c': ['sp', 'db'],
-                                  'd': ['rw', 'rt'],
-                                  'e': ['lb']
-                                  }
-        self.su = SchemaUtils(self.comp)                          
+        self.su = SchemaUtils(self.comp)
         self.cachedTeamDatas = {}
         self.averageTeam = DataModel.Team()
         self.averageTeam.number = -1
@@ -65,12 +57,12 @@ class Calculator(object):
 
 
     #Calculated Team Data
-    
-    #Hardcore Math 
+
+    #Hardcore Math
 
     def getAverageForDataFunctionForTeam(self, team, dataFunction):
         validTIMDs = filter(lambda timd: dataFunction(timd) != None, self.su.getCompletedTIMDsForTeam(team))
-        return np.mean(map(dataFunction, validTIMDs)) if len(validTIMDs) > 0 else None     
+        return np.mean(map(dataFunction, validTIMDs)) if len(validTIMDs) > 0 else None
 
     def getSumForDataFunctionForTeam(self, team, dataFunction):
         return sum([dataFunction(tm) for tm in self.su.getCompletedTIMDsForTeam(team) if dataFunction(tm) != None])
@@ -109,7 +101,7 @@ class Calculator(object):
         return np.mean(values) if len(values) > 0 else None
 
     # OVERALL DATA
- 
+
     def rValuesForAverageFunctionForDict(self, averageFunction, d):
         impossible = True
         values = map(averageFunction, self.cachedComp.teamsWithMatchesCompleted)
@@ -118,9 +110,9 @@ class Calculator(object):
         initialValue = values[0]
         for value in values[1:]:
             if value != initialValue: impossible = False
-        if impossible: 
+        if impossible:
             zscores = [0.0 for v in values]
-        else: 
+        else:
             zscores = stats.zscore(values)
         for i in range(len(self.cachedComp.teamsWithMatchesCompleted)):
             d[self.cachedComp.teamsWithMatchesCompleted[i].number] = zscores[i]
@@ -147,10 +139,10 @@ class Calculator(object):
 
     def firstPickAbility(self, team):
         ourTeam = self.su.getTeamForNumber(self.ourTeamNum)
-        if self.predictedScoreForAlliance([ourTeam, team]) == None or math.isnan(self.predictedScoreForAlliance([ourTeam, team])): return 
+        if self.predictedScoreForAlliance([ourTeam, team]) == None or math.isnan(self.predictedScoreForAlliance([ourTeam, team])): return
         return self.predictedPlayoffPointScoreForAlliance([ourTeam, team])
-    
-    def overallSecondPickAbility(self, team): 
+
+    def overallSecondPickAbility(self, team):
         return
 
     def predictedScoreForMatchForAlliance(self, match, allianceIsRed):
@@ -173,6 +165,30 @@ class Calculator(object):
 
     def getStandardDevShotPointsForTeam(self, team):
         return utils.sumStdDevs([team.calculatedData.sdHighShotsTele / 3.0, team.calculatedData.sdLowShotsTele / 9.0, team.calculatedData.sdHighShotsAuto, team.calculatedData.sdLowShotsAuto / 3.0])
+
+    def getTotalAverageGearPointsForTeam(self, team):
+        avgTotalGearsPlaced = team.calculatedData.avgGearsPlacedAuto + team.calculatedData.avgGearsPlacedTele
+        if team.calculatedData.avgGearsPlacedAuto > 2:
+            avgRotorsStartedAuto = 2
+        elif team.calculatedData.avgGearsPlacedAuto > 0:
+            avgRotorsStartedAuto = 1
+        else:
+            avgRotorsStartedAuto = 0
+        if avgTotalGearsPlaced > 11:
+            avgRotorsStartedTele = 4 - avgRotorsStartedAuto
+        elif team.avgTotalGearsPlaced > 5:
+            avgRotorsStartedTele = 3 - avgRotorsStartedAuto
+        elif avgTotalGearsPlaced > 1:
+            avgRotorsStartedTele = 2 - avgRotorsStartedAuto
+        else:
+            avgRotorsStartedTele = 1
+        return avgRotorsStartedTele * 40 + avgGearsPlacedAuto * 60
+
+    def getTotalAverageLiftoffPointsForTeam(self, team):
+        return team.calculatedData.liftoffAbility * 40
+
+    def getStandardDevLiftoffPointsForTeam(self, team):
+        return team.calculatedData.sdLiftoffAbility * 40
 
     def getTotalAverageShotPointsForAlliance(self, alliance):
         return sum(self.getAverageShotPointsForTeam, alliance)
@@ -201,7 +217,7 @@ class Calculator(object):
     def get40kPAChanceForAlliance(self, alliance):
         alliance = map(self.su.replaceWithAverageIfNecessary, alliance)
         return self.probabilityDensity(40.01, self.getTotalAverageShotPointsForAlliance(alliance), self.getStandardDevShotPointsForTeam(alliance))
-    
+
     def get40kPAChanceForAllianceWithNumbers(self, allianceNumbers):
         self.get40kPAChanceForAlliance(self.su.teamsForTeamNumbersOnAlliance(allianceNumbers))
 
@@ -218,7 +234,7 @@ class Calculator(object):
         return numerator / denominator
 
     # Seeding
-    
+
     def getSeedingFunctions(self):
         return [lambda t: t.calculatedData.actualNumRPs]
 
@@ -231,7 +247,7 @@ class Calculator(object):
         return predictedRPs + self.actualNumberOfRPs(team)
 
     def actualNumberOfRPs(self, team):
-        return self.getSumForDataFunctionForTeam(team, lambda tm: tm.calculatedData.numRPs)   
+        return self.getSumForDataFunctionForTeam(team, lambda tm: tm.calculatedData.numRPs)
 
     def scoreRPsGainedFromMatchWithScores(self, score, opposingScore):
         if score > opposingScore: return 2
@@ -242,7 +258,7 @@ class Calculator(object):
         ourFields = self.su.getFieldsForAllianceForMatch(allianceIsRed, match)
         opposingFields = self.su.getFieldsForAllianceForMatch(not allianceIsRed, match)
         numRPs = self.scoreRPsGainedFromMatchWithScores(ourFields[0], opposingFields[0])
-        return numRPs + int(utils.convertFirebaseBoolean(ourFields[1])) + int(utils.convertFirebaseBoolean(ourFields[2])) 
+        return numRPs + int(utils.convertFirebaseBoolean(ourFields[1])) + int(utils.convertFirebaseBoolean(ourFields[2]))
 
     def RPsGainedFromMatchForTeam(self, team, match):
         return self.RPsGainedFromMatchForAlliance(self.su.getTeamAllianceIsRedInMatch(team, match), match)
@@ -256,13 +272,13 @@ class Calculator(object):
         return RPs if not math.isnan(RPs) else None
 
     def teamsSortedByRetrievalFunctions(self, retrievalFunctions):
-        return sorted(self.cachedComp.teamsWithMatchesCompleted, key=lambda t: (retrievalFunctions[0](t), retrievalFunctions[1](t), retrievalFunctions[2](t)), reverse=True)  
+        return sorted(self.cachedComp.teamsWithMatchesCompleted, key=lambda t: (retrievalFunctions[0](t), retrievalFunctions[1](t), retrievalFunctions[2](t)), reverse=True)
 
     def getTeamSeed(self, team):
-        return int(filter(lambda x: int(x[1]) == team.number, self.cachedComp.actualSeedings)[0][0])       
+        return int(filter(lambda x: int(x[1]) == team.number, self.cachedComp.actualSeedings)[0][0])
 
     def getTeamRPsFromTBA(self, team):
-        return int(float(filter(lambda x: int(x[1]) == team.number, self.cachedComp.actualSeedings)[0][2]))       
+        return int(float(filter(lambda x: int(x[1]) == team.number, self.cachedComp.actualSeedings)[0][2]))
 
     #CACHING
 
@@ -287,7 +303,7 @@ class Calculator(object):
             self.cachedComp.actualSeedings = self.TBAC.makeEventRankingsRequest()
         except:
             self.cachedComp.actualSeedings = []
-        self.cachedComp.predictedSeedings = self.teamsSortedByRetrievalFunctions(self.getPredictedSeedingFunctions()) 
+        self.cachedComp.predictedSeedings = self.teamsSortedByRetrievalFunctions(self.getPredictedSeedingFunctions())
         self.doSecondCachingForTeam(self.averageTeam)
 
     def doCachingForTeam(self, team):
@@ -299,9 +315,9 @@ class Calculator(object):
         map(lambda dKey: utils.setDictionaryValue(cachedData.alphas, dKey, self.alphaForTeamForDefense(team, dKey)), self.defenseList)
         map(lambda dKey: utils.setDictionaryValue(cachedData.betas, dKey, self.betaForTeamForDefense(team, dKey)), self.defenseList)
 
-    #CALCULATIONS        
+    #CALCULATIONS
 
-    def getFirstCalculationsForAverageTeam(self): 
+    def getFirstCalculationsForAverageTeam(self):
         a = self.averageTeam.calculatedData
 
     def doFirstCalculationsForTeam(self, team):
@@ -329,7 +345,7 @@ class Calculator(object):
                 t.actualNumRPs = self.actualNumberOfRPs(team)
                 t.actualSeed = self.teamsSortedByRetrievalFunctions(self.getSeedingFunctions())
             t.predictedSeed = self.cachedComp.predictedSeedings.index(team) + 1
-            t.firstPickAbility = self.firstPickAbility(team) # Checked  
+            t.firstPickAbility = self.firstPickAbility(team) # Checked
             t.overallSecondPickAbility = self.overallSecondPickAbility(team) # Checked
             print "Completed second calcs for team " + str(team.number)
 
@@ -341,7 +357,7 @@ class Calculator(object):
         match.calculatedData.predictedBlueScore = self.predictedScoreForAllianceWithNumbers(match.blueAllianceTeamNumbers)
         match.calculatedData.predictedRedScore = self.predictedScoreForAllianceWithNumbers(match.redAllianceTeamNumbers)
         match.calculatedData.sdPredictedBlueScore = self.stdDevPredictedScoreForAllianceNumbers(match.blueAllianceTeamNumbers)
-        match.calculatedData.sdPredictedRedScore = self.stdDevPredictedScoreForAllianceNumbers(match.redAllianceTeamNumbers) 
+        match.calculatedData.sdPredictedRedScore = self.stdDevPredictedScoreForAllianceNumbers(match.redAllianceTeamNumbers)
         match.calculatedData.fortykPAChanceRed = self.get40kPAChanceForAllianceWithNumbers(match.redAllianceTeamNumbers)
         match.calculatedData.fortykPAChanceBlue = self.get40kPAChanceForAllianceWithNumbers(match.blueAllianceTeamNumbers)
         match.calculatedData.allRotorsTurningChanceRed = self.getAllRotorsTurningChanceForAllianceWithNumbers(match.redAllianceTeamNumbers)
@@ -366,11 +382,11 @@ class Calculator(object):
 
     def doMatchesCalculations(self):
         map(self.doFirstCalculationsForMatch, self.comp.matches)
-    
+
     def writeCalculationDiagnostic(self, time):
         with open('./diagnostics.txt', 'a') as file:
             file.write('Time: ' + str(time) + '    TIMDs: ' + str(len(self.su.getCompletedTIMDsInCompetition())) + '\n')
-            file.close()    
+            file.close()
 
     def doCalculations(self, FBC):
         isData = len(self.su.getCompletedTIMDsInCompetition()) > 0
