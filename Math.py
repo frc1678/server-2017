@@ -166,23 +166,32 @@ class Calculator(object):
     def getStandardDevShotPointsForTeam(self, team):
         return utils.sumStdDevs([team.calculatedData.sdHighShotsTele / 3.0, team.calculatedData.sdLowShotsTele / 9.0, team.calculatedData.sdHighShotsAuto, team.calculatedData.sdLowShotsAuto / 3.0])
 
-    def getTotalAverageGearPointsForTeam(self, team):
-        avgTotalGearsPlaced = team.calculatedData.avgGearsPlacedAuto + team.calculatedData.avgGearsPlacedTele
-        if team.calculatedData.avgGearsPlacedAuto > 2:
+    def getAverageAutoRotorsStartedForTeam(self, team):
+        if team.calculatedData.avgGearsPlacedAuto >= 3:
             avgRotorsStartedAuto = 2
-        elif team.calculatedData.avgGearsPlacedAuto > 0:
+        elif team.calculatedData.avgGearsPlacedAuto >= 1:
             avgRotorsStartedAuto = 1
         else:
             avgRotorsStartedAuto = 0
-        if avgTotalGearsPlaced > 11:
-            avgRotorsStartedTele = 4 - avgRotorsStartedAuto
-        elif team.avgTotalGearsPlaced > 5:
-            avgRotorsStartedTele = 3 - avgRotorsStartedAuto
-        elif avgTotalGearsPlaced > 1:
-            avgRotorsStartedTele = 2 - avgRotorsStartedAuto
+        return avgRotorsStartedAuto
+
+    def getTotalAverageRotorsStartedForTeam(self, team):
+        avgTotalGearsPlaced = team.calculatedData.avgGearsPlacedAuto + team.calculatedData.avgGearsPlacedTele
+        if avgTotalGearsPlaced >= 12:
+            avgRotorsStarted = 4
+        elif avgTotalGearsPlaced >= 6:
+            avgRotorsStarted = 3
+        elif avgTotalGearsPlaced >= 2:
+            avgRotorsStarted = 2
         else:
-            avgRotorsStartedTele = 1
-        return avgRotorsStartedTele * 40 + avgGearsPlacedAuto * 60
+            avgRotorsStarted = 1
+        return avgRotorsStarted
+
+    def getAverageTeleRotorsStartedForTeam(self, team):
+        return getTotalAverageRotorsStartedForTeam(team) - getAverageAutoRotorsStartedForTeam(team)
+
+    def getTotalAverageGearPointsForTeam(self, team):
+        return getAverageAutoRotorsStartedForTeam(team) * 60 + getAverageTeleRotorsStartedForTeam(team) * 40
 
     def getTotalAverageLiftoffPointsForTeam(self, team):
         return team.calculatedData.liftoffAbility * 40
