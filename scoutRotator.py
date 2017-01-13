@@ -15,11 +15,15 @@ config = {
 
 f = pyrebase.initialize_app(config)
 fb = f.database()
+scouts = []
+SPR = SPR.ScoutPrecision()
 
 def doThing(newMatchNumber):
-	currentMatchNum = newMatchNumber["data"]
+	currentMatchNum = int(newMatchNumber["data"])
 	blueTeams = fb.child("Matches").child(str(currentMatchNum)).get().val()['blueAllianceTeamNumbers']
 	redTeams = fb.child("Matches").child(str(currentMatchNum)).get().val()['redAllianceTeamNumbers']
-	print redTeams, blueTeams
-
+	available = [k for k, v in fb.child("available").get().val().items() if v]
+	newAssignments = SPR.assignScoutsToRobots(scouts, available, redTeams + blueTeams, fb.child("scouts").get().val())
+	fb.child("scouts").update(newAssignments)
+	
 fb.child("currentMatchNum").stream(doThing)
