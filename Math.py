@@ -201,10 +201,10 @@ class Calculator(object):
         return utils.sumStdDevs([autoGearSD, teleGearSD])
 
     def getTotalAverageLiftoffPointsForTeam(self, team):
-        return team.calculatedData.liftoffAbility * 40
+        return team.calculatedData.liftoffAbility * 50
 
     def getStandardDevLiftoffPointsForTeam(self, team):
-        return team.calculatedData.sdLiftoffAbility * 40
+        return team.calculatedData.sdLiftoffAbility * 50
 
     def getTotalAverageShotPointsForAlliance(self, alliance):
         return sum(self.getAverageShotPointsForTeam, alliance)
