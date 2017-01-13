@@ -83,8 +83,8 @@ class CalculatedMatchData(object):
 		self.actualBlueRPs = None
 		self.predictedRedRPs = None
 		self.actualRedRPs = None
-		self.fortykPAChanceRed = None
-		self.fortykPAChanceBlue = None
+		self.fortyKilopascalChanceRed = None
+		self.fortyKilopascalChanceBlue = None
 		self.allRotorsTurningChanceRed = None
 		self.allRotorsTurningChanceBlue = None
 		self.__dict__.update(args)

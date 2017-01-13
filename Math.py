@@ -135,7 +135,7 @@ class Calculator(object):
         return None
 
     def predictedPlayoffPointScoreForAlliance(self, alliance):
-        return 20 * self.get40kPAChanceForAlliance(alliance) + self.predictedScoreForAlliance(alliance) + 100 * self.getAllRotorsTurningChanceForAlliance(alliance)
+        return 20 * self.get40KilopascalChanceForAlliance(alliance) + self.predictedScoreForAlliance(alliance) + 100 * self.getAllRotorsTurningChanceForAlliance(alliance)
 
     def firstPickAbility(self, team):
         ourTeam = self.su.getTeamForNumber(self.ourTeamNum)
@@ -200,12 +200,6 @@ class Calculator(object):
         teleGearSD = teleGearValue * sdGearsPlacedTele
         return utils.sumStdDevs([autoGearSD, teleGearSD])
 
-    def getTotalAverageLiftoffPointsForTeam(self, team):
-        return team.calculatedData.liftoffAbility * 50
-
-    def getStandardDevLiftoffPointsForTeam(self, team):
-        return team.calculatedData.sdLiftoffAbility * 50
-
     def getTotalAverageShotPointsForAlliance(self, alliance):
         return sum(self.getAverageShotPointsForTeam, alliance)
 
@@ -230,12 +224,12 @@ class Calculator(object):
         winChance = match.calculatedData.redWinChance if allianceIsRed else match.calculatedData.blueWinChance
         return winChance if not math.isnan(winChance) else None
 
-    def get40kPAChanceForAlliance(self, alliance):
+    def get40KilopascalChanceForAlliance(self, alliance):
         alliance = map(self.su.replaceWithAverageIfNecessary, alliance)
         return self.probabilityDensity(40.01, self.getTotalAverageShotPointsForAlliance(alliance), self.getStandardDevShotPointsForTeam(alliance))
 
-    def get40kPAChanceForAllianceWithNumbers(self, allianceNumbers):
-        self.get40kPAChanceForAlliance(self.su.teamsForTeamNumbersOnAlliance(allianceNumbers))
+    def get40KilopascalChanceForAllianceWithNumbers(self, allianceNumbers):
+        self.get40KilopascalChanceForAlliance(self.su.teamsForTeamNumbersOnAlliance(allianceNumbers))
 
     def getAllRotorsTurningChanceForAlliance(self, alliance):
         alliance = map(self.su.replaceWithAverageIfNecessary, alliance)
@@ -382,8 +376,8 @@ class Calculator(object):
         match.calculatedData.predictedRedScore = self.predictedScoreForAllianceWithNumbers(match.redAllianceTeamNumbers)
         match.calculatedData.sdPredictedBlueScore = self.stdDevPredictedScoreForAllianceNumbers(match.blueAllianceTeamNumbers)
         match.calculatedData.sdPredictedRedScore = self.stdDevPredictedScoreForAllianceNumbers(match.redAllianceTeamNumbers)
-        match.calculatedData.fortykPAChanceRed = self.get40kPAChanceForAllianceWithNumbers(match.redAllianceTeamNumbers)
-        match.calculatedData.fortykPAChanceBlue = self.get40kPAChanceForAllianceWithNumbers(match.blueAllianceTeamNumbers)
+        match.calculatedData.fortyKilopascalChanceRed = self.get40KilopascalChanceForAllianceWithNumbers(match.redAllianceTeamNumbers)
+        match.calculatedData.fortyKilopascalChanceBlue = self.get40KilopascalChanceForAllianceWithNumbers(match.blueAllianceTeamNumbers)
         match.calculatedData.allRotorsTurningChanceRed = self.getAllRotorsTurningChanceForAllianceWithNumbers(match.redAllianceTeamNumbers)
         match.calculatedData.allRotorsTurningChanceBlue = self.getAllRotorsTurningChanceForAllianceWithNumbers(match.blueAllianceTeamNumbers)
         match.calculatedData.blueWinChance = self.winChanceForMatchForAllianceIsRed(match, False)
