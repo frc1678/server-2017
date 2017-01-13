@@ -251,8 +251,18 @@ class Calculator(object):
 
     # Seeding
 
+    def getScoreAcrossAllMatches(self, team):
+        allMatches = SchemaUtils.getCompletedMatchesForTeam(team)
+        totalScore = 0
+        for match in allMatches:
+            if team.number in match.redAllianceTeamNumbers:
+                totalScore += match.redScore
+            else:
+                totalScore += match.blueScore
+        return totalScore
+
     def getSeedingFunctions(self):
-        return [lambda t: t.calculatedData.actualNumRPs]
+        return [lambda t: t.calculatedData.actualNumRPs, lambda t: self.getScoreAcrossAllMatches(t)]
 
     def getPredictedSeedingFunctions(self):
         return [lambda t: t.calculatedData.predictedNumRPs]
