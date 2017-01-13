@@ -48,6 +48,8 @@ class CalculatedTeamData(object):
 		self.avgGearControl = None
 		self.liftoffAbility = None
 		self.sdLiftoffAbility = None
+		self.liftoffPercentage = None
+		self.sdLiftoffPercentage = None
 		self.__dict__.update(args)
 
 class Team(object):
@@ -114,7 +116,7 @@ class TeamInMatchData(object):
 		self.teamNumber = None
 		self.matchNumber = None
 		self.scoutName = None
-		self.gearsPlacedAuto = None
+		self.numGearsPlacedAuto = None
 		self.didReachBaselineAuto = None
 		self.didPotentiallyConflictingAuto = None
 		self.numHoppersPunkedAuto = None
