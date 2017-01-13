@@ -135,7 +135,7 @@ class Calculator(object):
         return None
 
     def predictedPlayoffPointScoreForAlliance(self, alliance):
-        return 20 * self.get40kPAChanceForAlliance(alliance) + self.predictedScoreForAlliance(alliance)
+        return 20 * self.get40kPAChanceForAlliance(alliance) + self.predictedScoreForAlliance(alliance) + 100 * self.getAllRotorsTurningChanceForAlliance(alliance)
 
     def firstPickAbility(self, team):
         ourTeam = self.su.getTeamForNumber(self.ourTeamNum)
@@ -304,13 +304,11 @@ class Calculator(object):
         self.doCachingForTeam(self.averageTeam)
         self.cachedComp.teamsWithMatchesCompleted = self.su.findTeamsWithMatchesCompleted()
 
-    # def rScoreParams(self):
-    #     return [(lambda t: t.calculatedData.avgSpeed, self.cachedComp.speedZScores),
-    #                 (lambda t: t.calculatedData.avgTorque, self.cachedComp.torqueZScores),
-    #                 (lambda t: t.calculatedData.avgDefense, self.cachedComp.defenseZScores),
-    #                 (lambda t: t.calculatedData.avgBallControl, self.cachedComp.ballControlZScores),
-    #                 (lambda t: t.calculatedData.avgAgility, self.cachedComp.agilityZScores),
-    #         (lambda t: t.calculatedData.avgDrivingAbility, self.cachedComp.drivingAbilityZScores)]
+    def rScoreParams(self):
+        return [(lambda t: t.calculatedData.avgSpeed, self.cachedComp.speedZScores),
+                     (lambda t: t.calculatedData.avgAgility, self.cachedComp.agilityZScores),
+                     (lambda t: t.calculatedData.avgBallControl, self.cachedComp.ballControlZScores),
+                     (lambda t: t.calculatedData.avgGearControl, self.cachedComp.gearControlZScores)]
 
     def cacheSecondTeamData(self):
         map(lambda (func, dictionary): self.rValuesForAverageFunctionForDict(func, dictionary), self.rScoreParams())
