@@ -48,6 +48,8 @@ class CalculatedTeamData(object):
 		self.avgGearControl = None
 		self.liftoffAbility = None
 		self.sdLiftoffAbility = None
+		self.liftoffPercentage = None
+		self.sdLiftoffPercentage = None
 		self.__dict__.update(args)
 
 class Team(object):
@@ -83,8 +85,8 @@ class CalculatedMatchData(object):
 		self.actualBlueRPs = None
 		self.predictedRedRPs = None
 		self.actualRedRPs = None
-		self.fortykPAChanceRed = None
-		self.fortykPAChanceBlue = None
+		self.fortyKilopascalChanceRed = None
+		self.fortyKilopascalChanceBlue = None
 		self.allRotorsTurningChanceRed = None
 		self.allRotorsTurningChanceBlue = None
 		self.__dict__.update(args)
@@ -98,8 +100,10 @@ class Match(object):
 		self.calculatedData = CalculatedMatchData()
 		self.redAllianceTeamNumbers = None
 		self.blueAllianceTeamNumbers = None
-		self.didStartAllRotors = None
-		self.didReach40kPA = None
+		self.redDidStartAllRotors = None
+		self.blueDidStartAllRotors = None
+		self.redDidReach40Kilopascals = None
+		self.blueDidReach40Kilopascals = None
 		self.redScore = None
 		self.blueScore = None
 		self.__dict__.update(args)
@@ -112,7 +116,7 @@ class TeamInMatchData(object):
 		self.teamNumber = None
 		self.matchNumber = None
 		self.scoutName = None
-		self.gearsPlacedAuto = None
+		self.numGearsPlacedAuto = None
 		self.didReachBaselineAuto = None
 		self.didPotentiallyConflictingAuto = None
 		self.numHoppersPunkedAuto = None

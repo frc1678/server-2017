@@ -8,6 +8,7 @@ def firstCalculationDict(team):
 	        'avgLowShotsTele' : lambda : self.getAverageForDataFunctionForTeam(team, lambda tm: tm.numLowShotsTele),
 	        'disabledPercentage' : lambda : self.getAverageForDataFunctionForTeam(team, lambda tm: utils.convertFirebaseBoolean(tm.didStartDisabled)),
 	        'incapacitatedPercentage' : lambda : self.getAverageForDataFunctionForTeam(team, lambda tm: utils.convertFirebaseBoolean(tm.didBecomeIncapacitated)),
+			'liftoffPercentage' : lambda : self.getAverageForDataFunctionForTeam(team, lambda tm: utils.convertFirebaseBoolean(tm.didLiftoff)),
 	        'avgGearsPlacedTele' : lambda : self.getAverageForDataFunctionForTeam(team, lambda tm: tm.numGearsPlacedTele),
 	        'avgGearsPlacedAuto' : lambda : self.getAverageForDataFunctionForTeam(team, lambda tm: tm.numGearsPlacedAuto)
 			'avgAgility' : lambda : self.getAverageForDataFunctionForTeam(team, lambda tm: tm.rankAgility)
