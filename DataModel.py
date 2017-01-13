@@ -98,8 +98,10 @@ class Match(object):
 		self.calculatedData = CalculatedMatchData()
 		self.redAllianceTeamNumbers = None
 		self.blueAllianceTeamNumbers = None
-		self.didStartAllRotors = None
-		self.didReach40kPA = None
+		self.redDidStartAllRotors = None
+		self.blueDidStartAllRotors = None
+		self.redDidReach40Kilopascals = None
+		self.blueDidReach40Kilopascals = None
 		self.redScore = None
 		self.blueScore = None
 		self.__dict__.update(args)
