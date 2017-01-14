@@ -61,7 +61,7 @@ class Calculator(object):
     #Hardcore Math
 
     def getAverageForDataFunctionForTeam(self, team, dataFunction):
-        validTIMDs = filter(lambda timd: dataFunction(timd) != None, self.su.getCompletedTIMDsForTeam(team))
+        validTIMDs = filter(lambda timd: dataFunction(timd), self.su.getCompletedTIMDsForTeam(team))
         return np.mean(map(dataFunction, validTIMDs)) if len(validTIMDs) > 0 else None
 
     def getSumForDataFunctionForTeam(self, team, dataFunction):
@@ -101,6 +101,9 @@ class Calculator(object):
         return np.mean(values) if len(values) > 0 else None
 
     # OVERALL DATA
+
+    def liftoffAbility(self, team):
+        return 50 * team.calculatedData.liftoffPercentage
 
     def rValuesForAverageFunctionForDict(self, averageFunction, d):
         impossible = True
@@ -218,6 +221,15 @@ class Calculator(object):
     def getStandardDevGearsPlacedForAlliance(self, alliance):
         return self.standardDeviationForRetrievalFunctionForAlliance(self.getStandardDevGearsPlacedForTeam, alliance)
 
+    def getAllBoilerFieldsAtKey(self, timd):
+        shots = timd.highShotTimesForBoilerTele + timd.highShotTimesForBoilerAuto + timd.lowShotTimesForBoilerAuto + timd.lowShotTimesForBoilerTele
+        return filter(lambda v: v['position'] != 'key', shots)
+
+    def boilerShotTimeFromKey(self, team):
+        timds = self.su.getCompletedTIMDsForTeam(team)
+        shotTimes = [self.getAllBoilerFields(timd) for timd in timds]
+        return np.mean([np.mean(map(lambda v: v['time'], sT)) for sT in shotTimes])
+
     #PROBABILITIES
 
     def getWinChanceForMatchForAllianceIsRed(self, match, allianceIsRed):
@@ -233,7 +245,7 @@ class Calculator(object):
 
     def getAllRotorsTurningChanceForAlliance(self, alliance):
         alliance = map(self.su.replaceWithAverageIfNecessary, alliance)
-        return self.probabilityDensity(13.0, self.getTotalAverageGearsPlacedForAlliance(alliance), self.getStandardDevGearsPlacedForAlliance(alliance))
+        
 
     def getAllRotorsTurningChanceForAllianceWithNumbers(self, allianceNumbers):
         return self.getAllRotorsTurningChanceForAlliance(self.su.teamsForTeamNumbersOnAlliance(allianceNumbers))
@@ -246,14 +258,8 @@ class Calculator(object):
     # Seeding
 
     def getScoreAcrossAllMatches(self, team):
-        allMatches = SchemaUtils.getCompletedMatchesForTeam(team)
-        totalScore = 0
-        for match in allMatches:
-            if team.number in match.redAllianceTeamNumbers:
-                totalScore += match.redScore
-            else:
-                totalScore += match.blueScore
-        return totalScore
+        allMatches = self.su.getCompletedMatchesForTeam(team)
+        return sum([match.redScore if self.getTeamAllianceIsRedInMatch(team, match) else match.blueScore for match in allMatches])
 
     def getSeedingFunctions(self):
         return [lambda t: t.calculatedData.actualNumRPs, lambda t: self.getScoreAcrossAllMatches(t)]
@@ -286,7 +292,7 @@ class Calculator(object):
     def predictedRPsForAllianceForMatch(self, allianceIsRed, match):
         alliance = map(self.su.replaceWithAverageIfNecessary, self.su.getAllianceForMatch(match, allianceIsRed))
         scoreRPs = 2 * (self.getWinChanceForMatchForAllianceIsRed(match, allianceIsRed) or 0)
-        boilerRPs = 0
+        boilerRPs = self.get40KilopascalChanceForAlliance(alliance)
         rotorRPs = 0
         RPs = scoreRPs + boilerRPs + rotorRPs
         return RPs if not math.isnan(RPs) else None

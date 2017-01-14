@@ -10,9 +10,12 @@ def firstCalculationDict(team):
 	        'incapacitatedPercentage' : lambda : self.getAverageForDataFunctionForTeam(team, lambda tm: utils.convertFirebaseBoolean(tm.didBecomeIncapacitated)),
 			'liftoffPercentage' : lambda : self.getAverageForDataFunctionForTeam(team, lambda tm: utils.convertFirebaseBoolean(tm.didLiftoff)),
 	        'avgGearsPlacedTele' : lambda : self.getAverageForDataFunctionForTeam(team, lambda tm: tm.numGearsPlacedTele),
-	        'avgGearsPlacedAuto' : lambda : self.getAverageForDataFunctionForTeam(team, lambda tm: tm.numGearsPlacedAuto)
-			'avgAgility' : lambda : self.getAverageForDataFunctionForTeam(team, lambda tm: tm.rankAgility)
-			'avgSpeed' : lambda : self.getAverageForDataFunctionForTeam(team, lambda tm: tm.rankSpeed)
-			'avgBallControl' : lambda : self.getAverageForDataFunctionForTeam(team, lambda tm: tm.rankBallControl)
-			'avgGearControl' : lambda : self.getAverageForDataFunctionForTeam(team, lambda tm: tm.rankGearControl)
-        }
+	        'avgGearsPlacedAuto' : lambda : self.getAverageForDataFunctionForTeam(team, lambda tm: tm.numGearsPlacedAuto),
+			'avgAgility' : lambda : self.getAverageForDataFunctionForTeam(team, lambda tm: tm.rankAgility),
+			'avgSpeed' : lambda : self.getAverageForDataFunctionForTeam(team, lambda tm: tm.rankSpeed),
+			'avgBallControl' : lambda : self.getAverageForDataFunctionForTeam(team, lambda tm: tm.rankBallControl),
+			'avgGearControl' : lambda : self.getAverageForDataFunctionForTeam(team, lambda tm: tm.rankGearControl),
+        	'avgKeyShotTime' : lambda : self.boilerShotTimeForKey(team),
+       		'sdLiftoffPercentage' : lambda : self.getStandardDeviationForDataFunctionForTeam(team, lambda tm: utils.convertFirebaseBoolean(tm.didLiftoff)),
+       		'liftoffAbility' : lambda : self.liftoffAbility(team) 
+       }
