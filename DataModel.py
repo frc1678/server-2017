@@ -50,6 +50,7 @@ class CalculatedTeamData(object):
 		self.sdLiftoffAbility = None
 		self.liftoffPercentage = None
 		self.sdLiftoffPercentage = None
+		self.baselineReachedPercentage = None
 		self.__dict__.update(args)
 
 class Team(object):

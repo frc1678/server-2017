@@ -98,7 +98,7 @@ class SchemaUtils(object):
         return calculatedData.drivingAbility != None 
 
     def timdIsCompleted(self, timd):
-        return timd.rankTorque != None and timd.numHighShotsMadeTele != None 
+        return timd.rankSpeed != None and timd.numHighShotsTele != None 
 
     def matchHasValuesSet(self, match):
         return match.redScore != None and match.blueScore != None
