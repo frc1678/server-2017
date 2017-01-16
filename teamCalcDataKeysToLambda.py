@@ -16,6 +16,7 @@ def firstCalculationDict(team):
 			'avgBallControl' : lambda : self.getAverageForDataFunctionForTeam(team, lambda tm: tm.rankBallControl),
 			'avgGearControl' : lambda : self.getAverageForDataFunctionForTeam(team, lambda tm: tm.rankGearControl),
         	'avgKeyShotTime' : lambda : self.boilerShotTimeForKey(team),
-       		'sdLiftoffPercentage' : lambda : self.getStandardDeviationForDataFunctionForTeam(team, lambda tm: utils.convertFirebaseBoolean(tm.didLiftoff)),
-       		'liftoffAbility' : lambda : self.liftoffAbility(team) 
+        	'liftoffAbility' : lambda : self.getAverageForDataFunctionForTeam(team, lambda tm: tm.calculatedData.liftoffAbility),
+       		'sdLiftoffAbility' : lambda : self.getStandardDeviationForDataFunctionForTeam(team, lambda tm: tm.calculatedData.liftoffAbility)
        }
+

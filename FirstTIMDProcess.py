@@ -19,11 +19,11 @@ class FirstTIMDProcess(multiprocessing.Process):
             print "Beginning first calculations for team " + str(self.timd.teamNumber) + " in match " + str(self.timd.matchNumber)
             team = self.calculator.su.getTeamForNumber(self.timd.teamNumber)
             match = self.calculator.su.getMatchForNumber(self.timd.matchNumber)
-            c.numHighShotsTele = sum(map(lambda v: v['numShots'], self.highShotTimesForBoilerTele))
-            c.numHighShotsAuto = sum(map(lambda v: v['numShots'], self.highShotTimesForBoilerAuto))
-            c.numLowShotsTele = sum(map(lambda v: v['numShots'], self.lowShotTimesForBoilerTele))
-            c.numLowShotsAuto  = sum(map(lambda v: v['numShots'], self.lowShotTimesForBoilerAuto))
-            
+            c.numHighShotsTele = self.calculator.weightFuelShotsForDataPoint(self.timd, match, timd.highShotTimesForBoilerTele)
+            c.numHighShotsAuto = self.calculator.weightFuelShotsForDataPoint(self.timd, match, timd.highShotTimesForBoilerAuto)
+            c.numLowShotsTele = self.calculator.weightFuelShotsForDataPoint(self.timd, match, timd.lowShotTimesForBoilerTele) 
+            c.numLowShotsAuto = self.calculator.weightFuelShotsForDataPoint(self.timd, match, timd.lowShotTimesForBoilerAuto) 
+            c.liftoffAbility = self.liftoffAbilityForTIMD(self.timd)
             if not self.calculator.su.TIMCalculatedDataHasValues(
                     self.timd.calculatedData): self.timd.calculatedData = DataModel.CalculatedTeamInMatchData()
             c = self.timd.calculatedData

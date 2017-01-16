@@ -49,7 +49,6 @@ class CalculatedTeamData(object):
 		self.liftoffAbility = None
 		self.sdLiftoffAbility = None
 		self.liftoffPercentage = None
-		self.sdLiftoffPercentage = None
 		self.baselineReachedPercentage = None
 		self.__dict__.update(args)
 
@@ -107,6 +106,8 @@ class Match(object):
 		self.blueDidReach40Kilopascals = None
 		self.redScore = None
 		self.blueScore = None
+		self.foulPointsGainedRed = None
+		self.foulPointsGainedBlue = None
 		self.__dict__.update(args)
 
 class TeamInMatchData(object):
@@ -120,11 +121,11 @@ class TeamInMatchData(object):
 		self.numGearsPlacedAuto = None
 		self.didReachBaselineAuto = None
 		self.didPotentiallyConflictingAuto = None
-		self.numHoppersPunkedAuto = None
+		self.numHoppersOpenedAuto = None
 		self.numGearsPlacedTele = None
-		self.numHoppersPunkedTele = None
+		self.numHoppersOpenedTele = None
 		self.numGearGroundIntakesTele = None
-		self.numGearHumanIntakesTele = None
+		self.numGearLoaderIntakesTele = None
 		self.didLiftoff = None
 		self.didStartDisabled = None
 		self.didBecomeIncapacitated = None
@@ -132,10 +133,7 @@ class TeamInMatchData(object):
 		self.rankAgility = None
 		self.rankGearControl = None
 		self.rankBallControl = None
-		self.numHighShotsTele = None
-		self.numHighShotsAuto = None
-		self.numLowShotsTele = None
-		self.numLowShotsAuto = None
+		self.rankDefense = None
 		self.highShotTimesForBoilerAuto = [
 			{
 				'time' : None,
@@ -171,3 +169,8 @@ class CalculatedTeamInMatchData(object):
 	def __init__(self, **args):
 		super(CalculatedTeamInMatchData, self).__init__()
 		self.__dict__.update(args)
+		self.liftoffAbility = None
+		self.numHighShotsTele = None
+		self.numHighShotsAuto = None
+		self.numLowShotsTele = None
+		self.numLowShotsAuto = None

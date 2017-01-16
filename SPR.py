@@ -82,7 +82,7 @@ class ScoutPrecision(object):
 	#I don't understand this function, and I am not sure it works
 	def organizeScouts(self, available, currentTeams):
 		groupFunc = lambda l: l[random.randint(0, len(l) - 1)] 		#picks a random member of the inputted group
-		scoutsPGrp = groupFunc(sum_to_n(len(available))) 		#sum_to_n should take 2-3 inputs, while here it takes 1
+		scoutsPGrp = groupFunc(utils.sum_to_n(len(available))) 		#sum_to_n should take 2-3 inputs, while here it takes 1
 		indScouts = self.getIndividualScouts(self.getScoutFrequencies(), len(filter(lambda x: x == 1, scoutsPGrp)))
 		scouts = indScouts + map(lambda c: group(filter(lambda n: n in indScouts, available), scoutsPGrp[c]), c[len(indScouts):len(c)])
 		return scoutsToRobotNums(scouts, currentTeams)

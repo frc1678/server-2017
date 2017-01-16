@@ -19,6 +19,8 @@ scouts = []
 SPR = SPR.ScoutPrecision()
 
 def doThing(newMatchNumber):
+	print newMatchNumber
+	if not newMatchNumber.get("data"): return
 	currentMatchNum = int(newMatchNumber["data"])
 	blueTeams = fb.child("Matches").child(str(currentMatchNum)).get().val()['blueAllianceTeamNumbers']
 	redTeams = fb.child("Matches").child(str(currentMatchNum)).get().val()['redAllianceTeamNumbers']
@@ -26,4 +28,4 @@ def doThing(newMatchNumber):
 	newAssignments = SPR.assignScoutsToRobots(scouts, available, redTeams + blueTeams, fb.child("scouts").get().val())
 	fb.child("scouts").update(newAssignments)
 	
-fb.child("currentMatchNum").stream(doThing)
+fb.child("currentMatchNumber").stream(doThing)

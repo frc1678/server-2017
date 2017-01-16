@@ -62,8 +62,8 @@ class SchemaUtils(object):
         return self.getAllianceForMatch(match, self.getTeamAllianceIsRedInMatch(team, match))
 
     def getFieldsForAllianceForMatch(self, allianceIsRed, match):
-        return (match.redScore, match.redAllianceDidBreach, match.redAllianceDidCapture) if allianceIsRed else (
-            match.blueScore, match.blueAllianceDidBreach, match.blueAllianceDidCapture)
+        return (match.redScore, match.redDidReachFortyKilopascals, match.redDidStartAllRotors, match.foulPointsGainedRed) if allianceIsRed else (
+            match.blueScore, match.blueDidReachFortyKilopascals, match.blueDidStartAllRotors, match.foulPointsGainedBlue)
 
     def getTeamAllianceIsRedInMatch(self, team, match):
         if team.number == -1 or team.number in match.redAllianceTeamNumbers: return True
