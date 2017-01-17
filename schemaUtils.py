@@ -4,10 +4,10 @@ import pdb
 
 class SchemaUtils(object):
     """docstring for SchemaUtils"""
-    def __init__(self, comp):
+    def __init__(self, comp, calc):
         super(SchemaUtils, self).__init__()
         self.comp = comp
-        
+        self.calc = calc
      # Team utility functions
     def getTeamForNumber(self, teamNumber):
         try: return [team for team in self.comp.teams if team.number == teamNumber][0]
@@ -28,10 +28,10 @@ class SchemaUtils(object):
         return filter(lambda team: len(self.getCompletedMatchesForTeam(team)) > 0, self.comp.teams)
 
     def teamCalculatedDataHasValues(self, calculatedData):
-        return calculatedData.siegeAbility != None
+        return calculatedData.liftoffAbility != None
 
     def replaceWithAverageIfNecessary(self, team):
-        return team if self.teamCalculatedDataHasValues(team.calculatedData) else self.comp.averageTeam
+        return team if self.teamCalculatedDataHasValues(team.calculatedData) else self.calc.averageTeam
 
     # Match utility functions
     def getMatchForNumber(self, matchNumber):
@@ -95,10 +95,10 @@ class SchemaUtils(object):
         return filter(self.timdIsCompleted, self.comp.TIMDs)
 
     def TIMCalculatedDataHasValues(self, calculatedData):
-        return calculatedData.drivingAbility != None 
+        return calculatedData.liftoffAbility != None 
 
     def timdIsCompleted(self, timd):
-        return timd.rankSpeed != None and timd.numHighShotsTele != None 
+        return timd.rankSpeed != None and timd.numGearGroundIntakesTele != None 
 
     def matchHasValuesSet(self, match):
         return match.redScore != None and match.blueScore != None

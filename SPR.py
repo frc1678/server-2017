@@ -20,10 +20,14 @@ class ScoutPrecision(object):
 		self.robotNumToScouts = []
 		self.TBAC = TBACommunicator.TBACommunicator()
 		self.keysToPointValues = {
-			'numHighShotsAuto' : 1,
-			'numLowShotsAuto' : 1,
-			'numHighShotsTele' : 1,
-			'numLowShotsTele' : 1
+			'numGearsPlacedTele' : 1,
+			'numGearsPlacedAuto' : 1,
+			'numHoppersOpenedAuto' : 1,
+			'numHoppersOpenedTele' : 1
+		}
+
+		self.dictsToPointValues = {
+			'highShotTimesForBoilerTele' : 1
 		}
 
 	#outputs list of TIMDs that have multiple scouts
@@ -45,6 +49,10 @@ class ScoutPrecision(object):
 				consolidationGroups[key] = [v]
 		return consolidationGroups
 
+	def findOddScoutForDictionaryPoint(self, tempTIMDs, key):
+		scouts = filter(lambda v: v != None, map(lambda k: k.get('scoutName'), tempTIMDs)) 		#finds scout names in tempTIMDs that aren't None
+		values = filter(lambda v: v != None, map(lambda t: t[key] if t.get('scoutName') != None else None, tempTIMDs)) 
+
 	def findOddScoutForDataPoint(self, tempTIMDs, key):
 		scouts = filter(lambda v: v != None, map(lambda k: k.get('scoutName'), tempTIMDs)) 		#finds scout names in tempTIMDs that aren't None
 		values = filter(lambda v: v != None, map(lambda t: t[key] if t.get('scoutName') != None else None, tempTIMDs)) 		#finds values (at an inputted key) that aren't None frome scouts that aren't None in tempTIMDs
@@ -53,14 +61,9 @@ class ScoutPrecision(object):
 		differenceFromCommonValue = map(lambda v: abs(v - commonValue), values) 		#makes a list of the differences from the common value
 		self.sprs = {scouts[c] : (self.sprs.get(scouts[c]) or 0) + differenceFromCommonValue[c] for c in range(len(differenceFromCommonValue))}		#adds the difference from this tempTIMDs to each scout's previous differences
 
-	def calculateSPRs(self, temp): 	#puts together tempTIMDs, and does the difference calculations for them
-		g = self.consolidateTIMDs(temp)
-		for v in g.values():
-			for key in v.keys():
-				if key in self.keysToPointValues.keys():
-					self.findOddScoutForDataPoint(v, key)
-
 	def calculateScoutPrecisionScores(self, temp, available):
+		g = self.consolidateTIMDs(temp)
+		[self.findOddScoutForDataPoint(v, key) for v in g.values() for key in v.keys() for k in self.keysToPointValues.keys()]
 		self.calculateSPRs() 		#puts together tempTIMDs and does difference calculations
 		self.sprs = {k:(v/float(self.cycle)/float(self.getTotalTIMDsForScoutName(k))) for (k,v) in self.sprs.items()} 		#divides values for scouts by cycle, and then by number of TIMDs
 		for a in available.keys()[:18]: 		#for the first 18 available keys
@@ -82,7 +85,11 @@ class ScoutPrecision(object):
 	#I don't understand this function, and I am not sure it works
 	def organizeScouts(self, available, currentTeams):
 		groupFunc = lambda l: l[random.randint(0, len(l) - 1)] 		#picks a random member of the inputted group
-		scoutsPGrp = groupFunc(utils.sum_to_n(len(available))) 		#sum_to_n should take 2-3 inputs, while here it takes 1
+		grpCombos = utils.sum_to_n(len(available), 6, 3)	#sum_to_n should take 2-3 inputs, while here it takes 1
+		if len(filter(lambda l: 2 not in l, scoutsPGrp)) > 0:
+			scoutsPGrp = groupFunc(filter(lambda l: 2 not in l, scoutsPGrp)) if len(filter(lambda l: 2 not in l, scoutsPGrp)) > 0 else groupFunc(grpCombos)
+		else:
+			pas
 		indScouts = self.getIndividualScouts(self.getScoutFrequencies(), len(filter(lambda x: x == 1, scoutsPGrp)))
 		scouts = indScouts + map(lambda c: group(filter(lambda n: n in indScouts, available), scoutsPGrp[c]), c[len(indScouts):len(c)])
 		return scoutsToRobotNums(scouts, currentTeams)

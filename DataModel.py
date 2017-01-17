@@ -46,6 +46,7 @@ class CalculatedTeamData(object):
 		self.avgSpeed = None
 		self.avgBallControl = None
 		self.avgGearControl = None
+		self.avgDefense = None
 		self.liftoffAbility = None
 		self.sdLiftoffAbility = None
 		self.liftoffPercentage = None
@@ -67,6 +68,7 @@ class Team(object):
 		self.pitNotes = None
 		self.pitOrganization = None
 		self.pitDidTankTread = None
+		self.pitCheesecake = None
 		self.pitProgrammingLanguage = None
 		self.__dict__.update(args)
 
@@ -102,8 +104,8 @@ class Match(object):
 		self.blueAllianceTeamNumbers = None
 		self.redDidStartAllRotors = None
 		self.blueDidStartAllRotors = None
-		self.redDidReach40Kilopascals = None
-		self.blueDidReach40Kilopascals = None
+		self.redDidReachFortyKilopascals = None
+		self.blueDidReachFortyKilopascals = None
 		self.redScore = None
 		self.blueScore = None
 		self.foulPointsGainedRed = None
@@ -126,6 +128,10 @@ class TeamInMatchData(object):
 		self.numHoppersOpenedTele = None
 		self.numGearGroundIntakesTele = None
 		self.numGearLoaderIntakesTele = None
+		self.numGearsEjectedAuto = None
+		self.numGearsEjectedTele = None
+		self.numGearsFumbledAuto = None
+		self.numGearsFumbledTele = None
 		self.didLiftoff = None
 		self.didStartDisabled = None
 		self.didBecomeIncapacitated = None
@@ -168,9 +174,11 @@ class CalculatedTeamInMatchData(object):
 	"""docstring for CalculatedTeamInMatchData"""
 	def __init__(self, **args):
 		super(CalculatedTeamInMatchData, self).__init__()
-		self.__dict__.update(args)
 		self.liftoffAbility = None
 		self.numHighShotsTele = None
 		self.numHighShotsAuto = None
 		self.numLowShotsTele = None
 		self.numLowShotsAuto = None
+		self.__dict__.update(args)
+
+

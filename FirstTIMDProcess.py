@@ -17,16 +17,15 @@ class FirstTIMDProcess(multiprocessing.Process):
             self.calculatedTIMDsList.append(self.timd)
         else:
             print "Beginning first calculations for team " + str(self.timd.teamNumber) + " in match " + str(self.timd.matchNumber)
-            team = self.calculator.su.getTeamForNumber(self.timd.teamNumber)
-            match = self.calculator.su.getMatchForNumber(self.timd.matchNumber)
-            c.numHighShotsTele = self.calculator.weightFuelShotsForDataPoint(self.timd, match, timd.highShotTimesForBoilerTele)
-            c.numHighShotsAuto = self.calculator.weightFuelShotsForDataPoint(self.timd, match, timd.highShotTimesForBoilerAuto)
-            c.numLowShotsTele = self.calculator.weightFuelShotsForDataPoint(self.timd, match, timd.lowShotTimesForBoilerTele) 
-            c.numLowShotsAuto = self.calculator.weightFuelShotsForDataPoint(self.timd, match, timd.lowShotTimesForBoilerAuto) 
-            c.liftoffAbility = self.liftoffAbilityForTIMD(self.timd)
             if not self.calculator.su.TIMCalculatedDataHasValues(
-                    self.timd.calculatedData): self.timd.calculatedData = DataModel.CalculatedTeamInMatchData()
+                self.timd.calculatedData): self.timd.calculatedData = DataModel.CalculatedTeamInMatchData() 
+            team = self.calculator.su.getTeamForNumber(self.timd.teamNumber)
+            match = self.calculator.su.getMatchForNumber(self.timd.matchNumber)    
             c = self.timd.calculatedData
-            
-            c.wasDisfunctional = utils.convertFirebaseBoolean(self.timd.didGetDisabled) or utils.convertFirebaseBoolean(self.timd.didGetIncapacitated)
+            c.numHighShotsTele = self.calculator.weightFuelShotsForDataPoint(self.timd, match, self.timd.highShotTimesForBoilerTele)
+            c.numHighShotsAuto = self.calculator.weightFuelShotsForDataPoint(self.timd, match, self.timd.highShotTimesForBoilerAuto)
+            c.numLowShotsTele = self.calculator.weightFuelShotsForDataPoint(self.timd, match, self.timd.lowShotTimesForBoilerTele) 
+            c.numLowShotsAuto = self.calculator.weightFuelShotsForDataPoint(self.timd, match, self.timd.lowShotTimesForBoilerAuto) 
+            c.liftoffAbility = self.calculator.liftoffAbilityForTIMD(self.timd)           
+            c.wasDisfunctional = utils.convertFirebaseBoolean(self.timd.didStartDisabled) or utils.convertFirebaseBoolean(self.timd.didBecomeIncapacitated)
             self.calculatedTIMDsList.append(self.timd)            

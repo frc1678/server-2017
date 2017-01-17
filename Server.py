@@ -34,15 +34,18 @@ def checkForMissingData():
 
 while(True):
 	print("\nCalcs Cycle " + str(cycle) + "...")
-	FBC.cacheFirebase()
+	# FBC.cacheFirebase()
 	comp.updateTeamsAndMatchesFromFirebase()
 	comp.updateTIMDsFromFirebase()
 	checkForMissingData()
 	try:
 		calculator.doCalculations(FBC)
 	except:
+		print "SOMETHING BAD KINDA HAPPENED"
 		if shouldEmail:
 			emailer.reportServerCrash(traceback.format_exc())
-			sys.exit(0)
+		else:
+			print traceback.format_exc()
+		sys.exit(0)
 	time.sleep(1)
 	cycle += 1
