@@ -34,11 +34,11 @@ class ScoutPrecision(object):
 	def filterToMultiScoutTIMDs(self):
 		return filter(lambda tm: type(tm.scoutName) == list, self.comp.timds)
 
-	#outputs list of TIMDs that an inputted scout was involved in
+	#outputs list of TIMDs that an inputted scout was involved in (and possibly was the only scout involved in)
 	def getTotalTIMDsForScoutName(self, scoutName):
 		return len(map(lambda v: v["scoutName"] == scoutName, tempTIMDs.values()))
 
-	#finds keys that start the same way and groups their values
+	#finds keys that start the same way and groups their values into lists under the keys
 	def consolidateTIMDs(self, temp):
 		consolidationGroups = {}
 		for k, v in temp.items():
@@ -51,7 +51,7 @@ class ScoutPrecision(object):
 
 	def findOddScoutForDictionaryPoint(self, tempTIMDs, key):
 		scouts = filter(lambda v: v != None, map(lambda k: k.get('scoutName'), tempTIMDs)) 		#finds scout names in tempTIMDs that aren't None
-		values = filter(lambda v: v != None, map(lambda t: t[key] if t.get('scoutName') != None else None, tempTIMDs)) 
+		values = filter(lambda v: v != None, map(lambda t: t[key] if t.get('scoutName') != None else None, tempTIMDs))
 
 	def findOddScoutForDataPoint(self, tempTIMDs, key):
 		scouts = filter(lambda v: v != None, map(lambda k: k.get('scoutName'), tempTIMDs)) 		#finds scout names in tempTIMDs that aren't None
@@ -81,17 +81,15 @@ class ScoutPrecision(object):
 		func = lambda s: [s] * rankedScouts.index(s) * (100/(len(rankedScouts) - 1)) + 1
 		return utils.extendList(map(func, available))
 
-	#Somehow creates a list of scouts to use in a given match and assigns them to robots
-	#I don't understand this function, and I am not sure it works
 	def organizeScouts(self, available, currentTeams):
 		groupFunc = lambda l: l[random.randint(0, len(l) - 1)] 		#picks a random member of the inputted group
-		grpCombos = utils.sum_to_n(len(available), 6, 3)	#sum_to_n should take 2-3 inputs, while here it takes 1
-		if len(filter(lambda l: 2 not in l, scoutsPGrp)) > 0:
-			scoutsPGrp = groupFunc(filter(lambda l: 2 not in l, scoutsPGrp)) if len(filter(lambda l: 2 not in l, scoutsPGrp)) > 0 else groupFunc(grpCombos)
+		grpCombos = utils.sum_to_n(len(available), 6, 3) #creates list of groupings that the scouts could be in
+		if len(filter(lambda l: 2 not in l, grpCombos)) > 0: #picks a random grouping of scouts that, if possible, doesn't have 2 scouts to a robot
+			scoutsPGrp = groupFunc(filter(lambda l: 2 not in l, grpCombos))
 		else:
-			pas
-		indScouts = self.getIndividualScouts(self.getScoutFrequencies(), len(filter(lambda x: x == 1, scoutsPGrp)))
-		scouts = indScouts + map(lambda c: group(filter(lambda n: n in indScouts, available), scoutsPGrp[c]), c[len(indScouts):len(c)])
+			scoutsPGrp = groupFunc(grpCombos)
+		indScouts = self.getIndividualScouts(self.getScoutFrequencies(), len(filter(lambda x: x == 1, scoutsPGrp)))	#Gets the scouts who are alone on a robot
+		scouts = indScouts + map(lambda c: group(filter(lambda n: n not in indScouts, available), scoutsPGrp[c]), c[len(indScouts):len(c)])
 		return scoutsToRobotNums(scouts, currentTeams)
 
 	def scoutToRobotNums(self, scouts, currentTeams): 	#assigns a list of scouts to a list of robots in order, and returns as a single dict
@@ -102,21 +100,23 @@ class ScoutPrecision(object):
 	def mapKeysToValue(self, keys, value): 	#Makes a dict with an inputted key attached to a value
 		return {k : value for k in keys}
 
+	#picks an inputted number of random members of an inputted group
 	def group(self, availableForGroup, count):
 		return map(lambda n: addTo(availableForGroup, availableForGroup[random.randint(0, len(availableForGroup) - 1)]), range(count))
 
+	#removes an inputted member from the group and returns it
 	def addTo(self, availableForGroup, item):
-		availableForGroup = availableForGroup.filter(lambda n: n == item, availableForGroup)
+		availableForGroup = filter(lambda n: n != item, availableForGroup)
 		return item
 
-	#I don't get this function: one of the parameters is adjusted in the function
+	#gets a scout from the dict inputted, and then makes them less likely to be picked again
 	def getRandomIndividuals(self, freqs):
 		index = random.randint(0, len(freqs))
 		scout = freqs[index]
-		freqs = filter(lambda name: name == freqs[index], freqs)
+		freqs = filter(lambda name: name != freqs[index], freqs)
 		return scout
 
-	#Gets the right number of random scout numbers
+	#Gets the right number of random scouts
 	def getIndividualScouts(self, ind, count):
 		return map(lambda k: getRandomIndividuals(ind), range(count))
 

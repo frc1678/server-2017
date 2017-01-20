@@ -15,7 +15,7 @@ config = {
 
 f = pyrebase.initialize_app(config)
 fb = f.database()
-scouts = []
+scouts = "Westley MX Tim Jesse Sage Alex Janet Livy Gemma Justin Berin Aiden Rolland Rachel Zoe Ayush Jona Angela Kyle Wesley".split()
 SPR = SPR.ScoutPrecision()
 
 def doThing(newMatchNumber):
@@ -27,5 +27,5 @@ def doThing(newMatchNumber):
 	available = [k for k, v in fb.child("available").get().val().items() if v]
 	newAssignments = SPR.assignScoutsToRobots(scouts, available, redTeams + blueTeams, fb.child("scouts").get().val())
 	fb.child("scouts").update(newAssignments)
-	
+
 fb.child("currentMatchNumber").stream(doThing)
