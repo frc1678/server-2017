@@ -31,11 +31,7 @@ class ScoutPrecision(object):
 			'highShotTimesForBoilerTele' : 1
 		}
 
-	#outputs list of TIMDs that have multiple scouts
-	def filterToMultiScoutTIMDs(self):
-		return filter(lambda tm: type(tm.scoutName) == list, self.comp.timds)
-
-	#outputs list of TIMDs that an inputted scout was involved in (and possibly was the only scout involved in)
+	#outputs list of TIMDs that an inputted scout was involved in
 	def getTotalTIMDsForScoutName(self, scoutName):
 		return len(map(lambda v: v["scoutName"] == scoutName, tempTIMDs.values()))
 
