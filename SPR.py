@@ -106,7 +106,7 @@ class ScoutPrecision(object):
 		return map(lambda n: addTo(availableForGroup, availableForGroup[random.randint(0, len(availableForGroup) - 1)]), range(count))
 
 	def addTo(self, availableForGroup, item):
-		availableForGroup = availableForGroup.filter(lambda n: n == item, availableForGroup)
+		availableForGroup = filter((lambda n: n == item, availableForGroup))
 		return item
 
 	#I don't get this function: one of the parameters is adjusted in the function

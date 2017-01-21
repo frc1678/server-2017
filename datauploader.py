@@ -1,6 +1,7 @@
 from firebase import firebase as fb
 import random
 import time
+import DataModel
 class TeamInMatchData(object):
 	"""An FRC TeamInMatchData Object"""
 	def __init__(self, **args):
@@ -55,20 +56,37 @@ class TeamInMatchData(object):
 		]
 		self.__dict__.update(args)
 
+
+
 (superSecret, url) = ('93Ybz7MldpSj6HQHW1zb4ddcGGmpCMlNlOBoI9V3', 'https://scouting-2017-5f51c.firebaseio.com/')
 
 auth = fb.FirebaseAuthentication(superSecret, "1678programming@gmail.com", True, True)
 
 firebase = fb.FirebaseApplication(url, auth)
-cm = 1
+cm = 12
+# for t in firebase.get('/Teams', None).values():
+# 	print t
+# 	cd = DataModel.CalculatedTeamData()
+# 	firebase.put('/Teams/' + str(t['number']), 'calculatedData', cd.__dict__)
 while True:
 	match = firebase.get('/Matches', cm)
-	for t in match["redAllianceTeamNumbers"] + match["blueAllianceTeamNumbers"]:
-		timd = TeamInMatchData(teamNumber=t, matchNumber=cm)
-		timdKey = str(t) + "Q" + str(cm)
-		firebase.put('/TeamInMatchDatas', timdKey, timd.__dict__)
+	firebase.put('/Matches/' + str(match['number']), 'redDidStartAllRotors', bool(random.randint(0,1)))
+	firebase.put('/Matches/' + str(match['number']), 'blueDidStartAllRotors', bool(random.randint(0,1)))
+	firebase.put('/Matches/' + str(match['number']), 'redDidReachFortyKilopascals', bool(random.randint(0,1)))
+	firebase.put('/Matches/' + str(match['number']), 'blueDidReachFortyKilopascals', bool(random.randint(0,1)))
+	firebase.put('/Matches/' + str(match['number']), 'redScore' , random.randint(0, 100))
+	firebase.put('/Matches/' + str(match['number']), 'blueScore' , random.randint(0, 100))
+	firebase.put('/Matches/' + str(match['number']), 'foulPointsGainedRed' , random.randint(0,5)*5)
+	firebase.put('/Matches/' + str(match['number']), 'foulPointsGainedBlue' , random.randint(0,5)*5)
+	# cd = DataModel.CalculatedMatchData()
+	# firebase.put('/Matches/' + str(match['number']), 'calculatedData', cd.__dict__)
+	# for t in match["redAllianceTeamNumbers"] + match["blueAllianceTeamNumbers"]:
+	# 	timd = TeamInMatchData(teamNumber=t, matchNumber=cm)
+	# 	timdKey = str(t) + "Q" + str(cm)
+	# 	firebase.put('/TeamInMatchDatas', timdKey, timd.__dict__)
+	# 	firebase.put('/TeamInMatchDatas/' + timdKey, 'calculatedData', DataModel.CalculatedTeamInMatchData().__dict__)
 	cm += 1
-	time.sleep(10)
+	time.sleep(1)
 
 
 

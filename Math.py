@@ -152,7 +152,7 @@ class Calculator(object):
 
     def getAverageGearsPlacedForTeam(self, team):
         return team.calculatedData.avgGearsPlacedTele + team.calculatedData.avgGearsPlacedAuto
-    
+
     def getTotalAverageGearPointsForAlliance(self, alliance):
         totalAutoGears = sum(map(lambda t: t.calculatedData.avgGearsPlacedAuto, alliance))
         totalTeleGears = sum(map(lambda t: t.calculatedData.avgGearsPlacedTele, alliance))
@@ -179,10 +179,7 @@ class Calculator(object):
         if len(values) == 0:
             return None
         initialValue = values[0]
-        for value in values[1:]:
-            if value != initialValue: 
-                impossible = False
-                break
+        impossible = bool(len(map(lambda v: v != initialValue, values[1:])))
         if impossible:
             zscores = [0.0 for v in values]
         else:
@@ -200,6 +197,7 @@ class Calculator(object):
         alliance = map(self.su.replaceWithAverageIfNecessary, alliance)
         fuelPts = self.getStandardDevShotPointsForAlliance(alliance)
         liftoffPts = utils.sumStdDevs(map(lambda t: 50 * t.calculatedData.sdLiftoffPercentage, alliance))
+        baselinePts = utils.sumStdDevs(map(lambda t: 5 * t.calculatedData.sdBaselineReachedPercentage))
         return utils.sumStdDevs([fuelPts, liftoffPts])
 
     def stdDevPredictedScoreForAllianceNumbers(self, allianceNumbers):
@@ -262,7 +260,7 @@ class Calculator(object):
     def getWinChanceForMatchForAllianceIsRed(self, match, allianceIsRed):
         winChance = match.calculatedData.redWinChance if allianceIsRed else match.calculatedData.blueWinChance
         print winChance
-        return winChance if not math.isnan(float(winChance)) else None
+        return winChance if not math.isnan(float(winChance)) or not winChance else None
 
     def get40KilopascalChanceForAlliance(self, alliance):
         alliance = map(self.su.replaceWithAverageIfNecessary, alliance)
@@ -328,7 +326,7 @@ class Calculator(object):
         return [lambda t: t.calculatedData.actualNumRPs, lambda t: self.cumulativeMatchPointsForTeam(t), lambda t: self.cumulativeAutoPointsForTeam(t)]
 
     def getPredictedSeedingFunctions(self):
-        return [lambda t: t.calculatedData.predictedNumRPs, lambda t: self.cumulativePredictedMatchPointsForTeam(t), lambda t: self.cumulativePredictedAutoPointsForTeam(t)]
+        return [lambda t: self.predictedNumberOfRPs(t), lambda t: self.cumulativePredictedMatchPointsForTeam(t), lambda t: self.cumulativePredictedAutoPointsForTeam(t)]
 
     def predictedNumberOfRPs(self, team):
         predictedRPsFunction = lambda m: self.predictedRPsForAllianceForMatch(self.su.getTeamAllianceIsRedInMatch(team, m), m)
@@ -396,7 +394,7 @@ class Calculator(object):
         self.doSecondCachingForTeam(self.averageTeam)
 
     def getAllGearProbabilitiesForTeam(self, team):
-        return dict(zip(range(13), map(lambda g: probabilityForGearsPlacedForNumberForTeam(team, g), range(13))))
+        return dict(zip(range(13), map(lambda g: self.probabilityForGearsPlacedForNumberForTeam(team, g), range(13))))
 
     def getAllGearProbabilitiesForTeams(self):
         return {team.number : self.getAllGearProbabilitiesForTeam(team) for team in self.cachedComp.teamsWithMatchesCompleted}

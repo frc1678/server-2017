@@ -1,6 +1,5 @@
 import firebaseCommunicator
 import utils
-#Classes That Reflect Firebase Data Structure
 
 class Competition(object):
 	"""docstring for Competition"""
@@ -29,6 +28,8 @@ class CalculatedTeamData(object):
 		self.incapacitatedPercentage = None
 		self.predictedSeed = None
 		self.actualSeed = None
+		self.predictedNumRPs = None
+		self.actualNumRPs = None
 		self.avgHighShotsTele = None
 		self.avgLowShotsTele = None
 		self.avgHighShotsAuto = None
@@ -41,6 +42,7 @@ class CalculatedTeamData(object):
 		self.sdHighShotsTele = None
 		self.sdLowShotsAuto = None
 		self.sdLowShotsTele = None
+		self.sdBaselineReachedPercentage = None
 		self.avgKeyShotTime = None
 		self.avgAgility = None
 		self.avgSpeed = None
@@ -51,6 +53,7 @@ class CalculatedTeamData(object):
 		self.sdLiftoffAbility = None
 		self.liftoffPercentage = None
 		self.baselineReachedPercentage = None
+		self.disfunctionalPercentage = None
 		self.__dict__.update(args)
 
 class Team(object):
@@ -60,8 +63,8 @@ class Team(object):
 		self.name = None
 		self.number = None
 		self.calculatedData = CalculatedTeamData()
-		self.pitSelectedImageUrl = None
-		self.pitOtherImageUrls = {
+		self.pitSelectedImageURL = None
+		self.allImageURLs = {
 			 'not0' : None
 		}
 		self.pitAvailableWeight = None
