@@ -53,8 +53,8 @@ class Calculator(object):
     def getMissingDataString(self):
         print "CURRENT MATCH NUM = " + str(self.comp.currentMatchNum)
         playedTIMDs = [timd for timd in self.comp.TIMDs if timd.matchNumber < self.comp.currentMatchNum]
-        incompletePlayedSuperTIMDs = [timd for timd in playedTIMDs if timd.rankTorque == None]
-        incompletePlayedScoutTIMDs = filter(lambda timd: timd.numHighShotsMadeTele == None, playedTIMDs)
+        incompletePlayedSuperTIMDs = [timd for timd in playedTIMDs if timd.rankAgility == None]
+        incompletePlayedScoutTIMDs = filter(lambda timd: timd.numHoppersOpenedTele == None, playedTIMDs)
         incompletePlayedSuperTIMDStrings = ['Scout: ' + str(timd.teamNumber) + 'Q' + str(timd.matchNumber) for timd in incompletePlayedSuperTIMDs]
         incompletePlayedScoutTIMDStrings = ['Super: ' + str(timd.teamNumber) + 'Q' + str(timd.matchNumber) for timd in incompletePlayedScoutTIMDs]
         incompletePlayedSuperTIMDStrings.extend(incompletePlayedScoutTIMDStrings)
@@ -205,7 +205,7 @@ class Calculator(object):
 
     def predictedScoreForAlliance(self, alliance):
         alliance = map(self.replaceWithAverageIfNecessary, alliance)
-        baselinePts = sum(map(t.calculatedData.baselineReachedPercentage * 5, alliance)) 
+        baselinePts = sum(map(t.calculatedData.baselineReachedPercentage * 5, alliance))
         fuelPts = self.getTotalAverageShotPointsForAlliance(alliance)
         liftoffPoints = sum(map(t.calculatedData.liftoffAbility, alliance))
         gearPts = self.getTotalAverageGearsPlacedForAlliance(alliance)
@@ -278,11 +278,11 @@ class Calculator(object):
 
     def totalGearsPlacedForTIMD(self, timd):
         return timd.numGearsPlacedAuto + timd.numGearsPlacedTele
-    
+
     def probabilityForGearsPlacedForNumberForTeam(self, team, number):
         gearTimds = map(self.totalGearsPlacedForTIMD, self.su.getCompletedTIMDsForTeam(team))
         return gearTimds.count(number)/float(len(gearTimds))
- 
+
     def getAllRotorsTurningChanceForAllianceWithNumbers(self, allianceNumbers):
         return self.getAllRotorsTurningChanceForAlliance(self.su.teamsForTeamNumbersOnAlliance(allianceNumbers))
 
@@ -313,7 +313,7 @@ class Calculator(object):
     def cumulativePredictedAutoPointsForTeam(self, team):
         matches = filter(lambda m: not self.su.matchIsCompleted(m), self.su.getMatchesForTeam(team))
         return sum([self.predictedAutoPointsForAlliance(self.getAllianceForTeamInMatch(team, match)) for match in matches]) + self.cumulativeAutoPointsForTeam(team)
-    
+
     def cumulativeMatchPointsForTeam(self, team):
         allMatches = self.su.getCompletedMatchesForTeam(team)
         return sum([match.redScore if self.getTeamAllianceIsRedInMatch(team, match) else match.blueScore for match in allMatches])
@@ -321,7 +321,7 @@ class Calculator(object):
     def cumulativePredictedMatchPointsForTeam(self, team):
         matches = filter(lambda m: not self.su.matchIsCompleted(m), self.su.getMatchesForTeam(team))
         return sum([self.predictedScoreForAlliance(self.getAllianceForTeamInMatch(team, match)) for match in matches]) + self.cumulativeMatchPointsForTeam(team)
-    
+
     def getSeedingFunctions(self):
         return [lambda t: t.calculatedData.actualNumRPs, lambda t: self.cumulativeMatchPointsForTeam(t), lambda t: self.cumulativeAutoPointsForTeam(t)]
 
@@ -406,7 +406,7 @@ class Calculator(object):
             self.cachedTeamDatas[team.number] = cache.CachedTeamData(**{'teamNumber': team.number})
         cachedData = self.cachedTeamDatas[team.number]
         cachedData.completedTIMDs = self.su.retrieveCompletedTIMDsForTeam(team)
-        
+
 
     def doSecondCachingForTeam(self, team):
         cachedData = self.cachedTeamDatas[team.number]

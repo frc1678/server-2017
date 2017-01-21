@@ -56,8 +56,7 @@ class ScoutPrecision(object):
 
 	def calculateScoutPrecisionScores(self, temp, available):
 		g = self.consolidateTIMDs(temp)
-		#What does the for k bit do?
-		self.findOddScoutForDataPoint(v, key) for v in g.values() for key in v.keys() for k in self.keysToPointValues.keys()
+		[self.findOddScoutForDataPoint(v, k) for v in g.values() for k in self.keysToPointValues.keys()] #Sets sprs
 		self.sprs = {k:(v/float(self.cycle)/float(self.getTotalTIMDsForScoutName(k))) for (k,v) in self.sprs.items()} 		#divides values for scouts by cycle, and then by number of TIMDs
 		for a in available.keys()[:18]: 		#for the first 18 available scouts
 			if a not in self.sprs.keys() and available.get(a) == 1: 			#If their values are 1 (which I assume is automatic until they are updated) and they are not in use in sprs
@@ -93,7 +92,7 @@ class ScoutPrecision(object):
 	def mapKeysToValue(self, keys, value): 	#Makes a dict with an inputted key attached to a value
 		return {k : value for k in keys}
 
-	#picks an inputted number of random members of an inputted group
+	#picks an inputted number of random members for a group
 	def group(self, availableForGroup, count):
 		return map(lambda n: addTo(availableForGroup, availableForGroup[random.randint(0, len(availableForGroup) - 1)]), range(count))
 
