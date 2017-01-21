@@ -27,7 +27,7 @@ def firstCalculationDict(team, calc):
 	cd.sdHighShotsTele = calc.getStandardDeviationForDataFunctionForTeam(team, lambda tm: tm.calculatedData.numHighShotsTele)
 	cd.sdLowShotsAuto = calc.getStandardDeviationForDataFunctionForTeam(team, lambda tm: tm.calculatedData.numLowShotsAuto)
 	cd.sdLowShotsTele = calc.getStandardDeviationForDataFunctionForTeam(team, lambda tm: tm.calculatedData.numLowShotsTele)
-	cd.sdBaselineReachedPercentage = calc.getStandardDeviationForDataFunctionForTeam(team, lambda tm: utils.convertFirebaseBoolean(tim.didReachBaselineAuto))
+	cd.sdBaselineReachedPercentage = calc.getStandardDeviationForDataFunctionForTeam(team, lambda tm: utils.convertFirebaseBoolean(tm.didReachBaselineAuto))
 	cd.disfunctionalPercentage = cd.disabledPercentage + cd.incapacitatedPercentage
 
 def secondCalculationDict(team, calc):
