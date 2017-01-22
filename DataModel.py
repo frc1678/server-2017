@@ -60,7 +60,7 @@ class CalculatedTeamData(object):
 		self.avgGearControl = None
 		self.avgDefense = None
 		self.liftoffAbility = None
-		self.sdLiftoffAbility = None
+		self.sdLiftoffAbility = None 
 		self.liftoffPercentage = None
 		self.baselineReachedPercentage = None
 		self.disfunctionalPercentage = None
@@ -136,12 +136,9 @@ class TeamInMatchData(object):
 		self.numHoppersOpenedTele = None
 		self.numGearGroundIntakesTele = None
 		self.numGearLoaderIntakesTele = None
-		self.numGearsEjectedAuto = None
 		self.numGearsEjectedTele = None
-		self.numGearsFumbledAuto = None
 		self.numGearsFumbledTele = None
 		self.didReachBaselineAuto = None
-		self.didPotentiallyConflictingAuto = None
 		self.numHoppersOpenedAuto = None
 		self.didLiftoff = None
 		self.didStartDisabled = None
