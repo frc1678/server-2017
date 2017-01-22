@@ -15,6 +15,7 @@ config = {
 
 f = pyrebase.initialize_app(config)
 fb = f.database()
+testScouts = "arman Sam so asdf abhi fgh".split()
 scouts = "Westley MX Tim Jesse Sage Alex Janet Livy Gemma Justin Berin Aiden Rolland Rachel Zoe Ayush Jona Angela Kyle Wesley".split()
 SPR = SPR.ScoutPrecision()
 
@@ -26,8 +27,7 @@ def doThing(newMatchNumber):
 	redTeams = fb.child("Matches").child(str(currentMatchNum)).get().val()['redAllianceTeamNumbers']
 	available = [k for (k, v) in fb.child("scouts").get().val().items() if v != None]
 	SPR.calculateScoutPrecisionScores(fb.child("TempTeamInMatchDatas").get().val(), available)
-	print fb.child("scouts").get().val()
-	newAssignments = SPR.assignScoutsToRobots(scouts, available, redTeams + blueTeams, fb.child("scouts").get().val())
+	newAssignments = SPR.assignScoutsToRobots(testScouts, available, redTeams + blueTeams, fb.child("scouts").get().val())
 	fb.child("scouts").update(newAssignments)
 
 fb.child("currentMatchNumber").stream(doThing)

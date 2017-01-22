@@ -72,7 +72,6 @@ class ScoutPrecision(object):
 		return utils.extendList(map(func, available))
 
 	def organizeScouts(self, available, currentTeams):
-		print available
 		groupFunc = lambda l: l[random.randint(0, len(l) - 1)] 		#picks a random member of the inputted group
 		grpCombos = utils.sum_to_n(len(available), 6, 3) #creates list of groupings that the scouts could be in
 		grpCombosList = [combo for combo in grpCombos]
@@ -80,8 +79,15 @@ class ScoutPrecision(object):
 			scoutsPGrp = groupFunc(filter(lambda l: 2 not in l, grpCombosList))
 		else:
 			scoutsPGrp = groupFunc(grpCombosList)
-		indScouts = self.getIndividualScouts(self.getScoutFrequencies(available), len(filter(lambda x: x == 1, scoutsPGrp)))	#Gets the scouts who are alone on a robot
-		nonIndScouts = map(lambda c: self.group(filter(lambda n: n not in indScouts, available), scoutsPGrp[c]), scoutsPGrp[len(indScouts):]) #creates a list of scouts who are sharing robots
+		scoutsPGrp.reverse()
+		freqs = self.getScoutFrequencies(available)
+		indScouts = self.getIndividualScouts(freqs, len(filter(lambda x: x == 1, scoutsPGrp)))	#Gets the scouts who are alone on a robot
+		unusedScouts = filter(lambda s: s not in indScouts, available)
+		nonIndScouts = []
+		for c in scoutsPGrp[len(indScouts):]:
+			newGroup = self.group(unusedScouts, c)
+			nonIndScouts += [newGroup[0]]
+			unusedScouts = newGroup[1]
 		scouts = indScouts + nonIndScouts
 		return self.scoutsToRobotNums(scouts, currentTeams)
 
@@ -95,34 +101,45 @@ class ScoutPrecision(object):
 
 	#picks an inputted number of random members for a group
 	def group(self, availableForGroup, count):
-		return map(lambda n: self.addTo(availableForGroup, availableForGroup[random.randint(0, len(availableForGroup) - 1)]), range(count))
-
-	#removes an inputted member from the group and returns it
-	def addTo(self, availableForGroup, item):
-		availableForGroup = filter(lambda n: n == item, availableForGroup)
-		return item
+		toReturn = []
+		for num in range(count):
+			newMember = availableForGroup[random.randint(0, len(availableForGroup) - 1)]
+			availableForGroup = filter(lambda m: m != newMember, availableForGroup)
+			toReturn += [newMember]
+		return (toReturn, availableForGroup)
 
 	#gets a scout from the dict inputted, and then makes them less likely to be picked again
 	def getRandomIndividuals(self, freqs):
 		index = random.randint(0, len(freqs))
 		scout = freqs[index]
-		freqs = filter(lambda name: name != freqs[index], freqs)
-		return scout
+		freqs = filter(lambda name: name != scout, freqs)
+		return (scout, freqs)
 
 	#Gets the right number of random scouts
 	def getIndividualScouts(self, ind, count):
-		return map(lambda k: self.getRandomIndividuals(ind), range(count))
+		scouts = []
+		unused = ind
+		for num in range(count):
+			random = self.getRandomIndividuals(unused)
+			unused = random[1]
+			scouts += [random[0]]
+		return scouts
 
 	def getScoutNumFromName(self, name, scoutsInRotation):
 		return filter(lambda k: scoutsInRotation[k].get('mostRecentUser') == name, scoutsInRotation.keys())[0]
 
 	#Picks the first scout on both the list and firebase
 	def getOutOfRotationSpot(self, scoutRotatorDict, available):
-		return filter(lambda k: scoutRotatorDict[k]["mostRecentUser"] in available, scoutRotatorDict.keys())[0]
+		normalScouts = filter(lambda k: scoutRotatorDict[k]["mostRecentUser"] in available, scoutRotatorDict.keys())
+		if len(normalScouts) > 0:
+			return normalScouts[0]
+		else:
+			return scoutRotatorDict['scout1']['mostRecentUser']
 
 	#If there are empty scouts in firebase (object, but no user), it gives them, otherwise just the first scout in firebase that is not empty
 	def findFirstEmptySpotForScout(self, scout, scoutRotatorDict, available):
 		emptyScouts = filter(lambda k: scoutRotatorDict[k]['mostRecentUser'] == '', scoutRotatorDict.keys())
+		print emptyScouts
 		return emptyScouts if len(emptyScouts) > 0 else self.getOutOfRotationSpot(scoutRotatorDict, available)
 
 	def assignScoutsToRobots(self, scouts, available, currentTeams, scoutRotatorDict):
@@ -130,11 +147,26 @@ class ScoutPrecision(object):
 		map(lambda s: self.assignScoutToRobot(s, available, teams, scoutRotatorDict), scouts)
 		return scoutRotatorDict
 
-	def assignScoutToRobot(self, scout, available, teams, scoutRotatorDict):
-		#If the scout is in the existing list of scouts, this updates firebase with the team they were assigned to scout
-		if scout in filter(lambda v: v.get('mostRecentUser') != "", scoutRotatorDict.values()):
-			scoutRotatorDict[self.getScoutNumFromName(scout, scoutRotatorDict)].update({'team' : teams[scout]})
-		#If the scout is not on the list, they are found a spot and added to firebase
-		else:
-			num = self.findFirstEmptySpotForScout(scout, scoutRotatorDict, available)
-			scoutRotatorDict[num].update({'team' : teams[scout], 'currentUser' : scout})
+#	def assignScoutToRobot(self, scout, available, teams, scoutRotatorDict):
+#		#If the scout is in the existing list of scouts from firebase, this updates firebase with the team they were assigned to scout
+#		scoutsWithNames = filter(lambda v: v.get('mostRecentUser') != "", scoutRotatorDict.values())
+#		namesOfScouts = map(lambda v: v.get('mostRecentUser'), scoutsWithNames)
+#		print namesOfScouts
+#		if scout in namesOfScouts:
+#			print str(scout) + ' in list'
+#			print self.getScoutNumFromName(scout, scoutRotatorDict)
+#			print scoutRotatorDict[self.getScoutNumFromName(scout, scoutRotatorDict)]
+#			print scout
+#			print teams
+#			scoutRotatorDict[self.getScoutNumFromName(scout, scoutRotatorDict)].update({'team' : teams[self.getScoutNumFromName(scout, scoutRotatorDict)]})
+#		#If the scout is not on the list, they are found a spot and added to firebase
+#		else:
+#			print str(scout) + ' not in list'
+#			num = self.getScoutNumFromName(self.findFirstEmptySpotForScout(scout, scoutRotatorDict, available), scoutRotatorDict)
+#			print num
+#			scoutNum = self.getScoutNumFromName(scout, scoutRotatorDict)
+#			print scoutNum
+#			scoutRotatorDict[num].update({'team' : teams[scoutNum], 'currentUser' : scout})
+
+	def assignScoutToRobot(self, scout, available, currentTeams, scoutRotatorDict):
+		
