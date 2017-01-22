@@ -22,23 +22,21 @@ class ScoutPrecision(object):
 		self.keysToPointValues = {
 			'numGearsPlacedTele' : 1,
 			'numGearsPlacedAuto' : 1,
-			'numHoppersOpenedAuto' : 1,
-			'numHoppersOpenedTele' : 1,
 			'numGearGroundIntakesTele' : 1,
 			'numGearLoaderIntakesTele' : 1,
 			'numGearsEjectedTele' : 1,
-			'numGearsEjectedAuto' : 1,
-			'numGearsFumbledTele' : 1,
-			'numGearsFumbledAuto' : 1
+			'numGearsFumbledTele' : 1
 		}
 
 		self.dictsToPointValues = {
 			'highShotTimesForBoilerTele' : 1,
 			'highShotTimesForBoilerAuto' : 1,
 			'gearsPlacedByLiftTele' : 1,
-			'gearsPlacedByLiftAuto' : 1
+			'gearsPlacedByLiftAuto' : 1,
 			'lowShotTimesForBoilerAuto' : 1,
-			'lowShotTimesForBoilerTele' : 1
+			'lowShotTimesForBoilerTele' : 1,
+			'hoppersOpenedTele' : 1,
+			'hoppersOpenedAuto' : 1
 		}
 
 	#outputs list of TIMDs that an inputted scout was involved in

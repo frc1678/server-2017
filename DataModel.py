@@ -60,7 +60,7 @@ class CalculatedTeamData(object):
 		self.avgGearControl = None
 		self.avgDefense = None
 		self.liftoffAbility = None
-		self.sdLiftoffAbility = None 
+		self.sdLiftoffAbility = None
 		self.liftoffPercentage = None
 		self.baselineReachedPercentage = None
 		self.disfunctionalPercentage = None
@@ -132,14 +132,28 @@ class TeamInMatchData(object):
 		self.calculatedData = CalculatedTeamInMatchData()
 		self.teamNumber = None
 		self.matchNumber = None
-		self.scoutName = None	
-		self.numHoppersOpenedTele = None
+		self.scoutName = None
+		self.hoppersOpenedTele = {
+			'hop1' : None,
+			'hop2' : None,
+			'hop3' : None,
+			'hop4' : None,
+			'hop5' : None,
+			'hop6' : None
+		}
 		self.numGearGroundIntakesTele = None
 		self.numGearLoaderIntakesTele = None
 		self.numGearsEjectedTele = None
 		self.numGearsFumbledTele = None
 		self.didReachBaselineAuto = None
-		self.numHoppersOpenedAuto = None
+		self.hoppersOpenedAuto = {
+			'hop1' : None,
+			'hop2' : None,
+			'hop3' : None,
+			'hop4' : None,
+			'hop5' : None,
+			'hop6' : None
+		}
 		self.didLiftoff = None
 		self.didStartDisabled = None
 		self.didBecomeIncapacitated = None
@@ -151,13 +165,13 @@ class TeamInMatchData(object):
 		self.gearsPlacedByLiftAuto = {
 			'lift1' : None,
 			'lift2' : None,
-			'lift3' : None 
+			'lift3' : None
 		}
 		self.gearsPlacedByLiftTele = {
 			'lift1' : None,
 			'lift2' : None,
-			'lift3' : None 
-		}	
+			'lift3' : None
+		}
 		self.highShotTimesForBoilerAuto = [
 			{
 				'time' : None,
@@ -203,5 +217,3 @@ class CalculatedTeamInMatchData(object):
 		self.wasDisfunctional = None
 		self.avgKeyShotTime = None
 		self.__dict__.update(args)
-
-
