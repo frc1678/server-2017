@@ -15,19 +15,31 @@ config = {
 
 f = pyrebase.initialize_app(config)
 fb = f.database()
+testScouts = "arman Sam so asdf abhi fgh aScout anotherScout aThirdScout".split()
 scouts = "Westley MX Tim Jesse Sage Alex Janet Livy Gemma Justin Berin Aiden Rolland Rachel Zoe Ayush Jona Angela Kyle Wesley".split()
 SPR = SPR.ScoutPrecision()
+#Note: set to true when starting to run and everyone is available, or the list of scouts has been updated
+resetAvailability = False
+if resetAvailability:
+	availability = {name: 1 for name in testScouts}
+	fb.child('availability').set(availability)
+
+def getScoutNumFromName(name, scoutsInRotation):
+	return filter(lambda k: scoutsInRotation[k].get('mostRecentUser') == name, scoutsInRotation.keys())[0]
 
 def doThing(newMatchNumber):
-	print newMatchNumber
+	print 'Setting scouts for match ' + str(fb.child('currentMatchNumber').get().val())
 	if not newMatchNumber.get("data"): return
 	currentMatchNum = int(newMatchNumber["data"])
 	blueTeams = fb.child("Matches").child(str(currentMatchNum)).get().val()['blueAllianceTeamNumbers']
 	redTeams = fb.child("Matches").child(str(currentMatchNum)).get().val()['redAllianceTeamNumbers']
-	available = [k for (k, v) in fb.child("scouts").get().val().items() if v != None]
+	available = [k for (k, v) in fb.child("availability").get().val().items() if v == 1]
 	SPR.calculateScoutPrecisionScores(fb.child("TempTeamInMatchDatas").get().val(), available)
-	print fb.child("scouts").get().val()
-	newAssignments = SPR.assignScoutsToRobots(scouts, available, redTeams + blueTeams, fb.child("scouts").get().val())
+	newAssignments = SPR.assignScoutsToRobots(available, redTeams + blueTeams, fb.child("scouts").get().val())
 	fb.child("scouts").update(newAssignments)
+	for scout in testScouts:
+		if scout not in available:
+			scoutNum = getScoutNumFromName(scout, fb.child("scouts").get().val())
+			fb.child("scouts").child(scoutNum).update({"team": "None"})
 
 fb.child("currentMatchNumber").stream(doThing)
