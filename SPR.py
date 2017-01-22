@@ -70,7 +70,6 @@ class ScoutPrecision(object):
 			if a not in self.sprs.keys() and available.get(a) == 1: 			#If their values in available are 1 and they are not in use in sprs
 				self.sprs[a] = np.mean(self.sprs.values()) 				#They are now set to the average value
 
-
 	#sorts scouts by sprs score
 	def rankScouts(self, available):
 		return sorted(self.sprs.keys(), key=lambda k: self.sprs[k])
