@@ -138,8 +138,7 @@ class TeamInMatchData(object):
 			'hop2' : None,
 			'hop3' : None,
 			'hop4' : None,
-			'hop5' : None,
-			'hop6' : None
+			'hop5' : None
 		}
 		self.numGearGroundIntakesTele = None
 		self.numGearLoaderIntakesTele = None
@@ -151,8 +150,7 @@ class TeamInMatchData(object):
 			'hop2' : None,
 			'hop3' : None,
 			'hop4' : None,
-			'hop5' : None,
-			'hop6' : None
+			'hop5' : None
 		}
 		self.didLiftoff = None
 		self.didStartDisabled = None
