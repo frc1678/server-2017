@@ -19,6 +19,7 @@ class ScoutPrecision(object):
 		self.cycle = 0
 		self.robotNumToScouts = []
 		self.TBAC = TBACommunicator.TBACommunicator()
+		#What do these do?
 		self.keysToPointValues = {
 			'numGearsPlacedTele' : 1,
 			'numGearsPlacedAuto' : 1,
@@ -30,11 +31,7 @@ class ScoutPrecision(object):
 			'highShotTimesForBoilerTele' : 1
 		}
 
-	#outputs list of TIMDs that have multiple scouts
-	def filterToMultiScoutTIMDs(self):
-		return filter(lambda tm: type(tm.scoutName) == list, self.comp.timds)
-
-	#outputs list of TIMDs that an inputted scout was involved in (and possibly was the only scout involved in)
+	#outputs list of TIMDs that an inputted scout was involved in
 	def getTotalTIMDsForScoutName(self, scoutName):
 		return len(map(lambda v: v["scoutName"] == scoutName, tempTIMDs.values()))
 
@@ -49,10 +46,6 @@ class ScoutPrecision(object):
 				consolidationGroups[key] = [v]
 		return consolidationGroups
 
-	def findOddScoutForDictionaryPoint(self, tempTIMDs, key):
-		scouts = filter(lambda v: v != None, map(lambda k: k.get('scoutName'), tempTIMDs)) 		#finds scout names in tempTIMDs that aren't None
-		values = filter(lambda v: v != None, map(lambda t: t[key] if t.get('scoutName') != None else None, tempTIMDs))
-
 	def findOddScoutForDataPoint(self, tempTIMDs, key):
 		scouts = filter(lambda v: v != None, map(lambda k: k.get('scoutName'), tempTIMDs)) 		#finds scout names in tempTIMDs that aren't None
 		values = filter(lambda v: v != None, map(lambda t: t[key] if t.get('scoutName') != None else None, tempTIMDs)) 		#finds values (at an inputted key) that aren't None frome scouts that aren't None in tempTIMDs
@@ -63,11 +56,10 @@ class ScoutPrecision(object):
 
 	def calculateScoutPrecisionScores(self, temp, available):
 		g = self.consolidateTIMDs(temp)
-		[self.findOddScoutForDataPoint(v, key) for v in g.values() for key in v.keys() for k in self.keysToPointValues.keys()]
-		self.calculateSPRs() 		#puts together tempTIMDs and does difference calculations
+		[self.findOddScoutForDataPoint(v, k) for v in g.values() for k in self.keysToPointValues.keys()] #Sets sprs
 		self.sprs = {k:(v/float(self.cycle)/float(self.getTotalTIMDsForScoutName(k))) for (k,v) in self.sprs.items()} 		#divides values for scouts by cycle, and then by number of TIMDs
-		for a in available.keys()[:18]: 		#for the first 18 available keys
-			if a not in self.sprs.keys() and available.get(a) == 1: 			#If their values in available are 1 and they are not in use in sprs
+		for a in available.keys()[:18]: 		#for the first 18 available scouts
+			if a not in self.sprs.keys() and available.get(a) == 1: 			#If their values are 1 (which I assume is automatic until they are updated) and they are not in use in sprs
 				self.sprs[a] = np.mean(self.sprs.values()) 				#They are now set to the average value
 
 	#sorts scouts by sprs score
@@ -88,6 +80,7 @@ class ScoutPrecision(object):
 		else:
 			scoutsPGrp = groupFunc(grpCombos)
 		indScouts = self.getIndividualScouts(self.getScoutFrequencies(), len(filter(lambda x: x == 1, scoutsPGrp)))	#Gets the scouts who are alone on a robot
+		#creates a list of scouts who are sharing robots and adds it to the list of individual scouts, making a list of all scouts
 		scouts = indScouts + map(lambda c: group(filter(lambda n: n not in indScouts, available), scoutsPGrp[c]), c[len(indScouts):len(c)])
 		return scoutsToRobotNums(scouts, currentTeams)
 
@@ -99,7 +92,7 @@ class ScoutPrecision(object):
 	def mapKeysToValue(self, keys, value): 	#Makes a dict with an inputted key attached to a value
 		return {k : value for k in keys}
 
-	#picks an inputted number of random members of an inputted group
+	#picks an inputted number of random members for a group
 	def group(self, availableForGroup, count):
 		return map(lambda n: addTo(availableForGroup, availableForGroup[random.randint(0, len(availableForGroup) - 1)]), range(count))
 

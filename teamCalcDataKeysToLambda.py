@@ -11,6 +11,8 @@ def firstCalculationDict(team, calc):
 	cd.incapacitatedPercentage = calc.getAverageForDataFunctionForTeam(team, lambda tm: utils.convertFirebaseBoolean(tm.didBecomeIncapacitated))
 	cd.liftoffPercentage = calc.getAverageForDataFunctionForTeam(team, lambda tm: utils.convertFirebaseBoolean(tm.didLiftoff))
 	cd.baselineReachedPercentage = calc.getAverageForDataFunctionForTeam(team, lambda tm: utils.convertFirebaseBoolean(tm.didReachBaselineAuto))
+	cd.avgGearsPlacedTele = calc.getAverageForDataFunctionForTeam(team, lambda tm: tm.numGearsPlacedTele)
+	cd.avgGearsPlacedAuto = calc.getAverageForDataFunctionForTeam(team, lambda tm: tm.numGearsPlacedAuto)
 	cd.avgAgility = calc.getAverageForDataFunctionForTeam(team, lambda tm: tm.rankAgility)
 	cd.avgSpeed = calc.getAverageForDataFunctionForTeam(team, lambda tm: tm.rankSpeed)
 	cd.avgBallControl = calc.getAverageForDataFunctionForTeam(team, lambda tm: tm.rankBallControl)
