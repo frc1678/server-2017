@@ -36,6 +36,16 @@ class CalculatedTeamData(object):
 		self.avgLowShotsAuto = None
 		self.avgGearsPlacedAuto = None
 		self.avgGearsPlacedTele = None
+		self.avgGearsPlacedByLiftAuto =  {
+			'lift1' : None,
+			'lift2' : None,
+			'lift3' : None
+		}
+		self.avgGearsPlacedByLiftTele =  {
+			'lift1' : None,
+			'lift2' : None,
+			'lift3' : None
+		}
 		self.sdGearsPlacedTele = None
 		self.sdGearsPlacedAuto = None
 		self.sdHighShotsAuto = None
@@ -122,12 +132,7 @@ class TeamInMatchData(object):
 		self.calculatedData = CalculatedTeamInMatchData()
 		self.teamNumber = None
 		self.matchNumber = None
-		self.scoutName = None
-		self.numGearsPlacedAuto = None
-		self.didReachBaselineAuto = None
-		self.didPotentiallyConflictingAuto = None
-		self.numHoppersOpenedAuto = None
-		self.numGearsPlacedTele = None
+		self.scoutName = None	
 		self.numHoppersOpenedTele = None
 		self.numGearGroundIntakesTele = None
 		self.numGearLoaderIntakesTele = None
@@ -135,6 +140,9 @@ class TeamInMatchData(object):
 		self.numGearsEjectedTele = None
 		self.numGearsFumbledAuto = None
 		self.numGearsFumbledTele = None
+		self.didReachBaselineAuto = None
+		self.didPotentiallyConflictingAuto = None
+		self.numHoppersOpenedAuto = None
 		self.didLiftoff = None
 		self.didStartDisabled = None
 		self.didBecomeIncapacitated = None
@@ -143,6 +151,16 @@ class TeamInMatchData(object):
 		self.rankGearControl = None
 		self.rankBallControl = None
 		self.rankDefense = None
+		self.gearsPlacedByLiftAuto = {
+			'lift1' : None,
+			'lift2' : None,
+			'lift3' : None 
+		}
+		self.gearsPlacedByLiftTele = {
+			'lift1' : None,
+			'lift2' : None,
+			'lift3' : None 
+		}	
 		self.highShotTimesForBoilerAuto = [
 			{
 				'time' : None,
@@ -177,11 +195,16 @@ class CalculatedTeamInMatchData(object):
 	"""docstring for CalculatedTeamInMatchData"""
 	def __init__(self, **args):
 		super(CalculatedTeamInMatchData, self).__init__()
+		self.numRPs = None
 		self.liftoffAbility = None
 		self.numHighShotsTele = None
 		self.numHighShotsAuto = None
 		self.numLowShotsTele = None
 		self.numLowShotsAuto = None
+		self.numGearsPlacedTele = None
+		self.numGearsPlacedAuto = None
+		self.wasDisfunctional = None
+		self.avgKeyShotTime = None
 		self.__dict__.update(args)
 
 

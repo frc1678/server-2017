@@ -28,7 +28,7 @@ class SchemaUtils(object):
         return filter(lambda team: len(self.getCompletedMatchesForTeam(team)) > 0, self.comp.teams)
 
     def teamCalculatedDataHasValues(self, calculatedData):
-        return calculatedData.liftoffAbility != None
+        return calculatedData.avgHighShotsTele != None
 
     def replaceWithAverageIfNecessary(self, team):
         return team if self.teamCalculatedDataHasValues(team.calculatedData) else self.calc.averageTeam
