@@ -29,8 +29,12 @@ class ScoutPrecision(object):
 		self.dictsToPointValues = {
 			'highShotTimesForBoilerTele' : 1,
 			'highShotTimesForBoilerAuto' : 1,
+<<<<<<< HEAD
 			'gearsPlacedByLiftTele' : 1,
 			'gearsPlacedByLiftAuto' : 1
+=======
+			'lowSo'
+>>>>>>> b162671f24305fc5230ad914dbc73ac8762e70c7
 		}
 
 	#outputs list of TIMDs that an inputted scout was involved in

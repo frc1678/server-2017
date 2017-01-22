@@ -11,8 +11,8 @@ def firstCalculationDict(team, calc):
 	cd.incapacitatedPercentage = calc.getAverageForDataFunctionForTeam(team, lambda tm: utils.convertFirebaseBoolean(tm.didBecomeIncapacitated))
 	cd.liftoffPercentage = calc.getAverageForDataFunctionForTeam(team, lambda tm: utils.convertFirebaseBoolean(tm.didLiftoff))
 	cd.baselineReachedPercentage = calc.getAverageForDataFunctionForTeam(team, lambda tm: utils.convertFirebaseBoolean(tm.didReachBaselineAuto))
-	cd.avgGearsPlacedTele = calc.getAverageForDataFunctionForTeam(team, lambda tm: tm.numGearsPlacedTele)
-	cd.avgGearsPlacedAuto = calc.getAverageForDataFunctionForTeam(team, lambda tm: tm.numGearsPlacedAuto)
+	cd.avgGearsPlacedTele = calc.weightedMeanForGearFunction(team, lambda tm: tm.calculatedData.numGearsPlacedTele)
+	cd.avgGearsPlacedAuto = calc.weightedMeanForGearFunction(team, lambda tm: tm.calculatedData.numGearsPlacedAuto)
 	cd.avgAgility = calc.getAverageForDataFunctionForTeam(team, lambda tm: tm.rankAgility)
 	cd.avgSpeed = calc.getAverageForDataFunctionForTeam(team, lambda tm: tm.rankSpeed)
 	cd.avgBallControl = calc.getAverageForDataFunctionForTeam(team, lambda tm: tm.rankBallControl)
@@ -21,12 +21,14 @@ def firstCalculationDict(team, calc):
 	cd.avgKeyShotTime = calc.getAverageForDataFunctionForTeam(team, lambda tm: tm.calculatedData.avgKeyShotTime)
 	cd.liftoffAbility = calc.getAverageForDataFunctionForTeam(team, lambda tm: tm.calculatedData.liftoffAbility)
 	cd.sdLiftoffAbility = calc.getStandardDeviationForDataFunctionForTeam(team, lambda tm: tm.calculatedData.liftoffAbility)
-	cd.sdGearsPlacedTele = calc.getStandardDeviationForDataFunctionForTeam(team, lambda tm: tm.numGearsPlacedTele)
-	cd.sdGearsPlacedAuto = calc.getStandardDeviationForDataFunctionForTeam(team, lambda tm: tm.numGearsPlacedAuto)
+	cd.sdGearsPlacedTele = calc.getStandardDeviationForDataFunctionForTeam(team, lambda tm: tm.calculatedData.numGearsPlacedTele)
+	cd.sdGearsPlacedAuto = calc.getStandardDeviationForDataFunctionForTeam(team, lambda tm: tm.calculatedData.numGearsPlacedAuto)
 	cd.sdHighShotsAuto = calc.getStandardDeviationForDataFunctionForTeam(team, lambda tm: tm.calculatedData.numHighShotsAuto)
 	cd.sdHighShotsTele = calc.getStandardDeviationForDataFunctionForTeam(team, lambda tm: tm.calculatedData.numHighShotsTele)
 	cd.sdLowShotsAuto = calc.getStandardDeviationForDataFunctionForTeam(team, lambda tm: tm.calculatedData.numLowShotsAuto)
 	cd.sdLowShotsTele = calc.getStandardDeviationForDataFunctionForTeam(team, lambda tm: tm.calculatedData.numLowShotsTele)
+	cd.sdGearsPlacedAuto = calc.weightedStdDevForGearFunction(team, lambda tm: tm.calculatedData.numGearsPlacedAuto)
+	cd.sdGearsPlacedTele = calc.weightedStdDevForGearFunction(team, lambda tm: tm.calculatedData.numGearsPlacedTele)
 	cd.sdBaselineReachedPercentage = calc.getStandardDeviationForDataFunctionForTeam(team, lambda tm: utils.convertFirebaseBoolean(tm.didReachBaselineAuto))
 	cd.disfunctionalPercentage = calc.getAverageForDataFunctionForTeam(team, lambda tm: tm.calculatedData.wasDisfunctional)
 	cd.avgGearsPlacedAuto = calc.getAverageForDataFunctionForTeam(team, lambda tm: tm.calculatedData.numGearsPlacedAuto)
@@ -41,7 +43,10 @@ def secondCalculationDict(team, calc):
 	cd.firstPickAbility = calc.firstPickAbility(team)
 	cd.overallSecondPickAbility = calc.overallSecondPickAbility(team)
 	cd.predictedSeed = calc.cachedComp.predictedSeedings.index(team) + 1
-	cd.actualSeed = calc.cachedComp.actualSeedings.index(team) + 1
+	try:
+		cd.actualSeed = self.getTeamSeed(team)
+	except:
+		pass
 	cd.RScoreDefense = calc.cachedComp.defenseZScores[team.number]
 	cd.RScoreBallControl = calc.cachedComp.ballControlZScores[team.number]
 	cd.RScoreGearControl = calc.cachedComp.gearControlZScores[team.number]
