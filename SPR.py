@@ -53,10 +53,27 @@ class ScoutPrecision(object):
 		differenceFromCommonValue = map(lambda v: abs(v - commonValue), values) 		#makes a list of the differences from the common value
 		self.sprs = {scouts[c] : (self.sprs.get(scouts[c]) or 0) + differenceFromCommonValue[c] for c in range(len(differenceFromCommonValue))}		#adds the difference from this tempTIMDs to each scout's previous differences
 
+	def findOddScoutForDict(self, tempTIMDs, key):
+		scouts = filter(lambda v: v != None, map(lambda k: k.get('scoutName'), tempTIMDs)) 		#finds scout names in tempTIMDs that aren't None
+		dicts = filter(lambda k: v!= None, map(lambda t: t[key] if t.get('scoutName') != None else None, tempTIMDs))
+		consolidationDict = {}
+		for key in dicts[0].keys():
+			consolidationDict[key] = []
+			for aDict in dicts:
+				consolidationDict[key] += [aDict[key]]
+		commonValues = {}
+		for key in consolidationDict.keys():
+			values = consolidationDict[key]
+			commonValues[key] = max(map(lambda v: values.count(v), values)) if len(map(lambda v: values.count(v), values)) != 0 else 0
+			if not values.count(commonValue) > len(values) / 2: commonValues[key] = np.mean(values)
+			differenceFromCommonValue = map(lambda v: abs(v - commonValues[key]), values)
+			self.sprs = {scouts[c] : (self.sprs.get(scouts[c]) or 0) + differenceFromCommonValue[c] for c in range(len(differenceFromCommonValue))}
+
 	def calculateScoutPrecisionScores(self, temp, available):
 		if temp != None:
 			g = self.consolidateTIMDs(temp)
 			[self.findOddScoutForDataPoint(v, k) for v in g.values() for k in self.keysToPointValues.keys()] #Sets sprs
+			[self.findOddScoutForDict(v, k) for v in g.values() for k in self.dictsToPointValues.keys()]
 			self.sprs = {k:(v/float(self.getTotalTIMDsForScoutName(k))) for (k,v) in self.sprs.items()} 		#divides values for scouts by cycle, and then by number of TIMDs
 			for a in available[:18]: 		#for the first 18 available scouts
 				if a not in self.sprs.keys(): 			#If their values are 1 (which I assume is automatic until they are updated) and they are not in use in sprs
