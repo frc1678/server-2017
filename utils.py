@@ -7,8 +7,8 @@ import pdb
 from StringIO import StringIO
 
 ########## Defining Util/Convenience Functions ############
-''' If there were too many more of these, or if this 
-were actual server code, I would make a module, but 
+''' If there were too many more of these, or if this
+were actual server code, I would make a module, but
 for fake database creation purposes it is not worth it'''
 
 
@@ -57,7 +57,7 @@ def setDictionaryValue(dict, key, value):
 	dict[key] = value
 
 def makeMatchFromDict(d):
-	match = DataModel.Match(**d) 
+	match = DataModel.Match(**d)
 	if 'calculatedData' in d.keys():
 		match.calculatedData = DataModel.CalculatedMatchData(**d['calculatedData'])
 	return match
@@ -81,7 +81,7 @@ def makeMatchesFromDicts(dicts):
 	return [makeMatchFromDict(m) for m in dicts if m != None]
 
 def makeDictFromObject(o):
-	if isinstance(o, dict): 
+	if isinstance(o, dict):
 		[setDictionaryValue(o,k,v) for k,v in o.iteritems() if v.__class__ in [DataModel.CalculatedTeamData, DataModel.CalculatedMatchData, DataModel.CalculatedTeamInMatchData]]
 		return o
 	return dict((key, value) for key, value in o.__dict__.iteritems() if not callable(value) and not key.startswith('__'))
@@ -135,7 +135,7 @@ def printWarningForSeconds(numSeconds):
 	print str(numSeconds) + ' SECONDS UNTIL FIREBASE WIPES'
 	time.sleep(1)
 
-def extendList(self, lis):
+def extendList(lis):
 	return [v for l in lis for v in l]
 
 def sum_to_n(n, size, limit=None):
@@ -159,7 +159,3 @@ def makeASCIIFromJSON(input):
         return input.encode('utf-8')
     else:
         return input
-
-
-
-
