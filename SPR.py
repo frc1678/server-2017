@@ -134,7 +134,7 @@ class ScoutPrecision(object):
 		#If the scout is in the existing list of scouts, this updates firebase with the team they were assigned to scout
 		if scout in filter(lambda v: v.get('mostRecentUser') != "", scoutRotatorDict.values()):
 			scoutRotatorDict[self.getScoutNumFromName(scout, scoutRotatorDict)].update({'team' : teams[scout]})
-		#If the scout is not on the list, they are
+		#If the scout is not on the list, they are found a spot and added to firebase
 		else:
 			num = self.findFirstEmptySpotForScout(scout, scoutRotatorDict, available)
-			scoutRotatorDict[num].update({'team' : teams[scout], currentUser : 'scout'})
+			scoutRotatorDict[num].update({'team' : teams[scout], 'currentUser' : scout})

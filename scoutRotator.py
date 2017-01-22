@@ -8,9 +8,9 @@ import random
 
 config = {
 	"apiKey": "mykey",
-	"authDomain": "1678-scouting-2016.firebaseapp.com",
-	"databaseURL": "https://1678-scouting-2016.firebaseio.com/",
-	"storageBucket": "1678-scouting-2016.appspot.com"
+	"authDomain": "scouting-2017-5f51c.firebaseapp.com",
+	"databaseURL": "https://scouting-2017-5f51c.firebaseio.com/",
+	"storageBucket": "scouting-2017-5f51c.appspot.com"
 }
 
 f = pyrebase.initialize_app(config)
@@ -24,8 +24,9 @@ def doThing(newMatchNumber):
 	currentMatchNum = int(newMatchNumber["data"])
 	blueTeams = fb.child("Matches").child(str(currentMatchNum)).get().val()['blueAllianceTeamNumbers']
 	redTeams = fb.child("Matches").child(str(currentMatchNum)).get().val()['redAllianceTeamNumbers']
-	available = [k for k, v in fb.child("available").get().val().items() if v]
-	SPR.calculateScoutPrecisionScores(fb.child("TempTeamInMatchDatas"), available)
+	available = [k for (k, v) in fb.child("scouts").get().val().items() if v != None]
+	SPR.calculateScoutPrecisionScores(fb.child("TempTeamInMatchDatas").get().val(), available)
+	print fb.child("scouts").get().val()
 	newAssignments = SPR.assignScoutsToRobots(scouts, available, redTeams + blueTeams, fb.child("scouts").get().val())
 	fb.child("scouts").update(newAssignments)
 
