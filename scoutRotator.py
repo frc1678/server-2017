@@ -24,7 +24,7 @@ if resetAvailability:
 	fb.child('availability').set(availability)
 
 def doThing(newMatchNumber):
-	print newMatchNumber
+	print 'Setting scouts for match ' + str(fb.child('currentMatchNumber').get().val())
 	if not newMatchNumber.get("data"): return
 	currentMatchNum = int(newMatchNumber["data"])
 	blueTeams = fb.child("Matches").child(str(currentMatchNum)).get().val()['blueAllianceTeamNumbers']

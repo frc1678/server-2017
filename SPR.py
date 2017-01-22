@@ -88,7 +88,7 @@ class ScoutPrecision(object):
 		indScouts = self.getIndividualScouts(freqs, len(filter(lambda x: x == 1, scoutsPGrp)))	#Gets the scouts who are alone on a robot
 		unusedScouts = filter(lambda s: s not in indScouts, available)
 		nonIndScouts = []
-		for c in scoutsPGrp[len(indScouts):]:
+		for c in scoutsPGrp[len(indScouts):]: #gets and groups the scouts who are paired or in threes for a robot
 			newGroup = self.group(unusedScouts, c)
 			nonIndScouts += [newGroup[0]]
 			unusedScouts = newGroup[1]
@@ -148,7 +148,6 @@ class ScoutPrecision(object):
 	def assignScoutsToRobots(self, available, currentTeams, scoutRotatorDict):
 		#assigns scout numbers to robots
 		teams = self.organizeScouts(available, currentTeams)
-		print teams
 		#updates scoutRotatorDict to include new teams for scouts
 		map(lambda a: self.assignScoutToRobot(a, teams, scoutRotatorDict, available), available)
 		return scoutRotatorDict
