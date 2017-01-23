@@ -22,8 +22,10 @@ class FirstTIMDProcess(multiprocessing.Process):
             team = self.calculator.su.getTeamForNumber(self.timd.teamNumber)
             match = self.calculator.su.getMatchForNumber(self.timd.matchNumber)    
             c = self.timd.calculatedData
-            c.numGearsPlacedAuto = self.calculator.getTotalGearsScoredForGearDict(self.timd.gearsPlacedByLiftAuto)
-            c.numGearsPlacedTele = self.calculator.getTotalGearsScoredForGearDict(self.timd.gearsPlacedByLiftTele)
+            c.numGearsPlacedAuto = self.calculator.getTotalValueForValueDict(self.timd.gearsPlacedByLiftAuto)
+            c.numGearsPlacedTele = self.calculator.getTotalValueForValueDict(self.timd.gearsPlacedByLiftTele)
+            c.numHoppersOpenedTele = self.calculator.getTotalValueForValueDict(self.timd.hoppersOpenedAuto)
+            c.numHoppersOpenedAuto = self.calculator.getTotalValueForValueDict(self.timd.hoppersOpenedTele)
             c.avgKeyShotTime = self.calculator.getAvgKeyShotTimeForTIMD(self.timd)
             c.numHighShotsTele = self.calculator.weightFuelShotsForDataPoint(self.timd, match, self.timd.highShotTimesForBoilerTele)
             c.numHighShotsAuto = self.calculator.weightFuelShotsForDataPoint(self.timd, match, self.timd.highShotTimesForBoilerAuto)

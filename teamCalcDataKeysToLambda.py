@@ -31,10 +31,16 @@ def firstCalculationDict(team, calc):
 	cd.sdGearsPlacedTele = calc.weightedStdDevForGearFunction(team, lambda tm: tm.calculatedData.numGearsPlacedTele)
 	cd.sdBaselineReachedPercentage = calc.getStandardDeviationForDataFunctionForTeam(team, lambda tm: utils.convertFirebaseBoolean(tm.didReachBaselineAuto))
 	cd.disfunctionalPercentage = calc.getAverageForDataFunctionForTeam(team, lambda tm: tm.calculatedData.wasDisfunctional)
-	cd.avgGearsPlacedAuto = calc.getAverageForDataFunctionForTeam(team, lambda tm: tm.calculatedData.numGearsPlacedAuto)
-	cd.avgGearsPlacedTele = calc.getAverageForDataFunctionForTeam(team, lambda tm: tm.calculatedData.numGearsPlacedTele)
-	calc.getAvgGearsByLift(team, cd.avgGearsPlacedByLiftAuto, lambda tm: tm.gearsPlacedByLiftAuto)
-	calc.getAvgGearsByLift(team, cd.avgGearsPlacedByLiftTele, lambda tm: tm.gearsPlacedByLiftTele)
+	cd.avgGearsPlacedAuto = calc.weightedMeanForGearFunction(team, lambda tm: tm.calculatedData.numGearsPlacedAuto)
+	cd.avgGearsPlacedTele = calc.weightedMeanForGearFunction(team, lambda tm: tm.calculatedData.numGearsPlacedTele)
+	cd.avgHoppersOpenedAuto = calc.getAverageForDataFunctionForTeam(team, lambda tm: tm.calculatedData.numHoppersOpenedAuto)
+	cd.avgHoppersOpenedTele = calc.getAverageForDataFunctionForTeam(team, lambda tm: tm.calculatedData.numHoppersOpenedTele)	
+	cd.avgGearsEjectedTele = calc.getAverageForDataFunctionForTeam(team, lambda tm: tm.numGearsEjectedTele)
+	cd.avgGearsFumbledTele = calc.getAverageForDataFunctionForTeam(team, lambda tm: tm.numGearsFumbledTele)	
+	calc.getAvgFuncForKeys(team, cd.avgGearsPlacedByLiftAuto, lambda tm: tm.gearsPlacedByLiftAuto, calc.lifts)
+	calc.getAvgFuncForKeys(team, cd.avgGearsPlacedByLiftTele, lambda tm: tm.gearsPlacedByLiftTele, calc.lifts)
+	calc.getAvgFuncForKeys(team, cd.hoppersOpenedPercentagesAuto, lambda tm: tm.hoppersOpenedAuto, calc.hops)
+	calc.getAvgFuncForKeys(team, cd.hoppersOpenedPercentagesTele, lambda tm: tm.hoppersOpenedTele, calc.hops)
 
 def secondCalculationDict(team, calc):
 	cd = team.calculatedData
@@ -44,9 +50,11 @@ def secondCalculationDict(team, calc):
 	cd.overallSecondPickAbility = calc.overallSecondPickAbility(team)
 	cd.predictedSeed = calc.cachedComp.predictedSeedings.index(team) + 1
 	try:
-		cd.actualSeed = self.getTeamSeed(team)
+		cd.actualNumRPs = calc.getTeamRPsFromTBA(team)
+		cd.actualSeed = calc.getTeamSeed(team)
 	except:
-		pass
+		cd.actualSeed = calc.cachedComp.actualSeedings.index(team) + 1
+		cd.actualNumRPs = calc.actualNumberOfRPs(team)
 	cd.RScoreDefense = calc.cachedComp.defenseZScores[team.number]
 	cd.RScoreBallControl = calc.cachedComp.ballControlZScores[team.number]
 	cd.RScoreGearControl = calc.cachedComp.gearControlZScores[team.number]
@@ -79,4 +87,4 @@ def averageTeamDict(calc):
 	a.sdHighShotsTele = calc.getStandardDeviationOfDataFunctionAcrossCompetition(lambda t: t.calculatedData.sdHighShotsTele)
 	a.sdLowShotsAuto = calc.getStandardDeviationOfDataFunctionAcrossCompetition(lambda t: t.calculatedData.sdLowShotsAuto)
 	a.sdLowShotsTele = calc.getStandardDeviationOfDataFunctionAcrossCompetition(lambda t: t.calculatedData.sdLowShotsTele)
-	print("Completed first calcs for team -1")
+	print("Completed first calcs for team " + str(calc.averageTeam.number))

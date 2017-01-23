@@ -36,6 +36,8 @@ class CalculatedTeamData(object):
 		self.avgLowShotsAuto = None
 		self.avgGearsPlacedAuto = None
 		self.avgGearsPlacedTele = None
+		self.avgGearsEjectedTele = None
+		self.avgGearsFumbledTele = None
 		self.avgGearsPlacedByLiftAuto =  {
 			'lift1' : None,
 			'lift2' : None,
@@ -45,6 +47,22 @@ class CalculatedTeamData(object):
 			'lift1' : None,
 			'lift2' : None,
 			'lift3' : None
+		}
+		self.avgHoppersOpenedAuto = None
+		self.avgHoppersOpenedTele = None
+		self.hoppersOpenedPercentagesAuto = {
+			'hop1' : None,
+			'hop2' : None,
+			'hop3' : None,
+			'hop4' : None,
+			'hop5' : None
+		}
+		self.hoppersOpenedPercentagesTele = {
+			'hop1' : None,
+			'hop2' : None,
+			'hop3' : None,
+			'hop4' : None,
+			'hop5' : None
 		}
 		self.sdGearsPlacedTele = None
 		self.sdGearsPlacedAuto = None
@@ -133,13 +151,25 @@ class TeamInMatchData(object):
 		self.teamNumber = None
 		self.matchNumber = None
 		self.scoutName = None	
-		self.numHoppersOpenedTele = None
+		self.hoppersOpenedTele = {
+			'hop1': None,
+			'hop2': None, 
+			'hop3': None,
+			'hop4': None,
+			'hop5': None
+		}
 		self.numGearGroundIntakesTele = None
 		self.numGearLoaderIntakesTele = None
 		self.numGearsEjectedTele = None
 		self.numGearsFumbledTele = None
 		self.didReachBaselineAuto = None
-		self.numHoppersOpenedAuto = None
+		self.hoppersOpenedAuto = {
+			'hop1': None,
+			'hop2': None, 
+			'hop3': None,
+			'hop4': None,
+			'hop5': None
+		}
 		self.didLiftoff = None
 		self.didStartDisabled = None
 		self.didBecomeIncapacitated = None
@@ -200,6 +230,8 @@ class CalculatedTeamInMatchData(object):
 		self.numLowShotsAuto = None
 		self.numGearsPlacedTele = None
 		self.numGearsPlacedAuto = None
+		self.numHoppersOpenedAuto = None
+		self.numHoppersOpenedTele = None
 		self.wasDisfunctional = None
 		self.avgKeyShotTime = None
 		self.__dict__.update(args)

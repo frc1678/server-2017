@@ -42,6 +42,7 @@ class Calculator(object):
         self.teleGearIncrements = [0, 2, 6, 12]
         self.autoGearIncrements = [1, 3, 7, 13]
         self.lifts = ['lift1', 'lift2', 'lift3']
+        self.hops = ['hop1', 'hop2', 'hop3', 'hop4', 'hop5', 'hop6']
         self.cachedTeamDatas = {}
         self.cachedComp = cache.CachedCompetitionData()
         self.cachedTeamDatas[self.averageTeam.number] = cache.CachedTeamData(**{'teamNumber': self.averageTeam.number})
@@ -152,26 +153,26 @@ class Calculator(object):
     
     # GEARS DATA
     
-    def getTotalGearsScoredForGearDict(self, gearDict):
-        return sum(filter(lambda v: v, gearDict.values()))
+    def getTotalValueForValueDict(self, valueDict):
+        return sum(filter(lambda v: v != None, valueDict.values()))
 
     def getTotalAverageGearPointsForAlliance(self, alliance):
-        totalAutoGears = sum(map(lambda t: self.getTotalGearsScoredForGearDict(t.calculatedData.avgGearsPlacedByLiftAuto), alliance))
-        totalTeleGears = sum(map(lambda t: self.getTotalGearsScoredForGearDict(t.calculatedData.avgGearsPlacedByLiftTele), alliance))
+        totalAutoGears = sum(map(lambda t: t.calculatedData.avgGearsPlacedAuto, alliance))
+        totalTeleGears = sum(map(lambda t: t.calculatedData.avgGearsPlacedTele, alliance))
         incReachedAuto = max(filter(lambda p: totalAutoGears >= p, self.autoGearIncrements)) if len(filter(lambda p: totalAutoGears >= p, self.autoGearIncrements)) > 0 else 0
         gearPtsAuto = 60 * (self.autoGearIncrements.index(incReachedAuto) + 1) if incReachedAuto > 0 else 0
         leftOverGearsAuto = totalAutoGears - incReachedAuto
         gearPtsTele = 40 * (self.teleGearIncrements.index(max(filter(lambda p: (totalTeleGears +  leftOverGearsAuto) >= p, self.teleGearIncrements))) + 1)
         return gearPtsAuto + gearPtsTele
 
-    def getAvgGearsByLift(self, team, dic, gearRetrieval):
+    def getAvgFuncForKeys(self, team, dic, gearRetrieval, keys):
         timds = self.su.getCompletedTIMDsForTeam(team)
         getAvgForLift = lambda t: np.mean(map(lambda tm: (gearRetrieval(tm).get(t) or 0), timds))
-        [utils.setDictionaryValue(dic, l, getAvgForLift(l)) for l in self.lifts]
+        [utils.setDictionaryValue(dic, l, getAvgForLift(l)) for l in keys]
 
     def getGearPtsForAllianceTIMDs(self, timds):
-        totalAutoGears = sum(map(lambda t: self.getTotalGearsScoredForGearDict(t.gearsPlacedByLiftAuto), timds))
-        totalTeleGears = sum(map(lambda t: self.getTotalGearsScoredForGearDict(t.gearsPlacedByLiftTele), timds))
+        totalAutoGears = sum(map(lambda t: self.getTotalValueForValueDict(t.gearsPlacedByLiftAuto), timds))
+        totalTeleGears = sum(map(lambda t: self.getTotalValueForValueDict(t.gearsPlacedByLiftTele), timds))
         incrementsReached = filter(lambda p: totalAutoGears >= p, self.autoGearIncrements)
         gearPtsAuto = 60 * (self.autoGearIncrements.index(max(incrementsReached)) + 1) if len(incrementsReached) > 0 else 0
         leftOverGearsAuto = (totalAutoGears - max(incrementsReached)) if len(incrementsReached) > 0 else 0
@@ -396,7 +397,7 @@ class Calculator(object):
         try:
             self.cachedComp.actualSeedings = self.TBAC.makeEventRankingsRequest()
         except:
-            self.cachedComp.actualSeedings = []
+            self.cachedComp.actualSeedings = self.teamsSortedByRetrievalFunctions(self.getSeedingFunctions())
         self.cachedComp.zGearProbabilities = self.getAllGearProbabilitiesForTeams()
         self.cachedComp.predictedSeedings = self.teamsSortedByRetrievalFunctions(self.getPredictedSeedingFunctions())
 
@@ -429,28 +430,15 @@ class Calculator(object):
             if not self.su.teamCalculatedDataHasValues(team.calculatedData):
                 team.calculatedData = DataModel.CalculatedTeamData()
             t = team.calculatedData
+            firstCalculationDict(team, self)                
             print "Completed first calcs for " + str(team.number)
-            firstCalculationDict(team, self)
+
 
     def doSecondCalculationsForTeam(self, team):
         if not len(self.su.getCompletedTIMDsForTeam(team)) <= 0:
             secondCalculationDict(team, self)
-
-    def doThirdCalculationsForTeam(self, team):
-        if not len(self.su.getCompletedMatchesForTeam(team)) <= 0:
-            t = team.calculatedData
-            t.predictedNumRPs = self.predictedNumberOfRPs(team)
-            try:
-                t.actualNumRPs = self.getTeamRPsFromTBA(team)
-                t.actualSeed = self.getTeamSeed(team)
-            except:
-                t.actualNumRPs = self.actualNumberOfRPs(team)
-                t.actualSeed = self.teamsSortedByRetrievalFunctions(self.getSeedingFunctions())
-            t.predictedSeed = self.cachedComp.predictedSeedings.index(team) + 1
-            t.firstPickAbility = self.firstPickAbility(team) # Checked
-            t.overallSecondPickAbility = self.overallSecondPickAbility(team) # Checked
             print "Completed second calcs for team " + str(team.number)
-
+            
     def doFirstCalculationsForMatch(self, match): #This entire thing being looped is what takes a while
         print "Performing calculations for match Q" + str(match.number)
         if self.su.matchIsCompleted(match):
@@ -508,9 +496,8 @@ class Calculator(object):
             self.cacheFirstTeamData()
             self.doFirstTeamCalculations()
             self.cacheSecondTeamData()
-            self.doSecondTeamCalculations()
             self.doMatchesCalculations()
-            self.doThirdTeamCalculations()
+            self.doSecondTeamCalculations()
             map(lambda o: FirebaseWriteObjectProcess(o, FBC).start(), self.cachedComp.teamsWithMatchesCompleted + self.su.getCompletedTIMDsInCompetition() + self.comp.matches)
             FBC.addCompInfoToFirebase()
             endTime = time.time()

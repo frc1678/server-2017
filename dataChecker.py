@@ -2,12 +2,13 @@ import pyrebase
 import numpy as np
 import utils
 import time
+import pdb 
 
 config = {
 	"apiKey": "mykey",
-	"authDomain": "1678-scouting-2016.firebaseapp.com",
-	"databaseURL": "https://1678-scouting-2016.firebaseio.com",
-	"storageBucket": "1678-scouting-2016.appspot.com"
+	"authDomain": "scouting-2017-5f51c.firebaseapp.com",
+	"databaseURL": "https://scouting-2017-5f51c.firebaseio.com/",
+	"storageBucket": "scouting-2017-5f51c.appspot.com"
 }
 
 listKeys = ["highShotTimesForBoilerTele", "highShotTimesForBoilerAuto", "lowShotTimesForBoilerAuto", "lowShotTimesForBoilerTele"]
@@ -20,8 +21,9 @@ consolidationGroups = {}
 def commonValue(vals):
 	if len(set(map(type, vals))) != 1: return
 	if list(set(map(type, vals)))[0] == str:
-		if (vals[0] == "true" or vals[0] == "false"):
-			return bool(joinList(map(lambda v: int(utils.convertFirebaseBoolean(v)), vals)))
+		if ("true" in vals or "false" in vals):
+			cv = joinList(map(lambda v: int(utils.convertFirebaseBoolean(v)), vals))
+			return False if cv < 0.5 else False
 		else: return vals
 	else:
 		return joinList(vals)
@@ -41,10 +43,10 @@ def findCommonValuesForKeys(lis):
 	length = int(commonValue(map(len, lis)))
 	valuesList = map(lambda t: t[:length], lis)
 	for i in boilerKeys:
-		for v in range(valuesList[0]):
-			cv = commonValue(filter(lambda t: t, map(lambda i: i[v][i] if len(i) > v else None, valuesList)))
-			for i in valuesList:
-				i[v][i] = cv
+		for v in range(len(valuesList[0])):
+			cv = commonValue(filter(lambda t: t, map(lambda val: val[v][i] if len(i) > v else None, valuesList)))
+			for j in valuesList:
+				j[v][i] = cv
 
 def avgDict(dicts):
 	dicts = filter(lambda d: d != None, dicts)
@@ -61,7 +63,8 @@ while True:
 		time.sleep(1)
 		continue
 	consolidationGroups = getConsolidationGroups(tempTIMDs)
-	map(lambda key: firebase.child("TeamInMatchDatas").child(key).update(joinValues(key)), consolidationGroups.keys())
+	map(lambda key: firebase.child("TempTempTeamInMatchDatas").child(key).update(joinValues(key)), consolidationGroups.keys())
+	print "consolidated" + str(consolidationGroups.keys())
 	time.sleep(1)
 
 

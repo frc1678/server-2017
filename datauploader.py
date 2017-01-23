@@ -108,15 +108,16 @@ class Match(object):
 auth = fb.FirebaseAuthentication(superSecret, "1678programming@gmail.com", True, True)
 
 firebase = fb.FirebaseApplication(url, auth)
-cm = 18
+cm = 1
 while True:
 	match = firebase.get('/Matches', cm)
-	m = Match(number=cm,redAllianceTeamNumbers=match['redAllianceTeamNumbers'],blueAllianceTeamNumbers=match['blueAllianceTeamNumbers'])
-	firebase.put('/Matches/', str(cm), m.__dict__)
-	# for t in match['redAllianceTeamNumbers'] + match['blueAllianceTeamNumbers']:
-		# k = str(t) + "Q" + str(cm)
-		# firebase.put('/TeamInMatchDatas', k, TeamInMatchData(teamNumber=t, matchNumber=cm).__dict__)
-		# firebase.put('/TeamInMatchDatas/' + k, 'calculatedData', CalculatedTeamInMatchData().__dict__)
+	# m = Match(number=cm,redAllianceTeamNumbers=match['redAllianceTeamNumbers'],blueAllianceTeamNumbers=match['blueAllianceTeamNumbers'])
+	# firebase.put('/Matches/', str(cm), m.__dict__)
+	for t in match['redAllianceTeamNumbers'] + match['blueAllianceTeamNumbers']:
+		for i in range(2):
+			k = str(t) + "Q" + str(cm) + '-' + str(i)
+			firebase.put('/TempTeamInMatchDatas', k, TeamInMatchData(teamNumber=t, matchNumber=cm).__dict__)
+			firebase.put('/TempTeamInMatchDatas/' + k, 'calculatedData', CalculatedTeamInMatchData().__dict__)
 	cm += 1
 	time.sleep(7)
 

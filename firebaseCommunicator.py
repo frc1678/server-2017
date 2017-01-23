@@ -8,6 +8,7 @@ from os import listdir
 import pdb
 import math
 import datetime
+import numpy as np
 
 
 # (superSecret, url) = ('j1r2wo3RUPMeUZosxwvVSFEFVcrXuuMAGjk6uPOc', 'https://1678-dev-2016.firebaseio.com/')
@@ -55,7 +56,8 @@ class FirebaseCommunicator(object):
 		calculatedTeamDataDict = utils.makeDictFromCalculatedData(team.calculatedData)
 		FBLocation = "/Teams/" + str(team.number)
 		try: firebase.put(FBLocation, 'calculatedData', calculatedTeamDataDict)
-		except requests.exceptions.RequestException as e: print e
+		except: 
+			print calculatedTeamDataDict.items()
 
 	def addCalculatedTIMDataToFirebase(self, timd):
 		print "Writing team " + str(timd.teamNumber) + " in match " + str(timd.matchNumber) + " to Firebase..."
