@@ -16,6 +16,8 @@ class CalculatedTeamInMatchData(object):
 		self.numGearsPlacedAuto = random.randint(0, 50)
 		self.wasDisfunctional = random.randint(0, 50)
 		self.avgKeyShotTime = random.randint(0, 50)
+		self.numHoppersOpenedTele = random.randint(0,5)
+		self.numHoppersOpenedAuto = random.randint(0,5)
 		self.__dict__.update(args)
 
 class TeamInMatchData(object):
@@ -25,8 +27,7 @@ class TeamInMatchData(object):
 		# self.calculatedData = DataModel.CalculatedTeamInMatchData()
 		self.teamNumber = args['teamNumber']
 		self.matchNumber = args['matchNumber']
-		self.scoutName = 'sammy'	
-		self.numHoppersOpenedTele = random.randint(0,5)
+		self.scoutName = args['scoutName']	
 		self.numGearGroundIntakesTele = random.randint(0,5)
 		self.numGearLoaderIntakesTele = random.randint(0,5)
 		self.numGearsEjectedAuto = random.randint(0,5)
@@ -35,7 +36,6 @@ class TeamInMatchData(object):
 		self.numGearsFumbledTele = random.randint(0,5)
 		self.didReachBaselineAuto = bool(random.randint(0,5))
 		self.didPotentiallyConflictingAuto = bool(random.randint(0,5))
-		self.numHoppersOpenedAuto = random.randint(0,5)
 		self.didLiftoff = bool(random.randint(0,5))
 		self.didStartDisabled = bool(random.randint(0,5))
 		self.didBecomeIncapacitated = bool(random.randint(0,5))
@@ -43,6 +43,20 @@ class TeamInMatchData(object):
 		self.rankAgility = random.randint(0,4)
 		self.rankGearControl = random.randint(0,4)
 		self.rankBallControl = random.randint(0,4)
+		self.hoppersOpenedAuto = {
+			'hopper1' : bool(random.randint(0,1)),
+			'hopper2' : bool(random.randint(0,1)),
+			'hopper3' : bool(random.randint(0,1)),
+			'hopper4' : bool(random.randint(0,1)),
+			'hopper5' : bool(random.randint(0,1))
+		}
+		self.hoppersOpenedTele = {
+			'hopper1' : bool(random.randint(0,1)),
+			'hopper2' : bool(random.randint(0,1)),
+			'hopper3' : bool(random.randint(0,1)),
+			'hopper4' : bool(random.randint(0,1)),
+			'hopper5' : bool(random.randint(0,1))
+		}
 		self.rankDefense = random.randint(0,4)
 		self.gearsPlacedByLiftAuto = {
 			'lift1' : random.randint(0,5),
@@ -106,20 +120,23 @@ class Match(object):
 (superSecret, url) = ('93Ybz7MldpSj6HQHW1zb4ddcGGmpCMlNlOBoI9V3', 'https://scouting-2017-5f51c.firebaseio.com/')
 
 auth = fb.FirebaseAuthentication(superSecret, "1678programming@gmail.com", True, True)
-
+testScouts = "arman Sam so asdf abhi fgh aScout anotherScout aThirdScout".split()
+testScouts = zip(testScouts, range(len(testScouts)))
 firebase = fb.FirebaseApplication(url, auth)
 cm = 1
 while True:
+	i = 0
 	match = firebase.get('/Matches', cm)
 	# m = Match(number=cm,redAllianceTeamNumbers=match['redAllianceTeamNumbers'],blueAllianceTeamNumbers=match['blueAllianceTeamNumbers'])
 	# firebase.put('/Matches/', str(cm), m.__dict__)
 	for t in match['redAllianceTeamNumbers'] + match['blueAllianceTeamNumbers']:
-		for i in range(2):
-			k = str(t) + "Q" + str(cm) + '-' + str(i)
-			firebase.put('/TempTeamInMatchDatas', k, TeamInMatchData(teamNumber=t, matchNumber=cm).__dict__)
-			firebase.put('/TempTeamInMatchDatas/' + k, 'calculatedData', CalculatedTeamInMatchData().__dict__)
+		for j in range(3):
+			if i >= len(testScouts): i = 0
+			k = str(t) + "Q" + str(cm) + "-" + str(testScouts[i][1])
+			firebase.put('/TempTeamInMatchDatas', k, TeamInMatchData(teamNumber=t, matchNumber=cm, scoutName=testScouts[i][0]).__dict__)
+			i+=1
 	cm += 1
-	time.sleep(7)
+	time.sleep(4)
 
 
 

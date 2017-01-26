@@ -51,18 +51,18 @@ class CalculatedTeamData(object):
 		self.avgHoppersOpenedAuto = None
 		self.avgHoppersOpenedTele = None
 		self.hoppersOpenedPercentagesAuto = {
-			'hop1' : None,
-			'hop2' : None,
-			'hop3' : None,
-			'hop4' : None,
-			'hop5' : None
+			'hopper1' : None,
+			'hopper2' : None,
+			'hopper3' : None,
+			'hopper4' : None,
+			'hopper5' : None
 		}
 		self.hoppersOpenedPercentagesTele = {
-			'hop1' : None,
-			'hop2' : None,
-			'hop3' : None,
-			'hop4' : None,
-			'hop5' : None
+			'hopper1' : None,
+			'hopper2' : None,
+			'hopper3' : None,
+			'hopper4' : None,
+			'hopper5' : None
 		}
 		self.sdGearsPlacedTele = None
 		self.sdGearsPlacedAuto = None
@@ -152,11 +152,11 @@ class TeamInMatchData(object):
 		self.matchNumber = None
 		self.scoutName = None	
 		self.hoppersOpenedTele = {
-			'hop1': None,
-			'hop2': None, 
-			'hop3': None,
-			'hop4': None,
-			'hop5': None
+			'hopper1': None,
+			'hopper2': None, 
+			'hopper3': None,
+			'hopper4': None,
+			'hopper5': None
 		}
 		self.numGearGroundIntakesTele = None
 		self.numGearLoaderIntakesTele = None
@@ -164,11 +164,11 @@ class TeamInMatchData(object):
 		self.numGearsFumbledTele = None
 		self.didReachBaselineAuto = None
 		self.hoppersOpenedAuto = {
-			'hop1': None,
-			'hop2': None, 
-			'hop3': None,
-			'hop4': None,
-			'hop5': None
+			'hopper1': None,
+			'hopper2': None, 
+			'hopper3': None,
+			'hopper4': None,
+			'hopper5': None
 		}
 		self.didLiftoff = None
 		self.didStartDisabled = None

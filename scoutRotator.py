@@ -37,9 +37,6 @@ def doThing(newMatchNumber):
 	SPR.calculateScoutPrecisionScores(fb.child("TempTeamInMatchDatas").get().val(), available)
 	newAssignments = SPR.assignScoutsToRobots(available, redTeams + blueTeams, fb.child("scouts").get().val())
 	fb.child("scouts").update(newAssignments)
-	for scout in testScouts:
-		if scout not in available:
-			scoutNum = getScoutNumFromName(scout, fb.child("scouts").get().val())
-			fb.child("scouts").child(scoutNum).update({"team": "None"})
+
 
 fb.child("currentMatchNumber").stream(doThing)
