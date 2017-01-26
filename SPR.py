@@ -179,41 +179,34 @@ class ScoutPrecision(object):
 		return scouts
 
 	def getScoutNumFromName(self, name, scoutsInRotation):
-		print name
-		print filter(lambda k: scoutsInRotation[k].get('mostRecentUser') == name, scoutsInRotation.keys())[0]
 		return filter(lambda k: scoutsInRotation[k].get('mostRecentUser') == name, scoutsInRotation.keys())[0]
 
-	#Picks the first scout on both the list and firebase
-	def getOutOfRotationSpot(self, scoutRotatorDict, available):
-		unavailableScouts = filter(lambda k: scoutRotatorDict[k]["mostRecentUser"] not in available, scoutRotatorDict.keys())
-		if len(unavailableScouts) > 0:
-			return unavailableScouts[0]
-		else:
-			return scoutRotatorDict[0]
-
-	#If there are empty scouts in firebase (object, but no user), it gives them, otherwise just the first scout in firebase that is not empty
+	#Returns the first scout key that doesn't have a current user
 	def findFirstEmptySpotForScout(self, scoutRotatorDict, available):
-		emptyScouts = filter(lambda k: scoutRotatorDict[k]['mostRecentUser'] == '', scoutRotatorDict.keys())
-		return emptyScouts[0] if len(emptyScouts) > 0 else self.getOutOfRotationSpot(scoutRotatorDict, available)
+		emptyScouts = filter(lambda k: scoutRotatorDict[k].get('currentUser') != None, scoutRotatorDict.keys())
+		return emptyScouts[0]
 
 	def assignScoutsToRobots(self, available, currentTeams, scoutRotatorDict):
-		scoutsWithNames = filter(lambda v: v.get('mostRecentUser') != "", scoutRotatorDict.values())
-		namesOfScouts = map(lambda v: v.get('mostRecentUser'), scoutsWithNames)
+		scoutsWithNames = filter(lambda v: v.get('currentUser') != None, scoutRotatorDict.values())
+		namesOfScouts = map(lambda v: v.get('currentUser'), scoutsWithNames)
 		#assigns scout numbers to robots
 		teams = self.organizeScouts(available, currentTeams)
-		#updates scoutRotatorDict to include new teams for scouts
-		map(lambda a: self.assignScoutToRobot(a, teams, scoutRotatorDict, available, namesOfScouts), available)
-		for scout in namesOfScouts:
-			if scout not in available:
-				scoutRotatorDict[self.getScoutNumFromName(scout, scoutRotatorDict)].update({'team' : None})
-				
+		#Moves the current user to the previous user spot, assigns a new user if necessary, and assigns a robot to each scout
+		for scout in scoutRotatorDict.keys():
+			if scoutRotatorDict[scout].get('currentUser') != None:
+				oldName = scoutRotatorDict[scout]['currentUser']
+				scoutRotatorDict[scout].update({'mostRecentUser': oldName})
+				if oldName not in available:
+					scoutRotatorDict[scout].update({'team': None, 'currentUser': None})
+		for scout in available
+			scoutRotatorDict = self.assignScoutToRobot(scout, teams, scoutRotatorDict, available, namesOfScouts)
 		return scoutRotatorDict
 
 	def assignScoutToRobot(self, availableScout, teams, scoutRotatorDict, available, names):
 		if availableScout in names:
 			scoutNum = self.getScoutNumFromName(availableScout, scoutRotatorDict)
-			scoutRotatorDict[scoutNum].update({'team': teams[availableScout]})
+			scoutRotatorDict[scoutNum].update({'team': teams[availableScout], 'currentUser': availableScout})
 		else:
 			newSpace = self.findFirstEmptySpotForScout(scoutRotatorDict, available)
-			scoutRotatorDict[newSpace].update({'team': teams[availableScout], 'mostRecentUser': availableScout})
+			scoutRotatorDict[newSpace].update({'team': teams[availableScout], 'currentUser': availableScout})
 		return scoutRotatorDict

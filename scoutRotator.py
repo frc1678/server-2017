@@ -1,7 +1,6 @@
 import pyrebase
 import DataModel
 import time
-from firebase import firebase as fir
 import SPR
 import multiprocessing
 import random
@@ -15,17 +14,15 @@ config = {
 
 f = pyrebase.initialize_app(config)
 fb = f.database()
-testScouts = "arman Sam so asdf abhi fgh aScout anotherScout aThirdScout".split()
+testScouts = "arman Sam so asdf abhi fgh aScout anotherScout aThirdScout popo hen".split()
 scouts = "Westley MX Tim Jesse Sage Alex Janet Livy Gemma Justin Berin Aiden Rolland Rachel Zoe Ayush Jona Angela Kyle Wesley".split()
 SPR = SPR.ScoutPrecision()
-#Note: set to true when starting to run and everyone is available, or the list of scouts has been updated
-resetAvailability = False
+#Note: set to true when starting to run and everyone is available, or the list of scouts has been updated,
+#	   set to false when maintaining availability already in firebase
+resetAvailability = True
 if resetAvailability:
 	availability = {name: 1 for name in testScouts}
 	fb.child('availability').set(availability)
-
-def getScoutNumFromName(name, scoutsInRotation):
-	return filter(lambda k: scoutsInRotation[k].get('mostRecentUser') == name, scoutsInRotation.keys())[0]
 
 def doThing(newMatchNumber):
 	print 'Setting scouts for match ' + str(fb.child('currentMatchNumber').get().val())
@@ -34,6 +31,8 @@ def doThing(newMatchNumber):
 	blueTeams = fb.child("Matches").child(str(currentMatchNum)).get().val()['blueAllianceTeamNumbers']
 	redTeams = fb.child("Matches").child(str(currentMatchNum)).get().val()['redAllianceTeamNumbers']
 	available = [k for (k, v) in fb.child("availability").get().val().items() if v == 1]
+	random.shuffle(available)
+	available = available[:18]
 	SPR.calculateScoutPrecisionScores(fb.child("TempTeamInMatchDatas").get().val(), available)
 	newAssignments = SPR.assignScoutsToRobots(available, redTeams + blueTeams, fb.child("scouts").get().val())
 	fb.child("scouts").update(newAssignments)
