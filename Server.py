@@ -34,7 +34,7 @@ def checkForMissingData():
 
 while(True):
 	print("\nCalcs Cycle " + str(cycle) + "...")
-	FBC.cacheFirebase()
+	# FBC.cacheFirebase()
 	comp.updateTeamsAndMatchesFromFirebase()
 	comp.updateTIMDsFromFirebase()
 	checkForMissingData()

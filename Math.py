@@ -47,7 +47,7 @@ class Calculator(object):
         self.cachedComp = cache.CachedCompetitionData()
         self.cachedTeamDatas[self.averageTeam.number] = cache.CachedTeamData(**{'teamNumber': self.averageTeam.number})
         for t in self.comp.teams:
-            print("HEY WHATS UP ITS NOT A SONG IT IS MY LIFE" + str(t.number))
+            print("HEY ARE YOU GOING TO SING YA BUT IT'S NOT A SONG IT IS MY LIFE" + str(t.number))
             self.cachedTeamDatas[t.number] = cache.CachedTeamData(**{'teamNumber': t.number})
 
 
@@ -105,14 +105,6 @@ class Calculator(object):
     def getAverageForDataFunctionForTIMDValues(self, timds, dataFunction):
         values = [dataFunction(timd) for timd in timds]
         return np.mean(values) if len(values) > 0 else None
-
-    def weightedMeanForGearFunction(self, team, gearFunction):
-        return sum(map(lambda n: self.probabilityForGearsPlacedForNumberForTeamForGearFunc(team, n, gearFunction), range(13)))
-
-    def weightedStdDevForGearFunction(self, team, gearFunction):
-        mean = self.weightedMeanForGearFunction(team, gearFunction)
-        g = lambda n: self.probabilityForGearsPlacedForNumberForTeamForGearFunc(team, n, gearFunction) * (n**2)
-        return np.sqrt(sum(map(g, range(13)))) - (mean**2)
 
     #SHOTS DATA
     def fieldsForShots(self, timd):
@@ -278,11 +270,11 @@ class Calculator(object):
 
     def getAllRotorsTurningChanceForAlliance(self, alliance):
         alliance = map(self.su.replaceWithAverageIfNecessary, alliance)
-        return sum(map(lambda w: sum(map(lambda z: self.zProbTeam(alliance[2], z) * sum(map(lambda y: self.zProbTeam(alliance[0], w-y-z) * self.zProbTeam(alliance[1], y), range(13))), range(13))), range(12, 12 * len(alliance) + 1)))
+        return sum(map(lambda x: sum(map(lambda z: self.zProbTeam(alliance[2], z) * sum(map(lambda y: self.zProbTeam(alliance[0], x) * self.zProbTeam(alliance[1], y), range(13))), range(13))), range(13)))
 
     def getAllRotorsTurningChanceForTwoRobotAlliance(self, alliance):        
         alliance = map(self.su.replaceWithAverageIfNecessary, alliance)
-        return sum(map(lambda w: sum(map(lambda y: self.zProbTeam(alliance[0], w - y) * self.zProbTeam(alliance[1], y), range(13))), range(12, 12 * len(alliance) + 1)))
+        return sum(map(lambda x: sum(map(lambda y: self.zProbTeam(alliance[0], x) * self.zProbTeam(alliance[1], y), range(13))), range(13)))
 
     def totalGearsPlacedForTIMD(self, timd):
         return timd.calculatedData.numGearsPlacedAuto + timd.calculatedData.numGearsPlacedTele
@@ -316,7 +308,7 @@ class Calculator(object):
         fuelPts = sum(map(lambda t: t.calculatedData.avgHighShotsAuto + t.calculatedData.avgLowShotsAuto / 3.0, alliance))
         baselinePts = sum(map(lambda t: t.calculatedData.baselineReachedPercentage * 5, alliance))
         incsReached = filter(lambda p: sum(map(lambda t: t.calculatedData.avgGearsPlacedAuto, alliance)) >= p, self.autoGearIncrements)
-        gearPts = 60 * (self.autoGearIncrements.index((max(incsReached) if len(incsReached) > 9 else 0) + 1))
+        gearPts = 60 * (self.autoGearIncrements.index((max(incsReached) if len(incsReached) > 0 else 0) + 1))
         return fuelPts + baselinePts + gearPts
 
     def cumulativeAutoPointsForTeam(self, team):
@@ -437,26 +429,11 @@ class Calculator(object):
     def doSecondCalculationsForTeam(self, team):
         if not len(self.su.getCompletedTIMDsForTeam(team)) <= 0:
             secondCalculationDict(team, self)
-            print "Completed second calcs for team " + str(team.number)
+            print "Completed second calculations for team " + str(team.number)
             
     def doFirstCalculationsForMatch(self, match): #This entire thing being looped is what takes a while
-        print "Performing calculations for match Q" + str(match.number)
-        if self.su.matchIsCompleted(match):
-            match.calculatedData.actualBlueRPs = self.RPsGainedFromMatchForAlliance(True, match)
-            match.calculatedData.actualRedRPs = self.RPsGainedFromMatchForAlliance(False, match)
-        match.calculatedData.predictedBlueScore = self.predictedScoreForAllianceWithNumbers(match.blueAllianceTeamNumbers)
-        match.calculatedData.predictedRedScore = self.predictedScoreForAllianceWithNumbers(match.redAllianceTeamNumbers)
-        match.calculatedData.sdPredictedBlueScore = self.stdDevPredictedScoreForAllianceNumbers(match.blueAllianceTeamNumbers)
-        match.calculatedData.sdPredictedRedScore = self.stdDevPredictedScoreForAllianceNumbers(match.redAllianceTeamNumbers)
-        match.calculatedData.fortyKilopascalChanceRed = self.get40KilopascalChanceForAllianceWithNumbers(match.redAllianceTeamNumbers)
-        match.calculatedData.fortyKilopascalChanceBlue = self.get40KilopascalChanceForAllianceWithNumbers(match.blueAllianceTeamNumbers)
-        match.calculatedData.allRotorsTurningChanceRed = self.getAllRotorsTurningChanceForAllianceWithNumbers(match.redAllianceTeamNumbers)
-        match.calculatedData.allRotorsTurningChanceBlue = self.getAllRotorsTurningChanceForAllianceWithNumbers(match.blueAllianceTeamNumbers)
-        match.calculatedData.blueWinChance = self.winChanceForMatchForAllianceIsRed(match, False)
-        match.calculatedData.redWinChance = self.winChanceForMatchForAllianceIsRed(match, True)
-        match.calculatedData.predictedBlueRPs = self.predictedRPsForAllianceForMatch(False, match)
-        match.calculatedData.predictedRedRPs = self.predictedRPsForAllianceForMatch(True, match)
-        print "Done! Match " + str(match.number)
+        matchDict(match, self)
+        print "Completed calculations for match " + str(match.number)
 
     def doFirstTeamCalculations(self):
         map(self.doFirstCalculationsForTeam, self.comp.teams)
