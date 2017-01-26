@@ -14,7 +14,7 @@ class CalculatedTeamInMatchData(object):
 		self.numLowShotsAuto = random.randint(0, 50)
 		self.numGearsPlacedTele = random.randint(0, 50)
 		self.numGearsPlacedAuto = random.randint(0, 50)
-		self.wasDisfunctional = random.randint(0, 50)
+		self.wasDisfunctional = bool(random.randint(0, 1))
 		self.avgKeyShotTime = random.randint(0, 50)
 		self.numHoppersOpenedTele = random.randint(0,5)
 		self.numHoppersOpenedAuto = random.randint(0,5)
@@ -24,7 +24,6 @@ class TeamInMatchData(object):
 	"""An FRC TeamInMatchData Object"""
 	def __init__(self, **args):
 		super(TeamInMatchData, self).__init__()
-		# self.calculatedData = DataModel.CalculatedTeamInMatchData()
 		self.teamNumber = args['teamNumber']
 		self.matchNumber = args['matchNumber']
 		self.scoutName = args['scoutName']	
