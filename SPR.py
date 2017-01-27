@@ -19,29 +19,29 @@ class ScoutPrecision(object):
 		self.robotNumToScouts = []
 		self.TBAC = TBACommunicator.TBACommunicator()
 		#What do these do?
-		self.keysToPointValues = {
-			'numGearGroundIntakesTele' : 1,
-			'numGearLoaderIntakesTele' : 1,
-			'numGearsEjectedTele' : 1,
-			'numGearsFumbledTele' : 1,
-			'didLiftoff' : 1,
-			'didBecomeIncapacitated' : 1,
-			'didStartDisabled' : 1,
-			'didReachBaselineAuto' : 1
-		}
+		self.keysToPointValues = [
+			'numGearGroundIntakesTele',
+			'numGearLoaderIntakesTele',
+			'numGearsEjectedTele',
+			'numGearsFumbledTele',
+			'didLiftoff',
+			'didBecomeIncapacitated',
+			'didStartDisabled',
+			'didReachBaselineAuto'
+		]
 
-		self.dictsToPointValues = {
-			'gearsPlacedByLiftTele' : 1,
-			'gearsPlacedByLiftAuto' : 1,
-			'hoppersOpenedTele' : 1,
-			'hoppersOpenedAuto' : 1
-		}
-		self.listsOfDictsToPointValues = {
-			'highShotTimesForBoilerTele' : 1,
-			'highShotTimesForBoilerAuto' : 1,
-			'lowShotTimesForBoilerAuto' : 1,
-			'lowShotTimesForBoilerTele' : 1
-		}
+		self.dictsToPointValues = [
+			'gearsPlacedByLiftTele',
+			'gearsPlacedByLiftAuto',
+			'hoppersOpenedTele',
+			'hoppersOpenedAuto'
+		]
+		self.listsOfDictsToPointValues = [
+			'highShotTimesForBoilerTele',
+			'highShotTimesForBoilerAuto',
+			'lowShotTimesForBoilerAuto',
+			'lowShotTimesForBoilerTele'
+		]
 
 	#outputs list of TIMDs that an inputted scout was involved in
 	def getTotalTIMDsForScoutName(self, scoutName, tempTIMDs):
@@ -102,9 +102,9 @@ class ScoutPrecision(object):
 	def calculateScoutPrecisionScores(self, temp, available):
 		if temp != None:
 			g = self.consolidateTIMDs(temp)
-			[self.findOddScoutForDataPoint(v, k) for v in g.values() for k in self.keysToPointValues.keys()] #Sets sprs
-			[self.findOddScoutForDict(v, k) for v in g.values() for k in self.dictsToPointValues.keys()]
-			[self.findOddScoutForListOfDicts(v, k) for v in g.values() for k in self.listsOfDictsToPointValues.keys()]
+			[self.findOddScoutForDataPoint(v, k) for v in g.values() for k in self.keysToPointValues] #Sets sprs
+			[self.findOddScoutForDict(v, k) for v in g.values() for k in self.dictsToPointValues]
+			[self.findOddScoutForListOfDicts(v, k) for v in g.values() for k in self.listsOfDictsToPointValues]
 			self.sprs = {k:(v/float(self.getTotalTIMDsForScoutName(k, temp))) for (k,v) in self.sprs.items()} 		#divides values for scouts by cycle, and then by number of TIMDs
 			for a in available[:18]: 		#for the first 18 available scouts
 				if a not in self.sprs.keys(): 			#If their values are 1 (which I assume is automatic until they are updated) and they are not in use in sprs
