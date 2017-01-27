@@ -70,7 +70,6 @@ class ScoutPrecision(object):
 		scouts = filter(lambda v: v != None, map(lambda k: k.get('scoutName'), tempTIMDs)) 		#finds scout names in tempTIMDs that aren't None
 		dicts = filter(lambda k: k!= None, map(lambda t: t[key] if t.get('scoutName') != None else None, tempTIMDs))
 		consolidationDict = {}
-		if len(dicts) <= 0: pdb.set_trace()
 		for key in dicts[0].keys():
 			consolidationDict[key] = []
 			for aDict in dicts:
@@ -198,7 +197,7 @@ class ScoutPrecision(object):
 				scoutRotatorDict[scout].update({'mostRecentUser': oldName})
 				if oldName not in available:
 					scoutRotatorDict[scout].update({'team': None, 'currentUser': None})
-		for scout in available
+		for scout in available:
 			scoutRotatorDict = self.assignScoutToRobot(scout, teams, scoutRotatorDict, available, namesOfScouts)
 		return scoutRotatorDict
 
@@ -208,5 +207,6 @@ class ScoutPrecision(object):
 			scoutRotatorDict[scoutNum].update({'team': teams[availableScout], 'currentUser': availableScout})
 		else:
 			newSpace = self.findFirstEmptySpotForScout(scoutRotatorDict, available)
+			print newSpace
 			scoutRotatorDict[newSpace].update({'team': teams[availableScout], 'currentUser': availableScout})
 		return scoutRotatorDict

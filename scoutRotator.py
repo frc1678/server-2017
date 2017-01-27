@@ -32,7 +32,8 @@ def doThing(newMatchNumber):
 	redTeams = fb.child("Matches").child(str(currentMatchNum)).get().val()['redAllianceTeamNumbers']
 	available = [k for (k, v) in fb.child("availability").get().val().items() if v == 1]
 	random.shuffle(available)
-	available = available[:18]
+	#Change 11 to 18 when using real scouts
+	available = available[:11]
 	SPR.calculateScoutPrecisionScores(fb.child("TempTeamInMatchDatas").get().val(), available)
 	newAssignments = SPR.assignScoutsToRobots(available, redTeams + blueTeams, fb.child("scouts").get().val())
 	fb.child("scouts").update(newAssignments)
