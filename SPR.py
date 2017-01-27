@@ -18,7 +18,8 @@ class ScoutPrecision(object):
 		self.sprs = {}
 		self.robotNumToScouts = []
 		self.TBAC = TBACommunicator.TBACommunicator()
-		self.keysToPointValues = [
+		#These keys are the names of sections of the tempTIMDs on which scouts will be graded
+		self.gradingKeys = [
 			'numGearGroundIntakesTele',
 			'numGearLoaderIntakesTele',
 			'numGearsEjectedTele',
@@ -29,13 +30,13 @@ class ScoutPrecision(object):
 			'didReachBaselineAuto'
 		]
 
-		self.dictsToPointValues = [
+		self.gradingDicts = [
 			'gearsPlacedByLiftTele',
 			'gearsPlacedByLiftAuto',
 			'hoppersOpenedTele',
 			'hoppersOpenedAuto'
 		]
-		self.listsOfDictsToPointValues = [
+		self.gradingListsOfDicts = [
 			'highShotTimesForBoilerTele',
 			'highShotTimesForBoilerAuto',
 			'lowShotTimesForBoilerAuto',
@@ -67,22 +68,23 @@ class ScoutPrecision(object):
 
 	def findOddScoutForDict(self, tempTIMDs, key):
 		scouts = filter(lambda v: v != None, map(lambda k: k.get('scoutName'), tempTIMDs)) 		#finds scout names in tempTIMDs that aren't None
-		dicts = filter(lambda k: k!= None, map(lambda t: t[key] if t.get('scoutName') != None else None, tempTIMDs))
-		consolidationDict = {}
+		dicts = filter(lambda k: k!= None, map(lambda t: t[key] if t.get('scoutName') != None else None, tempTIMDs)) #Finds dicts of an inputted type in the tempTIMDs that have values and scouts
+		consolidationDict = {} # This section groups keys of the dicts found earlier
 		for key in dicts[0].keys():
 			consolidationDict[key] = []
 			for aDict in dicts:
 				consolidationDict[key] += [aDict[key]]
 		commonValues = {}
 		for key in consolidationDict.keys():
-			values = consolidationDict[key]
+			values = consolidationDict[key] #see descriptions in findOddScoutForDataPoint for the math that this section does
 			commonValues[key] = max(map(lambda v: values.count(v), values)) if len(map(lambda v: values.count(v), values)) != 0 else 0
 			if not values.count(commonValues[key]) > len(values) / 2: commonValues[key] = np.mean(values)
 			differenceFromCommonValue = map(lambda v: abs(v - commonValues[key]), values)
 			self.sprs = {scouts[c] : (self.sprs.get(scouts[c]) or 0) + differenceFromCommonValue[c] for c in range(len(differenceFromCommonValue))}
 
+	#Exactly the same as findOddScoutForDict, but for each dict in a list of dicts
 	def findOddScoutForListOfDicts(self, tempTIMDs, key):
-		scouts = filter(lambda v: v != None, map(lambda k: k.get('scoutName'), tempTIMDs)) 		#finds scout names in tempTIMDs that aren't None
+		scouts = filter(lambda v: v != None, map(lambda k: k.get('scoutName'), tempTIMDs))
 		lists = filter(lambda k: k!= None, map(lambda t: t[key] if t.get('scoutName') != None else None, tempTIMDs))
 		for dicts in lists:
 			consolidationDict = {}
@@ -100,14 +102,20 @@ class ScoutPrecision(object):
 
 	def calculateScoutPrecisionScores(self, temp, available):
 		if temp != None:
+			#Put together all tempTIMDs for the same match
 			g = self.consolidateTIMDs(temp)
-			[self.findOddScoutForDataPoint(v, k) for v in g.values() for k in self.keysToPointValues] #Sets sprs
-			[self.findOddScoutForDict(v, k) for v in g.values() for k in self.dictsToPointValues]
-			[self.findOddScoutForListOfDicts(v, k) for v in g.values() for k in self.listsOfDictsToPointValues]
-			self.sprs = {k:(v/float(self.getTotalTIMDsForScoutName(k, temp))) for (k,v) in self.sprs.items()} 		#divides values for scouts by cycle, and then by number of TIMDs
-			for a in available[:18]: 		#for the first 18 available scouts
+			#These three grade each scout for each of the values in the grading keys, dicts, and lists of dicts
+			#Each scout gets more "points" if they are further off from the consensus on the actual values
+			#The grades are stored in sprs
+			#see the findOddScout functions for details on how
+			[self.findOddScoutForDataPoint(v, k) for v in g.values() for k in self.gradingKeys]
+			[self.findOddScoutForDict(v, k) for v in g.values() for k in self.gradingDicts]
+			[self.findOddScoutForListOfDicts(v, k) for v in g.values() for k in self.gradingListsOfDicts]
+			self.sprs = {k:(v/float(self.getTotalTIMDsForScoutName(k, temp))) for (k,v) in self.sprs.items()} 		#divides values for scouts by number of TIMDs the scout has participated in
+			for a in available: 		#for the first 18 available scouts
 				if a not in self.sprs.keys(): 			#If their values are 1 (which I assume is automatic until they are updated) and they are not in use in sprs
 					self.sprs[a] = np.mean(self.sprs.values()) 				#They are now set to the average value
+		#If there are no tempTIMDs, everyone is set to 1
 		else:
 			for a in available:
 				self.sprs[a] = 1
@@ -116,11 +124,19 @@ class ScoutPrecision(object):
 	def rankScouts(self, available):
 		return sorted(self.sprs.keys(), key=lambda k: self.sprs[k])
 
-	#orders available scouts by spr ranking, then makes a list of how frequently each scout should be selected (better scouts more frequently)
+	#orders available scouts by spr ranking, then makes a list of how frequently each scout should be selected
+	#(better (lower scoring) scouts more frequently)
 	def getScoutFrequencies(self, available):
+		print self.sprs.items()
 		rankedScouts = self.rankScouts(available)
+		print rankedScouts
 		func = lambda s: [s] * (rankedScouts.index(s) + 1) * ((100/(len(rankedScouts))) + 1)
-		return utils.extendList(map(func, available))
+		lis = utils.extendList(map(func, available))
+		print lis[0]
+		print lis[500]
+		print lis.count(lis[0])
+		print lis.count(lis[500])
+		return lis
 
 	def organizeScouts(self, available, currentTeams):
 		groupFunc = lambda l: l[random.randint(0, len(l) - 1)] 		#picks a random member of the inputted group
@@ -191,21 +207,25 @@ class ScoutPrecision(object):
 		teams = self.organizeScouts(available, currentTeams)
 		#Moves the current user to the previous user spot, assigns a new user if necessary, and assigns a robot to each scout
 		for scout in scoutRotatorDict.keys():
+			#The current user is now the previous user, as the match has changed
 			if scoutRotatorDict[scout].get('currentUser') != None:
 				oldName = scoutRotatorDict[scout]['currentUser']
 				scoutRotatorDict[scout].update({'mostRecentUser': oldName})
 				if oldName not in available:
+					#If they are not scouting again, team and current user are deleted, since either that scout spot will be empty this match or someone else will be put there
 					scoutRotatorDict[scout].update({'team': None, 'currentUser': None})
 		for scout in available:
+			#Each available scout is put into the dict to send to firebase, in an appropriate spot and with a team number
 			scoutRotatorDict = self.assignScoutToRobot(scout, teams, scoutRotatorDict, available, namesOfScouts)
 		return scoutRotatorDict
 
 	def assignScoutToRobot(self, availableScout, teams, scoutRotatorDict, available, names):
+		#If the available scout already has a spot on firebase, all that needs to be updated is the robot they scout for
 		if availableScout in names:
 			scoutNum = self.getScoutNumFromName(availableScout, scoutRotatorDict)
 			scoutRotatorDict[scoutNum].update({'team': teams[availableScout], 'currentUser': availableScout})
 		else:
+			#If they aren't, it needs to find an empty scout spot in firebase and put the available scout there
 			newSpace = self.findFirstEmptySpotForScout(scoutRotatorDict, available)
-			print newSpace
 			scoutRotatorDict[newSpace].update({'team': teams[availableScout], 'currentUser': availableScout})
 		return scoutRotatorDict
