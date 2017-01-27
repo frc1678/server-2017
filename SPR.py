@@ -18,7 +18,6 @@ class ScoutPrecision(object):
 		self.sprs = {}
 		self.robotNumToScouts = []
 		self.TBAC = TBACommunicator.TBACommunicator()
-		#What do these do?
 		self.keysToPointValues = [
 			'numGearGroundIntakesTele',
 			'numGearLoaderIntakesTele',
@@ -182,7 +181,7 @@ class ScoutPrecision(object):
 
 	#Returns the first scout key that doesn't have a current user
 	def findFirstEmptySpotForScout(self, scoutRotatorDict, available):
-		emptyScouts = filter(lambda k: scoutRotatorDict[k].get('currentUser') != None, scoutRotatorDict.keys())
+		emptyScouts = filter(lambda k: scoutRotatorDict[k].get('currentUser') == None, scoutRotatorDict.keys())
 		return emptyScouts[0]
 
 	def assignScoutsToRobots(self, available, currentTeams, scoutRotatorDict):
