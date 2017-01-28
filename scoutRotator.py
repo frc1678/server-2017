@@ -22,7 +22,7 @@ SPR = SPR.ScoutPrecision()
 resetAvailability = True
 if resetAvailability:
 	availability = {name: 1 for name in testScouts}
-									#change testScouts to scouts for actual use
+						#Note: change testScouts to scouts for actual use
 	fb.child('availability').set(availability)
 
 def doThing(newMatchNumber):
@@ -36,9 +36,10 @@ def doThing(newMatchNumber):
 	available = [k for (k, v) in fb.child("availability").get().val().items() if v == 1]
 	#Each scout is now assigned to a robot in the next 2 lines
 	SPR.calculateScoutPrecisionScores(fb.child("TempTeamInMatchDatas").get().val(), available)
-	newAssignments = SPR.assignScoutsToRobots(available, redTeams + blueTeams, fb.child("scouts").get().val())
+														#Note: check if Scouts in firebase is capitalized, and adjust accordingly
+	newAssignments = SPR.assignScoutsToRobots(available, redTeams + blueTeams, fb.child("Scouts").get().val())
 	#and it is put on firebase
-	fb.child("scouts").update(newAssignments)
+	fb.child("Scouts").update(newAssignments)
 
 
 fb.child("currentMatchNumber").stream(doThing)

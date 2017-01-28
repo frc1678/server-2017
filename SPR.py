@@ -99,7 +99,6 @@ class ScoutPrecision(object):
 				commonValues[key] = max(map(lambda v: values.count(v), values)) if len(map(lambda v: values.count(v), values)) != 0 else 0
 				if not values.count(commonValues[key]) > len(values) / 2: commonValues[key] = np.mean(values)
 				differenceFromCommonValue = map(lambda v: abs(v - commonValues[key]), values)
-				print differenceFromCommonValue
 				self.sprs.update({scouts[c] : (self.sprs.get(scouts[c]) or 0) + differenceFromCommonValue[c] for c in range(len(differenceFromCommonValue))})
 
 	def calculateScoutPrecisionScores(self, temp, available):
@@ -121,7 +120,6 @@ class ScoutPrecision(object):
 		else:
 			for a in available:
 				self.sprs[a] = 1
-		print self.sprs
 
 	#sorts scouts by sprs score
 	def rankScouts(self, available):
@@ -132,7 +130,6 @@ class ScoutPrecision(object):
 	def getScoutFrequencies(self, available):
 		rankedScouts = self.rankScouts(available)
 		rankedScouts.reverse()
-		print rankedScouts
 		func = lambda s: [s] * (rankedScouts.index(s) + 1) * ((100/(len(rankedScouts))) + 1)
 		return utils.extendList(map(func, available))
 
@@ -196,7 +193,7 @@ class ScoutPrecision(object):
 
 	#Returns the first scout key that doesn't have a current user
 	def findFirstEmptySpotForScout(self, scoutRotatorDict, available):
-		emptyScouts = filter(lambda k: scoutRotatorDict[k].get('currentUser') == None, scoutRotatorDict.keys())
+		emptyScouts = filter(lambda k: scoutRotatorDict[k].get('currentUser') == None or scoutRotatorDict[k].get ('currentUser') == "", scoutRotatorDict.keys())
 		return emptyScouts[0]
 
 	def assignScoutsToRobots(self, available, currentTeams, scoutRotatorDict):
