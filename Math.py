@@ -157,10 +157,10 @@ class Calculator(object):
         gearPtsTele = 40 * (self.teleGearIncrements.index(max(filter(lambda p: (totalTeleGears +  leftOverGearsAuto) >= p, self.teleGearIncrements))) + 1)
         return gearPtsAuto + gearPtsTele
 
-    def getAvgFuncForKeys(self, team, dic, gearRetrieval, keys):
+    def getAvgFuncForKeys(self, team, dic, retrievalFunction, keys):
         timds = self.su.getCompletedTIMDsForTeam(team)
-        getAvgForLift = lambda t: np.mean(map(lambda tm: (gearRetrieval(tm).get(t) or 0), timds))
-        [utils.setDictionaryValue(dic, l, getAvgForLift(l)) for l in keys]
+        getAvgForKey = lambda t: np.mean(map(lambda tm: (retrievalFunction(tm).get(t) or 0), timds))
+        [utils.setDictionaryValue(dic, l, getAvgForKey(l)) for l in keys]
 
     def getGearPtsForAllianceTIMDs(self, timds):
         totalAutoGears = sum(map(lambda t: self.getTotalValueForValueDict(t.gearsPlacedByLiftAuto), timds))
@@ -266,7 +266,7 @@ class Calculator(object):
         self.get40KilopascalChanceForAlliance(self.su.teamsForTeamNumbersOnAlliance(allianceNumbers))
 
     def zProbTeam(self, team, number):
-        return self.cachedComp.zGearProbabilities[team.number][number]
+        return (self.cachedComp.zGearProbabilities[team.number].get(number) or 0)
 
     def getAllRotorsTurningChanceForAlliance(self, alliance):
         alliance = map(self.su.replaceWithAverageIfNecessary, alliance)

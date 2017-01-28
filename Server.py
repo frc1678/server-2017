@@ -15,6 +15,7 @@ import utils
 import pdb
 import CrashReporter
 import numpy as np
+import dataChecker
 
 comp = DataModel.Competition()
 CSVExporter.TSVExportCMP(comp)
@@ -23,8 +24,8 @@ calculator = Math.Calculator(comp)
 cycle = 1
 shouldEmail = False
 emailer = CrashReporter.EmailThread()
-
-
+consolidator = dataChecker.DataChecker()
+# consolidator.start()
 
 def checkForMissingData():
 	with open('missing_data.txt', 'w') as missingDataFile:
@@ -34,7 +35,7 @@ def checkForMissingData():
 
 while(True):
 	print("\nCalcs Cycle " + str(cycle) + "...")
-	# FBC.cacheFirebase()
+	if not cycle % 5: FBC.cacheFirebase()
 	comp.updateTeamsAndMatchesFromFirebase()
 	comp.updateTIMDsFromFirebase()
 	checkForMissingData()
