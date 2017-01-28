@@ -31,11 +31,8 @@ def doThing(newMatchNumber):
 	#gets the teams we need to scout for
 	blueTeams = fb.child("Matches").child(str(currentMatchNum)).get().val()['blueAllianceTeamNumbers']
 	redTeams = fb.child("Matches").child(str(currentMatchNum)).get().val()['redAllianceTeamNumbers']
-	#These next 3 lines find available scouts, and randomly remove some if there are more than available spots in firebase
+	#These next 3 lines find available scouts
 	available = [k for (k, v) in fb.child("availability").get().val().items() if v == 1]
-	random.shuffle(available)
-	#Change 11 to 18 when using real scouts
-	available = available[:11]
 	#Each scout is now assigned to a robot in the next 2 lines
 	SPR.calculateScoutPrecisionScores(fb.child("TempTeamInMatchDatas").get().val(), available)
 	newAssignments = SPR.assignScoutsToRobots(available, redTeams + blueTeams, fb.child("scouts").get().val())
