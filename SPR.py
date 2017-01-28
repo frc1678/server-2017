@@ -87,7 +87,9 @@ class ScoutPrecision(object):
 	def findOddScoutForListOfDicts(self, tempTIMDs, key):
 		scouts = filter(lambda v: v != None, map(lambda k: k.get('scoutName'), tempTIMDs))
 		lists = filter(lambda k: k!= None, map(lambda t: t[key] if t.get('scoutName') != None else None, tempTIMDs))
-		for dicts in lists:
+		for num in range(len(lists[0])):
+			#comparing dicts that should be the same (e.g. each shot time dict for the same shot) within the tempTIMDs
+			dicts = [lis[num] for lis in lists]
 			consolidationDict = {}
 			for key in dicts[0].keys():
 				consolidationDict[key] = []
@@ -129,8 +131,10 @@ class ScoutPrecision(object):
 	#(better (lower scoring) scouts more frequently)
 	def getScoutFrequencies(self, available):
 		rankedScouts = self.rankScouts(available)
+		#It is reversed so the scouts with lower spr are later, causing them to be repeated more
 		rankedScouts.reverse()
 		func = lambda s: [s] * (rankedScouts.index(s) + 1) * ((100/(len(rankedScouts))) + 1)
+		print map(func, available)
 		return utils.extendList(map(func, available))
 
 	def organizeScouts(self, available, currentTeams, scoutSpots):
