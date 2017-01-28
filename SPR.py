@@ -62,9 +62,10 @@ class ScoutPrecision(object):
 		scouts = filter(lambda v: v != None, map(lambda k: k.get('scoutName'), tempTIMDs)) 		#finds scout names in tempTIMDs that aren't None
 		values = filter(lambda v: v != None, map(lambda t: t[key] if t.get('scoutName') != None else None, tempTIMDs)) 		#finds values (at an inputted key) that aren't None frome scouts that aren't None in tempTIMDs
 		commonValue = max(map(lambda v: values.count(v), values)) if len(map(lambda v: values.count(v), values)) != 0 else 0 		#gets the most common value in the list previously generated
-		if not values.count(commonValue) > len(values) / 2: commonValue = np.mean(values)		#If less than half of the values agree, the best estimate is the average
+		if not values.count(commonValue) > len(values) / 2:
+			commonValue = np.mean(values)		#If less than half of the values agree, the best estimate is the average
 		differenceFromCommonValue = map(lambda v: abs(v - commonValue), values) 		#makes a list of the differences from the common value
-		self.sprs = {scouts[c] : (self.sprs.get(scouts[c]) or 0) + differenceFromCommonValue[c] for c in range(len(differenceFromCommonValue))}		#adds the difference from this tempTIMDs to each scout's previous differences
+		self.sprs.update({scouts[c] : (self.sprs.get(scouts[c]) or 0) + differenceFromCommonValue[c] for c in range(len(differenceFromCommonValue))})		#adds the difference from this tempTIMDs to each scout's previous differences
 
 	def findOddScoutForDict(self, tempTIMDs, key):
 		scouts = filter(lambda v: v != None, map(lambda k: k.get('scoutName'), tempTIMDs)) 		#finds scout names in tempTIMDs that aren't None
@@ -80,7 +81,7 @@ class ScoutPrecision(object):
 			commonValues[key] = max(map(lambda v: values.count(v), values)) if len(map(lambda v: values.count(v), values)) != 0 else 0
 			if not values.count(commonValues[key]) > len(values) / 2: commonValues[key] = np.mean(values)
 			differenceFromCommonValue = map(lambda v: abs(v - commonValues[key]), values)
-			self.sprs = {scouts[c] : (self.sprs.get(scouts[c]) or 0) + differenceFromCommonValue[c] for c in range(len(differenceFromCommonValue))}
+			self.sprs.update({scouts[c] : (self.sprs.get(scouts[c]) or 0) + differenceFromCommonValue[c] for c in range(len(differenceFromCommonValue))})
 
 	#Exactly the same as findOddScoutForDict, but for each dict in a list of dicts
 	def findOddScoutForListOfDicts(self, tempTIMDs, key):
@@ -98,7 +99,8 @@ class ScoutPrecision(object):
 				commonValues[key] = max(map(lambda v: values.count(v), values)) if len(map(lambda v: values.count(v), values)) != 0 else 0
 				if not values.count(commonValues[key]) > len(values) / 2: commonValues[key] = np.mean(values)
 				differenceFromCommonValue = map(lambda v: abs(v - commonValues[key]), values)
-				self.sprs = {scouts[c] : (self.sprs.get(scouts[c]) or 0) + differenceFromCommonValue[c] for c in range(len(differenceFromCommonValue))}
+				print differenceFromCommonValue
+				self.sprs.update({scouts[c] : (self.sprs.get(scouts[c]) or 0) + differenceFromCommonValue[c] for c in range(len(differenceFromCommonValue))})
 
 	def calculateScoutPrecisionScores(self, temp, available):
 		if temp != None:
@@ -112,13 +114,14 @@ class ScoutPrecision(object):
 			[self.findOddScoutForDict(v, k) for v in g.values() for k in self.gradingDicts]
 			[self.findOddScoutForListOfDicts(v, k) for v in g.values() for k in self.gradingListsOfDicts]
 			self.sprs = {k:(v/float(self.getTotalTIMDsForScoutName(k, temp))) for (k,v) in self.sprs.items()} 		#divides values for scouts by number of TIMDs the scout has participated in
-			for a in available: 		#for the first 18 available scouts
-				if a not in self.sprs.keys(): 			#If their values are 1 (which I assume is automatic until they are updated) and they are not in use in sprs
-					self.sprs[a] = np.mean(self.sprs.values()) 				#They are now set to the average value
+			for a in available: 		#any team without and sprs score is set to the average score
+				if a not in self.sprs.keys():
+					self.sprs[a] = np.mean(self.sprs.values())
 		#If there are no tempTIMDs, everyone is set to 1
 		else:
 			for a in available:
 				self.sprs[a] = 1
+		print self.sprs
 
 	#sorts scouts by sprs score
 	def rankScouts(self, available):
@@ -129,20 +132,20 @@ class ScoutPrecision(object):
 	def getScoutFrequencies(self, available):
 		rankedScouts = self.rankScouts(available)
 		rankedScouts.reverse()
+		print rankedScouts
 		func = lambda s: [s] * (rankedScouts.index(s) + 1) * ((100/(len(rankedScouts))) + 1)
 		return utils.extendList(map(func, available))
 
 	def organizeScouts(self, available, currentTeams, scoutSpots):
 		groupFunc = lambda l: l[random.randint(0, len(l) - 1)] 		#picks a random member of the inputted group
-		grpCombos = utils.sum_to_n(min(len(available),scoutSpots), 6, 3) #creates list of groupings that the scouts could be in
-									#change 11 to 18 before use
+		grpCombos = utils.sum_to_n(min(len(available), scoutSpots), 6, 3) #creates list of groupings that the scouts could be in, with as many scouts as are available and have spaces
 		grpCombosList = [combo for combo in grpCombos]
 		if len(filter(lambda l: 2 not in l, grpCombosList)) > 0: #picks a random grouping of scouts that, if possible, doesn't have 2 scouts to a robot
 			scoutsPGrp = groupFunc(filter(lambda l: 2 not in l, grpCombosList))
 		else:
 			scoutsPGrp = groupFunc(grpCombosList)
 		scoutsPGrp.reverse()
-		freqs = self.getScoutFrequencies(available)
+		freqs = self.getScoutFrequencies(available) #used to make better scouts more likely to be picked
 		indScouts = self.getIndividualScouts(freqs, len(filter(lambda x: x == 1, scoutsPGrp)))	#Gets the scouts who are alone on a robot
 		unusedScouts = filter(lambda s: s not in indScouts, available)
 		nonIndScouts = []
@@ -152,7 +155,7 @@ class ScoutPrecision(object):
 			unusedScouts = newGroup[1]
 		scouts = indScouts + nonIndScouts
 		scoutsList = indScouts + utils.extendList(nonIndScouts)
-		return (self.scoutsToRobotNums(scouts, currentTeams), scoutsList)
+		return (self.scoutsToRobotNums(scouts, currentTeams), scoutsList) #returns the scouts paired to robots, and which scouts are used
 
 	def scoutsToRobotNums(self, scouts, currentTeams): 	#assigns a list of scouts to a list of robots in order, and returns as a single dict
 		f = lambda s: {scouts[s] : currentTeams[s]} if type(scouts[s]) != list else self.mapKeysToValue(scouts[s], currentTeams[s])
@@ -171,14 +174,14 @@ class ScoutPrecision(object):
 			toReturn += [newMember]
 		return (toReturn, availableForGroup)
 
-	#gets a scout from the dict inputted, and then makes them less likely to be picked again
+	#gets a scout from the dict inputted, and then makes them unable to be picked again
 	def getRandomIndividuals(self, freqs):
 		index = random.randint(0, len(freqs) - 1)
 		scout = freqs[index]
 		freqs = filter(lambda name: name != scout, freqs)
 		return (scout, freqs)
 
-	#Gets the right number of random scouts
+	#Gets the right number of random scouts without repetition
 	def getIndividualScouts(self, ind, count):
 		scouts = []
 		unused = ind
@@ -200,8 +203,7 @@ class ScoutPrecision(object):
 		scoutsWithNames = filter(lambda v: v.get('currentUser') != None, scoutRotatorDict.values())
 		namesOfScouts = map(lambda v: v.get('currentUser'), scoutsWithNames)
 		scoutSpots = len(scoutRotatorDict.keys())
-		print scoutSpots
-		#assigns scout numbers to robots
+		#assigns available scouts to robots, and shows exactly which availabe scouts will be scouting
 		calcTeams = self.organizeScouts(available, currentTeams, scoutSpots)
 		teams = calcTeams[0]
 		available = calcTeams[1]

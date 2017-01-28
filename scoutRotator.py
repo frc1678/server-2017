@@ -22,6 +22,7 @@ SPR = SPR.ScoutPrecision()
 resetAvailability = True
 if resetAvailability:
 	availability = {name: 1 for name in testScouts}
+									#change testScouts to scouts for actual use
 	fb.child('availability').set(availability)
 
 def doThing(newMatchNumber):
