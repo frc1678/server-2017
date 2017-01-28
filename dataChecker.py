@@ -3,6 +3,7 @@ import numpy as np
 import utils
 import time
 import pdb 
+import multiprocessing
 
 config = {
 	"apiKey": "mykey",
@@ -17,58 +18,61 @@ boilerKeys = ['time', 'numShots']
 standardDictKeys = ['gearsPlacedByLiftAuto', 'gearsPlacedTele', '']
 firebase = pyrebase.initialize_app(config)
 firebase = firebase.database()
-consolidationGroups = {}
 
-def commonValue(vals):
-	if len(set(map(type, vals))) != 1: return
-	if list(set(map(type, vals)))[0] == str:
-		if ("true" in vals or "false" in vals):
-			cv = joinList(map(lambda v: int(utils.convertFirebaseBoolean(v)), vals))
-			return False if cv < 0.5 else False
-		else: return vals
-	else:
-		return joinList(vals)
-	
-def joinList(values):
-	a = map(values.count, values)
-	mCV = values[a.index(max(a))]
-	try:
-		return mCV if values.count(mCV) > len(values) / 2 else np.mean(values)
-	except:
-		return None
+class DataChecker(multiprocessing.Process):
+	"""Checks data...what the hell do you think it does??"""
+	def __init__(self):
+		super(DataChecker, self).__init__()
+		self.consolidationGroups = {}
 
-def joinValues(key):
-	return {k : findCommonValuesForKeys(map(lambda tm: (tm.get(k) or []), consolidationGroups[key])) if k in listKeys else consolidationGroups[key][0][k] if k in constants else avgDict(map(lambda c: (c.get(k) or {}), consolidationGroups[key])) if k in standardDictKeys else commonValue(map(lambda tm: tm.get(k) or 0, consolidationGroups[key])) for k in getAllKeys(map(lambda v: v.keys(), consolidationGroups[key]))}
+	def commonValue(self, vals):
+		if len(set(map(type, vals))) != 1: return
+		if list(set(map(type, vals)))[0] == str:
+			if ("true" in vals or "false" in vals):
+				cv = self.joinList(map(lambda v: int(utils.convertFirebaseBoolean(v)), vals))
+				return False if cv < 0.5 else False
+			else: return vals
+		else:
+			return self.joinList(vals)
+		
+	def joinList(self, values):
+		a = map(values.count, values)
+		mCV = values[a.index(max(a))]
+		try:
+			return mCV if values.count(mCV) > len(values) / 2 else np.mean(values)
+		except:
+			return None
 
-def findCommonValuesForKeys(lis):
-	length = int(commonValue(map(len, lis)))
-	valuesList = map(lambda t: t[:length], lis)
-	for i in boilerKeys:
-		for v in range(len(valuesList[0])):
-			cv = commonValue(filter(lambda t: t, map(lambda val: val[v][i] if len(i) > v else None, valuesList)))
-			for j in valuesList:
-				j[v][i] = cv
+	def joinValues(self, key):
+		return {k : self.findCommonValuesForKeys(map(lambda tm: (tm.get(k) or []), self.consolidationGroups[key])) if k in listKeys else self.consolidationGroups[key][0][k] if k in constants else self.avgDict(map(lambda c: (c.get(k) or {}), self.consolidationGroups[key])) if k in standardDictKeys else self.commonValue(map(lambda tm: tm.get(k) or 0, self.consolidationGroups[key])) for k in self.getAllKeys(map(lambda v: v.keys(), self.consolidationGroups[key]))}
 
-def getAllKeys(keyArrays):
-	return list(set([v for l in keyArrays for v in l]))
+	def findCommonValuesForKeys(self, lis):
+		length = int(self.commonValue(map(len, lis)))
+		valuesList = map(lambda t: t[:length], lis)
+		[]
+		for i in boilerKeys:
+			for v in range(len(valuesList[0])):
+				cv = self.commonValue(filter(lambda t: t!=None, map(lambda val: val[v][i] if len(i) > v else None, valuesList)))
+				for j in valuesList:
+					j[v][i] = cv
 
-def avgDict(dicts):
-	keys = getAllKeys(map(lambda d: d.keys(), dicts))
-	return {k : commonValue(map(lambda v: (v.get(k) or 0), dicts)) for k in keys}
+	def getAllKeys(self, keyArrays):
+		return list(set([v for l in keyArrays for v in l]))
 
-def getConsolidationGroups(tempTIMDs):
-	actualKeys = list(set([key.split('-')[0] for key in tempTIMDs.keys()]))
-	return {key : [v for k, v in tempTIMDs.items() if k.split('-')[0] == key] for key in actualKeys}
-consolidated = []
-while True:
-	tempTIMDs = firebase.child("TempTeamInMatchDatas").get().val()
-	if tempTIMDs == None:
-		print "No data"
-		time.sleep(1)
-		continue
-	consolidationGroups = getConsolidationGroups(tempTIMDs)
-	timdsToProcess = filter(lambda l: l not in consolidated, consolidationGroups.keys())
-	map(lambda key: firebase.child("TempTempTeamInMatchDatas").child(key).update(joinValues(key)), timdsToProcess)
-	consolidated = consolidationGroups.keys()
-	print "consolidated" + str(consolidated)
-	time.sleep(3)
+	def avgDict(self, dicts):
+		keys = self.getAllKeys(map(lambda d: d.keys(), dicts))
+		return {k : self.commonValue(map(lambda v: (v.get(k) or 0), dicts)) for k in keys}
+
+	def getConsolidationGroups(self, tempTIMDs):
+		actualKeys = list(set([key.split('-')[0] for key in tempTIMDs.keys()]))
+		return {key : [v for k, v in tempTIMDs.items() if k.split('-')[0] == key] for key in actualKeys}
+
+	def run(self):
+		while True:
+			tempTIMDs = firebase.child("TempTeamInMatchDatas").get().val()
+			if tempTIMDs == None:
+				print "No data"
+				continue
+			self.consolidationGroups = self.getConsolidationGroups(tempTIMDs)
+			map(lambda key: firebase.child("TeamInMatchDatas").child(key).update(self.joinValues(key)), self.consolidationGroups.keys())
+			time.sleep(3) 

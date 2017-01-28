@@ -12,14 +12,14 @@ class Competition(object):
 		self.currentMatchNum = 0
 
 	def updateTeamsAndMatchesFromFirebase(self):
-		self.teams = utils.makeTeamsFromDicts(firebaseCommunicator.getPythonObjectForFirebaseDataAtLocation("/Teams"))
-		self.matches = utils.makeMatchesFromDicts(firebaseCommunicator.getPythonObjectForFirebaseDataAtLocation("/Matches"))
+		self.teams = utils.makeTeamsFromDicts(firebaseCommunicator.getPythonObjectForFirebaseDataAtLocation("Teams"))
+		self.matches = utils.makeMatchesFromDicts(firebaseCommunicator.getPythonObjectForFirebaseDataAtLocation("Matches"))
 
 	def updateTIMDsFromFirebase(self):
-		self.TIMDs = utils.makeTIMDsFromDicts(firebaseCommunicator.getPythonObjectForFirebaseDataAtLocation("/TeamInMatchDatas"))
+		self.TIMDs = utils.makeTIMDsFromDicts(firebaseCommunicator.getPythonObjectForFirebaseDataAtLocation("TeamInMatchDatas"))
 
 class CalculatedTeamData(object):
-	"""The calculatedData for an FRC Team object"""
+	"""c"""
 	def __init__(self, **args):
 		super(CalculatedTeamData, self).__init__()
 		self.firstPickAbility = None
@@ -85,7 +85,7 @@ class CalculatedTeamData(object):
 		self.__dict__.update(args)
 
 class Team(object):
-	"""An FRC Team object"""
+	"""FRC Team Object"""
 	def __init__(self, **args):
 		super(Team, self).__init__()
 		self.name = None
