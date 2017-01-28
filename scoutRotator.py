@@ -26,6 +26,8 @@ if resetAvailability:
 	fb.child('availability').set(availability)
 
 #If reset scouts is true, this makes firebase objects with 11 scouts (change to 18 for actual use)
+#Set to true if scouts in firebase do not extendList
+#otherwise, set to false
 resetScouts = True
 if resetScouts:
 	scouts = {'scout' + str(num) : {'currentUser': ''} for num in range(11)}
@@ -42,10 +44,8 @@ def doThing(newMatchNumber):
 	available = [k for (k, v) in fb.child("availability").get().val().items() if v == 1]
 	#Each scout is now assigned to a robot in the next 2 lines
 	SPR.calculateScoutPrecisionScores(fb.child("TempTeamInMatchDatas").get().val(), available)
-														#Note: check if Scouts in firebase is capitalized, and adjust accordingly
 	newAssignments = SPR.assignScoutsToRobots(available, redTeams + blueTeams, fb.child("scouts").get().val())
 	#and it is put on firebase
 	fb.child("scouts").update(newAssignments)
-
 
 fb.child("currentMatchNum").stream(doThing)

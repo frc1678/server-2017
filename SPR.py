@@ -62,7 +62,7 @@ class ScoutPrecision(object):
 		scouts = filter(lambda v: v != None, map(lambda k: k.get('scoutName'), tempTIMDs)) 		#finds scout names in tempTIMDs that aren't None
 		values = filter(lambda v: v != None, map(lambda t: t[key] if t.get('scoutName') != None else None, tempTIMDs)) 		#finds values (at an inputted key) that aren't None frome scouts that aren't None in tempTIMDs
 		commonValue = max(map(lambda v: values.count(v), values)) if len(map(lambda v: values.count(v), values)) != 0 else 0 		#gets the most common value in the list previously generated
-		if not values.count(commonValue) > len(values) / 2:
+		if values.count(commonValue) <= len(values) / 2:
 			commonValue = np.mean(values)		#If less than half of the values agree, the best estimate is the average
 		differenceFromCommonValue = map(lambda v: abs(v - commonValue), values) 		#makes a list of the differences from the common value
 		self.sprs.update({scouts[c] : (self.sprs.get(scouts[c]) or 0) + differenceFromCommonValue[c] for c in range(len(differenceFromCommonValue))})		#adds the difference from this tempTIMDs to each scout's previous differences
@@ -75,12 +75,12 @@ class ScoutPrecision(object):
 			consolidationDict[key] = []
 			for aDict in dicts:
 				consolidationDict[key] += [aDict[key]]
-		commonValues = {}
 		for key in consolidationDict.keys():
 			values = consolidationDict[key] #see descriptions in findOddScoutForDataPoint for the math that this section does
-			commonValues[key] = max(map(lambda v: values.count(v), values)) if len(map(lambda v: values.count(v), values)) != 0 else 0
-			if not values.count(commonValues[key]) > len(values) / 2: commonValues[key] = np.mean(values)
-			differenceFromCommonValue = map(lambda v: abs(v - commonValues[key]), values)
+			commonValue = max(map(lambda v: values.count(v), values)) if len(map(lambda v: values.count(v), values)) != 0 else 0
+			if values.count(commonValue) <= len(values) / 2:
+				commonValue = np.mean(values)
+			differenceFromCommonValue = map(lambda v: abs(v - commonValue), values)
 			self.sprs.update({scouts[c] : (self.sprs.get(scouts[c]) or 0) + differenceFromCommonValue[c] for c in range(len(differenceFromCommonValue))})
 
 	#Exactly the same as findOddScoutForDict, but for each dict in a list of dicts
@@ -89,18 +89,19 @@ class ScoutPrecision(object):
 		lists = filter(lambda k: k!= None, map(lambda t: t[key] if t.get('scoutName') != None else None, tempTIMDs))
 		for num in range(len(lists[0])):
 			#comparing dicts that should be the same (e.g. each shot time dict for the same shot) within the tempTIMDs
+			#This means comparisons such as the first shot in teleop by a given robot, as recorded by multiple scouts
 			dicts = [lis[num] for lis in lists]
 			consolidationDict = {}
 			for key in dicts[0].keys():
 				consolidationDict[key] = []
 				for aDict in dicts:
 					consolidationDict[key] += [aDict[key]]
-			commonValues = {}
 			for key in consolidationDict.keys():
 				values = consolidationDict[key]
-				commonValues[key] = max(map(lambda v: values.count(v), values)) if len(map(lambda v: values.count(v), values)) != 0 else 0
-				if not values.count(commonValues[key]) > len(values) / 2: commonValues[key] = np.mean(values)
-				differenceFromCommonValue = map(lambda v: abs(v - commonValues[key]), values)
+				commonValue = max(map(lambda v: values.count(v), values)) if len(map(lambda v: values.count(v), values)) != 0 else 0
+				if values.count(commonValue) <= len(values) / 2 and type(commonValue) != str:
+					commonValue = np.mean(values)
+				differenceFromCommonValue = map(lambda v: abs(v - commonValue), values)
 				self.sprs.update({scouts[c] : (self.sprs.get(scouts[c]) or 0) + differenceFromCommonValue[c] for c in range(len(differenceFromCommonValue))})
 
 	def calculateScoutPrecisionScores(self, temp, available):
@@ -134,7 +135,6 @@ class ScoutPrecision(object):
 		#It is reversed so the scouts with lower spr are later, causing them to be repeated more
 		rankedScouts.reverse()
 		func = lambda s: [s] * (rankedScouts.index(s) + 1) * ((100/(len(rankedScouts))) + 1)
-		print map(func, available)
 		return utils.extendList(map(func, available))
 
 	def organizeScouts(self, available, currentTeams, scoutSpots):
