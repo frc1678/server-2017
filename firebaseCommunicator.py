@@ -31,7 +31,7 @@ class FirebaseCommunicator(object):
 		print str(team.number) + ",",
 		teamDict = utils.makeDictFromTeam(team)
 		FBLocation = "Teams"
-		result = firebase.child(FBLocation).set(teamDict)
+		result = firebase.child(FBLocation).child(str(team.number)).set(teamDict)
 
 	def updateFirebaseWithMatch(self, match):
 		print str(match.number) + ",",
@@ -39,7 +39,7 @@ class FirebaseCommunicator(object):
 		FBLocation = "Matches"
 		matchDict["blueAllianceTeamNumbers"] = map(lambda n: int(n.replace('frc', '')), matchDict["blueAllianceTeamNumbers"])
 		matchDict["redAllianceTeamNumbers"] = map(lambda n: int(n.replace('frc', '')), matchDict["redAllianceTeamNumbers"])
-		result = firebase.child(FBLocation).set(matchDict)
+		result = firebase.child(FBLocation).child(str(match.number)).set(matchDict)
 
 	def updateFirebaseWithTIMD(self, timd):
 		timdDict = utils.makeDictFromTIMD(timd)
@@ -86,13 +86,9 @@ class FirebaseCommunicator(object):
 		addTIMD = lambda m: map(lambda t: timdFunc(t, m), m.redAllianceTeamNumbers + m.blueAllianceTeamNumbers)
 		map(addTIMD, matches)
 
-
 	def addCompInfoToFirebase(self): #Doing these keys manually so less clicking in firebase is better and because just easier
-		FBLocation = "/"
-		code = {'code', self.competition.code}
-		currentMatchNum = {'currentMatchNum', self.competition.currentMatchNum}
-		result = firebase.child(FBLocation).set(code)
-		result = firebase.child(FBLocation).set(currentMatchNum)
+		result = firebase.child('code').set(self.competition.code)
+		result = firebase.child('currentMatchNum').set(self.competition.currentMatchNum)
 
 	def wipeDatabase(self):
 		map(utils.printWarningForSeconds, range(10, 0, -1))
@@ -112,4 +108,4 @@ class FirebaseCommunicator(object):
 			except: pass
 
 def getPythonObjectForFirebaseDataAtLocation(location):
-	return utils.makeASCIIFromJSON((firebase.child(location).get().val()))
+	return utils.makeASCIIFromJSON(firebase.child(location).get().val())
