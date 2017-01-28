@@ -17,7 +17,7 @@ def firstCalculationDict(team, calc):
 	cd.avgSpeed = calc.getAverageForDataFunctionForTeam(team, lambda tm: tm.rankSpeed)
 	cd.avgBallControl = calc.getAverageForDataFunctionForTeam(team, lambda tm: tm.rankBallControl)
 	cd.avgGearControl = calc.getAverageForDataFunctionForTeam(team, lambda tm: tm.rankGearControl)
-	cd.avgDefense = calc.getAverageForDataFunctionForTeam(team, lambda tm: tm.rankDefense)		
+	cd.avgDefense = calc.getAverageForDataFunctionForTeam(team, lambda tm: tm.rankDefense)
 	cd.avgKeyShotTime = calc.getAverageForDataFunctionForTeam(team, lambda tm: tm.calculatedData.avgKeyShotTime)
 	cd.liftoffAbility = calc.getAverageForDataFunctionForTeam(team, lambda tm: tm.calculatedData.liftoffAbility)
 	cd.sdLiftoffAbility = calc.getStandardDeviationForDataFunctionForTeam(team, lambda tm: tm.calculatedData.liftoffAbility)
@@ -34,9 +34,9 @@ def firstCalculationDict(team, calc):
 	cd.avgGearsPlacedAuto = calc.getAverageForDataFunctionForTeam(team, lambda tm: tm.calculatedData.numGearsPlacedAuto)
 	cd.avgGearsPlacedTele = calc.getAverageForDataFunctionForTeam(team, lambda tm: tm.calculatedData.numGearsPlacedTele)
 	cd.avgHoppersOpenedAuto = calc.getAverageForDataFunctionForTeam(team, lambda tm: tm.calculatedData.numHoppersOpenedAuto)
-	cd.avgHoppersOpenedTele = calc.getAverageForDataFunctionForTeam(team, lambda tm: tm.calculatedData.numHoppersOpenedTele)	
+	cd.avgHoppersOpenedTele = calc.getAverageForDataFunctionForTeam(team, lambda tm: tm.calculatedData.numHoppersOpenedTele)
 	cd.avgGearsEjectedTele = calc.getAverageForDataFunctionForTeam(team, lambda tm: tm.numGearsEjectedTele)
-	cd.avgGearsFumbledTele = calc.getAverageForDataFunctionForTeam(team, lambda tm: tm.numGearsFumbledTele)	
+	cd.avgGearsFumbledTele = calc.getAverageForDataFunctionForTeam(team, lambda tm: tm.numGearsFumbledTele)
 	calc.getAvgFuncForKeys(team, cd.avgGearsPlacedByLiftAuto, lambda tm: tm.gearsPlacedByLiftAuto, calc.lifts)
 	calc.getAvgFuncForKeys(team, cd.avgGearsPlacedByLiftTele, lambda tm: tm.gearsPlacedByLiftTele, calc.lifts)
 	calc.getAvgFuncForKeys(team, cd.hoppersOpenedPercentagesAuto, lambda tm: tm.hoppersOpenedAuto, calc.hops)
@@ -58,7 +58,7 @@ def secondCalculationDict(team, calc):
 	cd.RScoreDefense = calc.cachedComp.defenseZScores[team.number]
 	cd.RScoreBallControl = calc.cachedComp.ballControlZScores[team.number]
 	cd.RScoreGearControl = calc.cachedComp.gearControlZScores[team.number]
-	cd.RScoreSpeed = calc.cachedComp.defenseZScores[team.number]
+	cd.RScoreSpeed = calc.cachedComp.speedZScores[team.number]
 	cd.RScoreAgility = calc.cachedComp.agilityZScores[team.number]
 
 def averageTeamDict(calc):
@@ -77,7 +77,7 @@ def averageTeamDict(calc):
 	a.avgSpeed = calc.getAverageOfDataFunctionAcrossCompetition(lambda t: t.calculatedData.avgSpeed)
 	a.avgBallControl = calc.getAverageOfDataFunctionAcrossCompetition(lambda t: t.calculatedData.avgBallControl)
 	a.avgGearControl = calc.getAverageOfDataFunctionAcrossCompetition(lambda t: t.calculatedData.avgGearControl)
-	a.avgDefense = calc.getAverageOfDataFunctionAcrossCompetition(lambda t: t.calculatedData.avgDefense)		
+	a.avgDefense = calc.getAverageOfDataFunctionAcrossCompetition(lambda t: t.calculatedData.avgDefense)
 	a.avgKeyShotTime = calc.getAverageOfDataFunctionAcrossCompetition(lambda t: t.calculatedData.avgKeyShotTime)
 	a.liftoffAbility = calc.getAverageOfDataFunctionAcrossCompetition(lambda t: t.calculatedData.liftoffAbility)
 	a.sdLiftoffAbility = calc.getStandardDeviationOfDataFunctionAcrossCompetition(lambda t: t.calculatedData.sdLiftoffAbility)
