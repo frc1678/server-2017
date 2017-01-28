@@ -132,9 +132,9 @@ class ScoutPrecision(object):
 		func = lambda s: [s] * (rankedScouts.index(s) + 1) * ((100/(len(rankedScouts))) + 1)
 		return utils.extendList(map(func, available))
 
-	def organizeScouts(self, available, currentTeams):
+	def organizeScouts(self, available, currentTeams, scoutSpots):
 		groupFunc = lambda l: l[random.randint(0, len(l) - 1)] 		#picks a random member of the inputted group
-		grpCombos = utils.sum_to_n(min(len(available),11), 6, 3) #creates list of groupings that the scouts could be in
+		grpCombos = utils.sum_to_n(min(len(available),scoutSpots), 6, 3) #creates list of groupings that the scouts could be in
 									#change 11 to 18 before use
 		grpCombosList = [combo for combo in grpCombos]
 		if len(filter(lambda l: 2 not in l, grpCombosList)) > 0: #picks a random grouping of scouts that, if possible, doesn't have 2 scouts to a robot
@@ -152,8 +152,6 @@ class ScoutPrecision(object):
 			unusedScouts = newGroup[1]
 		scouts = indScouts + nonIndScouts
 		scoutsList = indScouts + utils.extendList(nonIndScouts)
-		print scouts
-		print scoutsList
 		return (self.scoutsToRobotNums(scouts, currentTeams), scoutsList)
 
 	def scoutsToRobotNums(self, scouts, currentTeams): 	#assigns a list of scouts to a list of robots in order, and returns as a single dict
@@ -201,8 +199,10 @@ class ScoutPrecision(object):
 	def assignScoutsToRobots(self, available, currentTeams, scoutRotatorDict):
 		scoutsWithNames = filter(lambda v: v.get('currentUser') != None, scoutRotatorDict.values())
 		namesOfScouts = map(lambda v: v.get('currentUser'), scoutsWithNames)
+		scoutSpots = len(scoutRotatorDict.keys())
+		print scoutSpots
 		#assigns scout numbers to robots
-		calcTeams = self.organizeScouts(available, currentTeams)
+		calcTeams = self.organizeScouts(available, currentTeams, scoutSpots)
 		teams = calcTeams[0]
 		available = calcTeams[1]
 		#Moves the current user to the previous user spot, assigns a new user if necessary, and assigns a robot to each scout
