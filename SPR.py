@@ -59,17 +59,17 @@ class ScoutPrecision(object):
 		return consolidationGroups
 
 	def findOddScoutForDataPoint(self, tempTIMDs, key):
-		scouts = filter(lambda v: v != None, map(lambda k: k.get('scoutName'), tempTIMDs)) 		#finds scout names in tempTIMDs that aren't None
-		values = filter(lambda v: v != None, map(lambda t: t[key] if t.get('scoutName') != None else None, tempTIMDs)) 		#finds values (at an inputted key) that aren't None frome scouts that aren't None in tempTIMDs
-		commonValue = max(map(lambda v: values.count(v), values)) if len(map(lambda v: values.count(v), values)) != 0 else 0 		#gets the most common value in the list previously generated
+		scouts = filter(lambda v: v != None, map(lambda k: k.get('scoutName'), tempTIMDs)) 		#finds scout names in tempTIMDs
+		values = filter(lambda v: v != None, map(lambda t: t[key] if t.get('scoutName') != None else None, tempTIMDs)) 		#finds values (at an inputted key) in tempTIMDs
+		commonValue = max(map(lambda v: values.count(v), values)) if len(map(lambda v: values.count(v), values)) != 0 else 0 		#gets the most common value at the inputted key
 		if values.count(commonValue) <= len(values) / 2:
 			commonValue = np.mean(values)		#If less than half of the values agree, the best estimate is the average
 		differenceFromCommonValue = map(lambda v: abs(v - commonValue), values) 		#makes a list of the differences from the common value
 		self.sprs.update({scouts[c] : (self.sprs.get(scouts[c]) or 0) + differenceFromCommonValue[c] for c in range(len(differenceFromCommonValue))})		#adds the difference from this tempTIMDs to each scout's previous differences
 
 	def findOddScoutForDict(self, tempTIMDs, key):
-		scouts = filter(lambda v: v != None, map(lambda k: k.get('scoutName'), tempTIMDs)) 		#finds scout names in tempTIMDs that aren't None
-		dicts = filter(lambda k: k!= None, map(lambda t: t[key] if t.get('scoutName') != None else None, tempTIMDs)) #Finds dicts of an inputted type in the tempTIMDs that have values and scouts
+		scouts = filter(lambda v: v != None, map(lambda k: k.get('scoutName'), tempTIMDs)) 		#finds scout names in tempTIMDs
+		dicts = filter(lambda k: k!= None, map(lambda t: t[key] if t.get('scoutName') != None else None, tempTIMDs)) #Finds dicts of an inputted type in the tempTIMDs
 		consolidationDict = {} # This section groups keys of the dicts found earlier
 		for key in dicts[0].keys():
 			consolidationDict[key] = []

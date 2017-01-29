@@ -26,7 +26,7 @@ if resetAvailability:
 	fb.child('availability').set(availability)
 
 #If reset scouts is true, this makes firebase objects with 11 scouts (change to 18 for actual use)
-#Set to true if scouts in firebase do not extendList
+#Set to true if scouts in firebase do not exist
 #otherwise, set to false
 resetScouts = True
 if resetScouts:
