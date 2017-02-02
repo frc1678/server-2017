@@ -2,7 +2,7 @@ import pyrebase
 import numpy as np
 import utils
 import time
-import pdb 
+import pdb
 import multiprocessing
 
 config = {
@@ -26,7 +26,8 @@ class DataChecker(multiprocessing.Process):
 		self.consolidationGroups = {}
 
 	def commonValue(self, vals):
-		if len(set(map(type, vals))) != 1: return
+		if len(set(map(type, vals))) != 1:
+			return
 		if list(set(map(type, vals)))[0] == str:
 			if ("true" in vals or "false" in vals):
 				cv = self.joinList(map(lambda v: int(utils.convertFirebaseBoolean(v)), vals))
@@ -34,7 +35,7 @@ class DataChecker(multiprocessing.Process):
 			else: return vals
 		else:
 			return self.joinList(vals)
-		
+
 	def joinList(self, values):
 		a = map(values.count, values)
 		mCV = values[a.index(max(a))]
@@ -75,4 +76,4 @@ class DataChecker(multiprocessing.Process):
 				continue
 			self.consolidationGroups = self.getConsolidationGroups(tempTIMDs)
 			map(lambda key: firebase.child("TeamInMatchDatas").child(key).update(self.joinValues(key)), self.consolidationGroups.keys())
-			time.sleep(3) 
+			time.sleep(3)
