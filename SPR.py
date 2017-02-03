@@ -36,7 +36,7 @@ class ScoutPrecision(object):
 			'gearsPlacedByLiftTele',
 			'gearsPlacedByLiftAuto'
 		]
-		
+
 		self.gradingListsOfDicts = [
 			'highShotTimesForBoilerTele',
 			'highShotTimesForBoilerAuto',
@@ -87,7 +87,7 @@ class ScoutPrecision(object):
 			differenceFromCommonValue = map(lambda v: abs(v - commonValue), values)
 			self.sprs.update({scouts[c] : (self.sprs.get(scouts[c]) or 0) + differenceFromCommonValue[c] for c in range(len(differenceFromCommonValue))})
 
-	#Exactly the same as findOddScoutForDict, but for each dict in a list of dicts
+	#Almost exactly the same as findOddScoutForDict, but for each dict in a list of dicts
 	def findOddScoutForListOfDicts(self, tempTIMDs, key):
 		scouts = filter(lambda v: v != None, map(lambda k: k.get('scoutName'), tempTIMDs))
 		lists = filter(lambda k: k!= None, map(lambda t: t[key] if t.get('scoutName') != None else None, tempTIMDs))
@@ -124,6 +124,8 @@ class ScoutPrecision(object):
 		if temp != None:
 			#Put together all tempTIMDs for the same match
 			g = self.consolidateTIMDs(temp)
+			#Removes any data from previous calculations from sprs
+			self.sprs = {}
 			#These three grade each scout for each of the values in the grading keys, dicts, and lists of dicts
 			#Each scout gets more "points" if they are further off from the consensus on the actual values
 			#The grades are stored in sprs
@@ -134,7 +136,9 @@ class ScoutPrecision(object):
 			self.sprs = {k:(v/float(self.getTotalTIMDsForScoutName(k, temp))) for (k,v) in self.sprs.items()} 		#divides values for scouts by number of TIMDs the scout has participated in
 			for a in available: 		#any team without and sprs score is set to the average score
 				if a not in self.sprs.keys():
-					self.sprs[a] = np.mean(self.sprs.values())
+					avgScore = np.mean(self.sprs.values())
+					self.sprs[a] = avgScore
+					print np.mean(self.sprs.values())
 		#If there are no tempTIMDs, everyone is set to 1
 		else:
 			for a in available:
