@@ -36,6 +36,7 @@ class ScoutPrecision(object):
 			'gearsPlacedByLiftTele',
 			'gearsPlacedByLiftAuto'
 		]
+		
 		self.gradingListsOfDicts = [
 			'highShotTimesForBoilerTele',
 			'highShotTimesForBoilerAuto',
