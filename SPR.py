@@ -5,10 +5,8 @@ import itertools
 import TBACommunicator
 import Math
 import random
-import pdb
 import pyrebase
 import numpy as np
-import utils
 
 # Scout Performance Analysis
 class ScoutPrecision(object):
@@ -138,7 +136,6 @@ class ScoutPrecision(object):
 				if a not in self.sprs.keys():
 					avgScore = np.mean(self.sprs.values())
 					self.sprs[a] = avgScore
-					print np.mean(self.sprs.values())
 		#If there are no tempTIMDs, everyone is set to 1
 		else:
 			for a in available:
@@ -154,6 +151,7 @@ class ScoutPrecision(object):
 		rankedScouts = self.rankScouts(available)
 		#It is reversed so the scouts with lower spr are later, causing them to be repeated more
 		rankedScouts.reverse()
+		#lower sprs, so higher number list index scouts are repeated more frequently, but less if there are more scouts
 		func = lambda s: [s] * (rankedScouts.index(s) + 1) * ((100/(len(rankedScouts))) + 1)
 		return utils.extendList(map(func, available))
 
