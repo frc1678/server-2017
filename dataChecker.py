@@ -2,7 +2,7 @@ import pyrebase
 import numpy as np
 import utils
 import time
-import pdb 
+import pdb
 import multiprocessing
 
 config = {
@@ -47,7 +47,7 @@ class DataChecker(multiprocessing.Process):
 			return bool(mCV) if values.count(mCV) > len(bools) / 2 else True if np.mean(bools) >= 0.5 else False
 		except:
 			return None 
-		
+
 	def joinList(self, values):
 		a = map(values.count, values)
 		mCV = values[a.index(max(a))]
@@ -90,3 +90,4 @@ class DataChecker(multiprocessing.Process):
 			time.sleep(10) 
 
 DataChecker().run()
+

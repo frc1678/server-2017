@@ -1,23 +1,27 @@
 import DataModel
 import utils
 import json
+from firebase import firebase as fb
 import unicodedata
 import requests
 from os import listdir
 import pdb
 import math
 import datetime
-import pyrebase
+import numpy as np
 
-config = {
-	"apiKey": "mykey",
-	"authDomain": "scouting-2017-5f51c.firebaseapp.com",
-	"databaseURL": "https://scouting-2017-5f51c.firebaseio.com/",
-	"storageBucket": "scouting-2017-5f51c.appspot.com"
-}
 
-firebase = pyrebase.initialize_app(config)
-firebase = firebase.database()
+# (superSecret, url) = ('j1r2wo3RUPMeUZosxwvVSFEFVcrXuuMAGjk6uPOc', 'https://1678-dev-2016.firebaseio.com/')
+#(superSecret, url) = ('hL8fStivTbHUXM8A0KXBYPg2cMsl80EcD7vgwJ1u', 'https://1678-dev2-2016.firebaseio.com/')
+#(superSecret, url) = ('AEduO6VFlZKD4v10eW81u9j3ZNopr5h2R32SPpeq', 'https://1678-dev3-2016.firebaseio.com/')
+#(superSecret, url) = ('IMXOxXD3FjOOUoMGJlkAK5pAtn89mGIWAEnaKJhP', 'https://1678-strat-dev-2016.firebaseio.com/')
+# (superSecret, url) = ('lGufYCifprPw8p1fiVOs7rqYV3fswHHr9YLwiUWh', 'https://1678-extreme-testing.firebaseio.com/')
+# (superSecret, url) = ('qVIARBnAD93iykeZSGG8mWOwGegminXUUGF2q0ee', 'https://1678-scouting-2016.firebaseio.com/')
+(superSecret, url) = ('93Ybz7MldpSj6HQHW1zb4ddcGGmpCMlNlOBoI9V3', 'https://scouting-2017-5f51c.firebaseio.com/')
+
+auth = fb.FirebaseAuthentication(superSecret, "1678programming@gmail.com", True, True)
+
+firebase = fb.FirebaseApplication(url, auth)
 
 class FirebaseCommunicator(object):
 	"""docstring for FirebaseCommunicator"""
@@ -30,45 +34,43 @@ class FirebaseCommunicator(object):
 	def updateFirebaseWithTeam(self, team):
 		print str(team.number) + ",",
 		teamDict = utils.makeDictFromTeam(team)
-		FBLocation = "Teams"
-		result = firebase.child(FBLocation).child(str(team.number)).set(teamDict)
+		FBLocation = "/Teams"
+		result = firebase.put(FBLocation, team.number, teamDict)
 
 	def updateFirebaseWithMatch(self, match):
 		print str(match.number) + ",",
 		matchDict = utils.makeDictFromMatch(match)
-		FBLocation = "Matches"
+		FBLocation = "/Matches"
 		matchDict["blueAllianceTeamNumbers"] = map(lambda n: int(n.replace('frc', '')), matchDict["blueAllianceTeamNumbers"])
 		matchDict["redAllianceTeamNumbers"] = map(lambda n: int(n.replace('frc', '')), matchDict["redAllianceTeamNumbers"])
-		result = firebase.child(FBLocation).child(str(match.number)).set(matchDict)
+		result = firebase.put(FBLocation, match.number, matchDict)
 
 	def updateFirebaseWithTIMD(self, timd):
 		timdDict = utils.makeDictFromTIMD(timd)
-		FBLocation = "TeamInMatchDatas"
+		FBLocation = "/TeamInMatchDatas"
 		print(str(timd.teamNumber) + "Q" + str(timd.matchNumber)) + "," ,
-		result = firebase.child(FBLocation).child(str(timd.teamNumber) + "Q" + str(timd.matchNumber)).set(timdDict)
+		result = firebase.put(FBLocation, str(timd.teamNumber) + "Q" + str(timd.matchNumber), timdDict)
 
 	def addCalculatedTeamDataToFirebase(self, team):
 		print "Writing team " + str(team.number) + " to Firebase..."
 		calculatedTeamDataDict = utils.makeDictFromCalculatedData(team.calculatedData)
 		FBLocation = "/Teams/" + str(team.number)
-		calculatedDataDict = {'calculatedData', calculatedTeamDataDict}
-		try: firebase.child(FBLocation).set(calculatedDataDict)
-		except requests.exceptions.RequestException as e: print e
+		try: firebase.put(FBLocation, 'calculatedData', calculatedTeamDataDict)
+		except: 
+			print calculatedTeamDataDict.items()
 
 	def addCalculatedTIMDataToFirebase(self, timd):
 		print "Writing team " + str(timd.teamNumber) + " in match " + str(timd.matchNumber) + " to Firebase..."
 		calculatedTIMDataDict = utils.makeDictFromCalculatedData(timd.calculatedData)
 		FBLocation = "/TeamInMatchDatas/" + str(timd.teamNumber) + "Q" + str(timd.matchNumber)
-		calcDict = {'calculatedData', calculatedTIMDataDict}
-		try: firebase.child(FBLocation).set(calcDict)
+		try: firebase.put(FBLocation, 'calculatedData', calculatedTIMDataDict)
 		except requests.exceptions.RequestException as e: print e
 
 	def addCalculatedMatchDataToFirebase(self, match):
 		print "Writing match " + str(match.number) + " to Firebase..."
 		calculatedMatchDataDict = utils.makeDictFromCalculatedData(match.calculatedData)
 		FBLocation = "/Matches/" + str(match.number)
-		dataCalc = {'calculatedData', calculatedMatchDataDict}
-		try: firebase.child(FBLocation).set(dataCalc)
+		try: firebase.put(FBLocation, 'calculatedData', calculatedMatchDataDict)
 		except requests.exceptions.RequestException as e: print e
 
 	def addTeamsToFirebase(self):
@@ -86,20 +88,23 @@ class FirebaseCommunicator(object):
 		addTIMD = lambda m: map(lambda t: timdFunc(t, m), m.redAllianceTeamNumbers + m.blueAllianceTeamNumbers)
 		map(addTIMD, matches)
 
+
 	def addCompInfoToFirebase(self): #Doing these keys manually so less clicking in firebase is better and because just easier
-		result = firebase.child('code').set(self.competition.code)
-		result = firebase.child('currentMatchNum').set(self.competition.currentMatchNum)
+		FBLocation = "/"
+		result = firebase.put(FBLocation, 'code', self.competition.code)
+		result = firebase.put(FBLocation, 'currentMatchNum', self.competition.currentMatchNum)
 
 	def wipeDatabase(self):
 		map(utils.printWarningForSeconds, range(10, 0, -1))
 		print "\nWARNING: Wiping Firebase..."
 		FBLocation = "/"
-		firebase.child(FBLocation).remove()
+		firebase.delete(FBLocation, None)
 
-	def cacheFirebase(self):
+	def cacheFirebase(self, data):
+		if not data['data']: return
 		while True:
 			try:
-				data = json.dumps(firebase.child("/").get().val())
+				data = json.dumps(firebase.get("/", None))
 				now = str(datetime.datetime.now())
 				with open("./CachedFirebases/" + now + '.json', 'w') as f:
 					f.write(data)
@@ -108,4 +113,4 @@ class FirebaseCommunicator(object):
 			except: pass
 
 def getPythonObjectForFirebaseDataAtLocation(location):
-	return utils.makeASCIIFromJSON(firebase.child(location).get().val())
+	return utils.makeASCIIFromJSON((firebase.get(location, None)))

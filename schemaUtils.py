@@ -31,10 +31,11 @@ class SchemaUtils(object):
         return calculatedData.avgHighShotsTele != None
 
     def replaceWithAverageIfNecessary(self, team):
-        return team if self.teamCalculatedDataHasValues(team.calculatedData) else self.calc.averageTeam
+        return team if self.teamCalculatedDataHasValues(team.calculatedData) and len(self.getCompletedMatchesForTeam(team)) > 0 else self.calc.averageTeam
 
     # Match utility functions
     def getMatchForNumber(self, matchNumber):
+        if not len([match for match in self.comp.matches if match.number == matchNumber]): print "Match " + str(matchNumber) + " doesn't exist."
         return [match for match in self.comp.matches if match.number == matchNumber][0]
 
     def teamsInMatch(self, match):

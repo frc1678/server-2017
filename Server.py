@@ -16,9 +16,14 @@ import pdb
 import CrashReporter
 import numpy as np
 import dataChecker
+import multiprocessing
+import firebaseCacher
 
+print "starting"
 comp = DataModel.Competition()
-CSVExporter.TSVExportCMP(comp)
+comp.updateTeamsAndMatchesFromFirebase()
+comp.updateTIMDsFromFirebase()
+CSVExporter.TSVExportAll(comp)
 FBC = firebaseCommunicator.FirebaseCommunicator(comp)
 calculator = Math.Calculator(comp)
 cycle = 1
@@ -26,6 +31,7 @@ shouldEmail = False
 emailer = CrashReporter.EmailThread()
 consolidator = dataChecker.DataChecker()
 # consolidator.start()
+# firebaseCacher.startFirebaseCacheStream(FBC)
 
 def checkForMissingData():
 	with open('missing_data.txt', 'w') as missingDataFile:
@@ -35,7 +41,6 @@ def checkForMissingData():
 
 while(True):
 	print("\nCalcs Cycle " + str(cycle) + "...")
-	if not cycle % 5: FBC.cacheFirebase()
 	comp.updateTeamsAndMatchesFromFirebase()
 	comp.updateTIMDsFromFirebase()
 	checkForMissingData()

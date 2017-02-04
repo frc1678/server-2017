@@ -136,14 +136,14 @@ class TeamInMatchData(object):
 		self.calculatedData = CalculatedTeamInMatchData()
 		self.teamNumber = None
 		self.matchNumber = None
-		self.scoutName = None	
+		self.scoutName = None
+		self.numHoppersOpenedTele = None
 		self.numGearGroundIntakesTele = None
 		self.numGearLoaderIntakesTele = None
 		self.numGearsEjectedTele = None
 		self.numGearsFumbledTele = None
 		self.didReachBaselineAuto = None
 		self.numHoppersOpenedAuto = None
-		self.numHoppersOpenedTele = None
 		self.didLiftoff = None
 		self.didStartDisabled = None
 		self.didBecomeIncapacitated = None

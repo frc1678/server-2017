@@ -11,8 +11,8 @@ def firstCalculationDict(team, calc):
 	cd.incapacitatedPercentage = calc.getAverageForDataFunctionForTeam(team, lambda tm: utils.convertFirebaseBoolean(tm.didBecomeIncapacitated))
 	cd.liftoffPercentage = calc.getAverageForDataFunctionForTeam(team, lambda tm: utils.convertFirebaseBoolean(tm.didLiftoff))
 	cd.baselineReachedPercentage = calc.getAverageForDataFunctionForTeam(team, lambda tm: utils.convertFirebaseBoolean(tm.didReachBaselineAuto))
-	cd.avgGearsPlacedTele = calc.weightedMeanForGearFunction(team, lambda tm: tm.calculatedData.numGearsPlacedTele)
-	cd.avgGearsPlacedAuto = calc.weightedMeanForGearFunction(team, lambda tm: tm.calculatedData.numGearsPlacedAuto)
+	cd.avgGearsPlacedTele = calc.getAverageForDataFunctionForTeam(team, lambda tm: tm.calculatedData.numGearsPlacedTele)
+	cd.avgGearsPlacedAuto = calc.getAverageForDataFunctionForTeam(team, lambda tm: tm.calculatedData.numGearsPlacedAuto)
 	cd.avgAgility = calc.getAverageForDataFunctionForTeam(team, lambda tm: tm.rankAgility)
 	cd.avgSpeed = calc.getAverageForDataFunctionForTeam(team, lambda tm: tm.rankSpeed)
 	cd.avgBallControl = calc.getAverageForDataFunctionForTeam(team, lambda tm: tm.rankBallControl)
@@ -33,14 +33,13 @@ def firstCalculationDict(team, calc):
 	cd.disfunctionalPercentage = calc.getAverageForDataFunctionForTeam(team, lambda tm: tm.calculatedData.wasDisfunctional)
 	cd.avgGearsPlacedAuto = calc.getAverageForDataFunctionForTeam(team, lambda tm: tm.calculatedData.numGearsPlacedAuto)
 	cd.avgGearsPlacedTele = calc.getAverageForDataFunctionForTeam(team, lambda tm: tm.calculatedData.numGearsPlacedTele)
-	cd.avgHoppersOpenedAuto = calc.getAverageForDataFunctionForTeam(team, lambda tm: tm.calculatedData.numHoppersOpenedAuto)
-	cd.avgHoppersOpenedTele = calc.getAverageForDataFunctionForTeam(team, lambda tm: tm.calculatedData.numHoppersOpenedTele)
+	cd.avgHoppersOpenedAuto = calc.getAverageForDataFunctionForTeam(team, lambda tm: tm.numHoppersOpenedAuto)
+	cd.avgHoppersOpenedTele = calc.getAverageForDataFunctionForTeam(team, lambda tm: tm.numHoppersOpenedTele)
 	cd.avgGearsEjectedTele = calc.getAverageForDataFunctionForTeam(team, lambda tm: tm.numGearsEjectedTele)
 	cd.avgGearsFumbledTele = calc.getAverageForDataFunctionForTeam(team, lambda tm: tm.numGearsFumbledTele)
+	cd.avgDrivingAbility = calc.drivingAbility(team)
 	calc.getAvgFuncForKeys(team, cd.avgGearsPlacedByLiftAuto, lambda tm: tm.gearsPlacedByLiftAuto, calc.lifts)
 	calc.getAvgFuncForKeys(team, cd.avgGearsPlacedByLiftTele, lambda tm: tm.gearsPlacedByLiftTele, calc.lifts)
-	calc.getAvgFuncForKeys(team, cd.hoppersOpenedPercentagesAuto, lambda tm: tm.hoppersOpenedAuto, calc.hops)
-	calc.getAvgFuncForKeys(team, cd.hoppersOpenedPercentagesTele, lambda tm: tm.hoppersOpenedTele, calc.hops)
 
 def secondCalculationDict(team, calc):
 	cd = team.calculatedData
@@ -48,11 +47,12 @@ def secondCalculationDict(team, calc):
 	cd.actualNumRPs = calc.actualNumberOfRPs(team)
 	cd.firstPickAbility = calc.firstPickAbility(team)
 	cd.overallSecondPickAbility = calc.overallSecondPickAbility(team)
-	cd.predictedSeed = calc.cachedComp.predictedSeedings.index(team) + 1
 	try:
+		cd.predictedSeed = calc.cachedComp.predictedSeedings.index(team) + 1
 		cd.actualNumRPs = calc.getTeamRPsFromTBA(team)
 		cd.actualSeed = calc.getTeamSeed(team)
 	except:
+		if team not in calc.cachedComp.actualSeedings: pdb.set_trace()
 		cd.actualSeed = calc.cachedComp.actualSeedings.index(team) + 1
 		cd.actualNumRPs = calc.actualNumberOfRPs(team)
 	cd.RScoreDefense = calc.cachedComp.defenseZScores[team.number]
@@ -71,6 +71,7 @@ def averageTeamDict(calc):
 	a.disabledPercentage = calc.getAverageOfDataFunctionAcrossCompetition(lambda t: t.calculatedData.disabledPercentage)
 	a.incapacitatedPercentage = calc.getAverageOfDataFunctionAcrossCompetition(lambda t: t.calculatedData.incapacitatedPercentage)
 	a.liftoffPercentage = calc.getAverageOfDataFunctionAcrossCompetition(lambda t: t.calculatedData.liftoffPercentage)
+	a.sdBaselineReachedPercentage = calc.getStandardDeviationOfDataFunctionAcrossCompetition(lambda t: t.calculatedData.baselineReachedPercentage)
 	a.avgGearsPlacedTele = calc.getAverageOfDataFunctionAcrossCompetition(lambda t: t.calculatedData.avgGearsPlacedTele)
 	a.avgGearsPlacedAuto = calc.getAverageOfDataFunctionAcrossCompetition(lambda t: t.calculatedData.avgGearsPlacedAuto)
 	a.avgAgility = calc.getAverageOfDataFunctionAcrossCompetition(lambda t: t.calculatedData.avgAgility)
