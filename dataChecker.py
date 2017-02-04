@@ -75,13 +75,14 @@ class DataChecker(multiprocessing.Process):
 		#return {k : self.findCommonValuesForKeys(map(lambda tm: (tm.get(k) or []), self.consolidationGroups[key])) if k in listKeys else self.consolidationGroups[key][0][k] if k in constants else self.avgDict(map(lambda c: (c.get(k) or {}), self.consolidationGroups[key])) if k in standardDictKeys else self.commonValue(map(lambda tm: tm.get(k) or 0, self.consolidationGroups[key])) for k in self.getAllKeys(map(lambda v: v.keys(), self.consolidationGroups[key]))}
 
 	def findCommonValuesForKeys(self, lis):
+		#Finds the most common number of dict within each list in the larger list
 		listOfLengths = []
-		for aScout in lists:
+		for aScout in lis:
 			listOfLengths += [len(aScout)]
 		lengthFrequencies = map(listOfLengths.count, listOfLengths)
 		mostCommonNum = listOfLengths[lengthFrequencies.index(max(lengthFrequencies))]
 		#If someone missed a dict (for a shot) (that is, they did not include one that most of the scouts did), this makes one with no values
-		for aScout in lists:
+		for aScout in lis:
 			if len(aScout) < mostCommonNum:
 				for x in range(mostCommonNum - len(aScout)):
 					aScout += [{'numShots': 0, 'position': 0, 'time': 0}]
@@ -96,13 +97,14 @@ class DataChecker(multiprocessing.Process):
 				consolidationDict[key] = []
 				for aDict in dicts:
 					consolidationDict[key] += [aDict[key]]
-			for key in consolidationDict.keys() if key != 'position':
-				values = consolidationDict[key]
-				valueFrequencies = map(values.count, values)
-				commonValue = values[valueFrequencies.index(max(valueFrequencies))]
-				if values.count(commonValue) <= len(values) / 2 and type(commonValue) != str:
-					commonValue = np.mean(values)
-				returnList[num].update({key: commonValue})
+			for key in consolidationDict.keys():
+				if key != 'position':
+					values = consolidationDict[key]
+					valueFrequencies = map(values.count, values)
+					commonValue = values[valueFrequencies.index(max(valueFrequencies))]
+					if values.count(commonValue) <= len(values) / 2 and type(commonValue) != str:
+						commonValue = np.mean(values)
+					returnList[num].update({key: commonValue})
 			if len(consolidationDict['position']) == 1:
 				returnList[num].update({'position': consolidationDict['position']})
 			elif len(consolidationDict['position']) == 2:
@@ -134,7 +136,9 @@ class DataChecker(multiprocessing.Process):
 				print "No data"
 				continue
 			self.consolidationGroups = self.getConsolidationGroups(tempTIMDs)
+			print self.consolidationGroups
 			map(lambda key: firebase.child("TeamInMatchDatas").child(key).update(self.joinValues(key)), self.consolidationGroups.keys())
 			time.sleep(10)
+			print "I completed a cycle"
 
 DataChecker().run()
