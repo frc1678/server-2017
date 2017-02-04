@@ -123,7 +123,6 @@ def makeTIMDFromTeamNumberAndMatchNumber(teamNumber, matchNumber):
 def setDataForMatch(match):
 	m = DataModel.Match()
 	m.number, m.redAllianceTeamNumbers, m.blueAllianceTeamNumbers = int(match["match_number"]), match["alliances"]["red"]["teams"], match["alliances"]["blue"]["teams"]
-	m.redScore, m.blueScore = 0, 0
 	return m
 
 def setDataForTeam(team):

@@ -12,11 +12,11 @@ class Competition(object):
 		self.currentMatchNum = 0
 
 	def updateTeamsAndMatchesFromFirebase(self):
-		self.teams = utils.makeTeamsFromDicts(firebaseCommunicator.getPythonObjectForFirebaseDataAtLocation("Teams"))
-		self.matches = utils.makeMatchesFromDicts(firebaseCommunicator.getPythonObjectForFirebaseDataAtLocation("Matches"))
+		self.teams = utils.makeTeamsFromDicts(firebaseCommunicator.getPythonObjectForFirebaseDataAtLocation("/Teams"))
+		self.matches = utils.makeMatchesFromDicts(firebaseCommunicator.getPythonObjectForFirebaseDataAtLocation("/Matches"))
 
 	def updateTIMDsFromFirebase(self):
-		self.TIMDs = utils.makeTIMDsFromDicts(firebaseCommunicator.getPythonObjectForFirebaseDataAtLocation("TeamInMatchDatas"))
+		self.TIMDs = utils.makeTIMDsFromDicts(firebaseCommunicator.getPythonObjectForFirebaseDataAtLocation("/TeamInMatchDatas"))
 
 class CalculatedTeamData(object):
 	"""c"""
@@ -50,20 +50,6 @@ class CalculatedTeamData(object):
 		}
 		self.avgHoppersOpenedAuto = None
 		self.avgHoppersOpenedTele = None
-		self.hoppersOpenedPercentagesAuto = {
-			'hopper1' : None,
-			'hopper2' : None,
-			'hopper3' : None,
-			'hopper4' : None,
-			'hopper5' : None
-		}
-		self.hoppersOpenedPercentagesTele = {
-			'hopper1' : None,
-			'hopper2' : None,
-			'hopper3' : None,
-			'hopper4' : None,
-			'hopper5' : None
-		}
 		self.sdGearsPlacedTele = None
 		self.sdGearsPlacedAuto = None
 		self.sdHighShotsAuto = None
@@ -151,25 +137,13 @@ class TeamInMatchData(object):
 		self.teamNumber = None
 		self.matchNumber = None
 		self.scoutName = None	
-		self.hoppersOpenedTele = {
-			'hopper1': None,
-			'hopper2': None, 
-			'hopper3': None,
-			'hopper4': None,
-			'hopper5': None
-		}
 		self.numGearGroundIntakesTele = None
 		self.numGearLoaderIntakesTele = None
 		self.numGearsEjectedTele = None
 		self.numGearsFumbledTele = None
 		self.didReachBaselineAuto = None
-		self.hoppersOpenedAuto = {
-			'hopper1': None,
-			'hopper2': None, 
-			'hopper3': None,
-			'hopper4': None,
-			'hopper5': None
-		}
+		self.numHoppersOpenedAuto = None
+		self.numHoppersOpenedTele = None
 		self.didLiftoff = None
 		self.didStartDisabled = None
 		self.didBecomeIncapacitated = None
@@ -230,8 +204,6 @@ class CalculatedTeamInMatchData(object):
 		self.numLowShotsAuto = None
 		self.numGearsPlacedTele = None
 		self.numGearsPlacedAuto = None
-		self.numHoppersOpenedAuto = None
-		self.numHoppersOpenedTele = None
 		self.wasDisfunctional = None
 		self.avgKeyShotTime = None
 		self.__dict__.update(args)
