@@ -138,6 +138,7 @@ def printWarningForSeconds(numSeconds):
 def extendList(lis):
 	return [v for l in lis for v in l]
 
+#Finds possible groupings of individuals (n of them) into a specified number of groups (size) with each group's maximum size of limit
 def sum_to_n(n, size, limit=None):
     if size == 1:
         yield [n]

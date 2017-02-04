@@ -45,6 +45,7 @@ class ScoutPrecision(object):
 		return len(filter(lambda v: v.get('scoutName') == scoutName, tempTIMDs.values()))
 
 	#finds keys that start the same way and groups their values into lists under the keys
+	#Used to combine tempTIMDs of the same match by different scouts
 	def consolidateTIMDs(self, temp):
 		consolidationGroups = {}
 		for k, v in temp.items():
@@ -81,7 +82,7 @@ class ScoutPrecision(object):
 			consolidationDict[key] = []
 			for aDict in dicts:
 				consolidationDict[key] += [aDict[key]]
-		#see descriptions in findOddScoutForDataPoint for the math that this section does
+		#see descriptions in findOddScoutForDataPoint for this section
 		for key in consolidationDict.keys():
 			values = consolidationDict[key]
 			valueFrequencies = map(values.count, values)
@@ -91,7 +92,7 @@ class ScoutPrecision(object):
 			differenceFromCommonValue = map(lambda v: abs(v - commonValue), values)
 			self.sprs.update({scouts[c] : (self.sprs.get(scouts[c]) or 0) + differenceFromCommonValue[c] for c in range(len(differenceFromCommonValue))})
 
-	#Almost exactly the same as findOddScoutForDict, but for each dict in a list of dicts
+	#Similar to findOddScoutForDict, but matching each dict in lists of dicts
 	def findOddScoutForListOfDicts(self, tempTIMDs, key):
 		scouts = filter(lambda v: v != None, map(lambda k: k.get('scoutName'), tempTIMDs))
 		lists = filter(lambda k: k!= None, map(lambda t: t[key] if t.get('scoutName') != None else None, tempTIMDs))
@@ -138,8 +139,10 @@ class ScoutPrecision(object):
 			[self.findOddScoutForDataPoint(v, k) for v in g.values() for k in self.gradingKeys]
 			[self.findOddScoutForDict(v, k) for v in g.values() for k in self.gradingDicts]
 			[self.findOddScoutForListOfDicts(v, k) for v in g.values() for k in self.gradingListsOfDicts]
-			self.sprs = {k:(v/float(self.getTotalTIMDsForScoutName(k, temp))) for (k,v) in self.sprs.items()} 		#divides values for scouts by number of TIMDs the scout has participated in
-			for a in available: 		#any team without and sprs score is set to the average score
+			#divides values for scouts by number of TIMDs the scout has participated in
+			self.sprs = {k:(v/float(self.getTotalTIMDsForScoutName(k, temp))) for (k,v) in self.sprs.items()}
+			#any team without and sprs score is set to the average score
+			for a in available:
 				if a not in self.sprs.keys():
 					avgScore = np.mean(self.sprs.values())
 					self.sprs[a] = avgScore
@@ -177,7 +180,7 @@ class ScoutPrecision(object):
 		#used to make better scouts more likely to be picked
 		freqs = self.getScoutFrequencies(available)
 		#Gets the scouts who are alone on a robot
-		indScouts = self.getIndividualScouts(freqs, len(filter(lambda x: x == 1, scoutsPGrp)))
+		indScouts = self.getIndividualScouts(freqs, scoutsPGrp.count(1))
 		unusedScouts = filter(lambda s: s not in indScouts, available)
 		nonIndScouts = []
 		#gets and groups the scouts who are paired or in threes for a robot
@@ -200,7 +203,7 @@ class ScoutPrecision(object):
 	def mapKeysToValue(self, keys, value):
 		return {k : value for k in keys}
 
-	#picks an inputted number of random members for a group
+	#picks an inputted number of random non-repeating members for a group, and also returns the list of members not picked
 	def group(self, availableForGroup, count):
 		toReturn = []
 		for num in range(count):
@@ -209,7 +212,7 @@ class ScoutPrecision(object):
 			toReturn += [newMember]
 		return (toReturn, availableForGroup)
 
-	#gets a scout from the dict inputted, and then makes them unable to be picked again
+	#gets a scout from the dict inputted, and a list of scouts not yet picked
 	def getRandomIndividuals(self, freqs):
 		index = random.randint(0, len(freqs) - 1)
 		scout = freqs[index]
@@ -234,6 +237,7 @@ class ScoutPrecision(object):
 		emptyScouts = filter(lambda k: scoutRotatorDict[k].get('currentUser') == None or scoutRotatorDict[k].get ('currentUser') == "", scoutRotatorDict.keys())
 		return emptyScouts[0]
 
+	#Updates a dict going to firebase with information about scouts for the next match
 	def assignScoutsToRobots(self, available, currentTeams, scoutRotatorDict):
 		scoutsWithNames = filter(lambda v: v.get('currentUser') != None, scoutRotatorDict.values())
 		namesOfScouts = map(lambda v: v.get('currentUser'), scoutsWithNames)
@@ -256,6 +260,7 @@ class ScoutPrecision(object):
 			scoutRotatorDict = self.assignScoutToRobot(scout, teams, scoutRotatorDict, available, namesOfScouts)
 		return scoutRotatorDict
 
+	#Finds a spot and a robot for an inputted available scout
 	def assignScoutToRobot(self, availableScout, teams, scoutRotatorDict, available, names):
 		#If the available scout already has a spot on firebase, all that needs to be updated is the robot they scout for
 		if availableScout in names:

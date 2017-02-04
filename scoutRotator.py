@@ -17,15 +17,15 @@ fb = f.database()
 testScouts = "arman Sam so asdf abhi fgh aScout anotherScout aThirdScout popo hen".split()
 scouts = "Westley MX Tim Jesse Sage Alex Janet Livy Gemma Justin Berin Aiden Rolland Rachel Zoe Ayush Jona Angela Kyle Wesley".split()
 SPR = SPR.ScoutPrecision()
-#Note: set to true when starting to run and everyone is available, or the list of scouts has been updated,
-#	   set to false when maintaining availability already in firebase
+#Note: set to true when starting to run and everyone is available, or the list of scouts on this file has been updated
+#	   set to false when maintaining availability already in firebase, or leaving in scouts on firebase but not the list here
 resetAvailability = True
 if resetAvailability:
 	availability = {name: 1 for name in testScouts}
 						#Note: change testScouts to scouts for actual use
 	fb.child('availability').set(availability)
 
-#If reset scouts is true, this makes firebase objects with 11 scouts (change 11 to 18 for actual use)
+#If reset scouts is true, this makes firebase objects for 11 scouts (change 11 to 18 for actual use)
 #Set to true if scouts in firebase do not exist, or there are the wrong number
 #otherwise, set to false
 resetScouts = True
