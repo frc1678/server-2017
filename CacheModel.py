@@ -17,6 +17,4 @@ class CachedCompetitionData(object):
 		self.predictedSeedings = []
 		self.actualSeedings = []
 		self.TBAMatches = {}
-		self.zGearProbabilitiesTele = {}
-		self.zGearProbabilitiesAuto = {}
 		self.zGearProbabilities = {}

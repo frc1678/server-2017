@@ -29,7 +29,7 @@ calculator = Math.Calculator(comp)
 cycle = 1
 shouldEmail = False
 emailer = CrashReporter.EmailThread()
-consolidator = dataChecker.DataChecker()
+# consolidator = dataChecker.DataChecker()
 # consolidator.start()
 # firebaseCacher.startFirebaseCacheStream(FBC)
 
