@@ -14,13 +14,13 @@ config = {
 
 f = pyrebase.initialize_app(config)
 fb = f.database()
-testScouts = "arman Sam so asdf abhi fgh aScout anotherScout aThirdScout popo hen".split()
+testScouts = "ethan ben calvin kenny ryan peter shane".split()
 scouts = "Westley MX Tim Jesse Sage Alex Janet Livy Gemma Justin Berin Aiden Rolland Rachel Zoe Ayush Jona Angela Kyle Wesley".split()
 SPR = SPR.ScoutPrecision()
 #Note: set to true when starting to run and everyone is available, or the list of scouts on this file has been updated
 #	   set to false when maintaining availability already in firebase, or leaving in scouts on firebase but not the list here
 def resetAvailability():
-	availability = {name: 1 for name in scouts}
+	availability = {name: 1 for name in testScouts}
 						#Note: change testScouts to scouts for actual use
 	fb.child('availability').set(availability)
 
@@ -46,4 +46,5 @@ def doThing(newMatchNumber):
 	#and it is put on firebase
 	fb.child("scouts").update(newAssignments)
 
-fb.child("currentMatchNum").stream(doThing)
+def doThingStream():
+	fb.child("currentMatchNum").stream(doThing)

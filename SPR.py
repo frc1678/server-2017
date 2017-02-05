@@ -63,10 +63,13 @@ class ScoutPrecision(object):
 		values = filter(lambda v: v != None, map(lambda t: t[key] if t.get('scoutName') != None else None, tempTIMDs))
 		#These 2 lines find the most common value in the list of values, or a random one if they occur in equal frequency
 		valueFrequencies = map(values.count, values)
-		commonValue = values[valueFrequencies.index(max(valueFrequencies))]
-		#If less than half of the values agree, the best estimate is the average
-		if values.count(commonValue) <= len(values) / 2 and type(commonValue) != str:
-			commonValue = np.mean(values)
+		if len(values) != 0:
+			commonValue = values[valueFrequencies.index(max(valueFrequencies))]
+			#If less than half of the values agree, the best estimate is the average
+			if values.count(commonValue) <= len(values) / 2 and type(commonValue) != str:
+				commonValue = np.mean(values)
+		else:
+			commonValue = 0
 		#makes a list of the differences from the common value
 		differenceFromCommonValue = map(lambda v: abs(v - commonValue), values)
 		#adds the difference from this tempTIMDs to each scout's previous differences
@@ -77,31 +80,35 @@ class ScoutPrecision(object):
 		scouts = filter(lambda v: v != None, map(lambda k: k.get('scoutName'), tempTIMDs))
 		dicts = filter(lambda k: k!= None, map(lambda t: t[key] if t.get('scoutName') != None else None, tempTIMDs))
 		# This section groups keys of the dicts found earlier
-		consolidationDict = {}
-		for key in dicts[0].keys():
-			consolidationDict[key] = []
-			for aDict in dicts:
-				consolidationDict[key] += [aDict[key]]
-		#see descriptions in findOddScoutForDataPoint for this section
-		for key in consolidationDict.keys():
-			values = consolidationDict[key]
-			valueFrequencies = map(values.count, values)
-			commonValue = values[valueFrequencies.index(max(valueFrequencies))]
-			if values.count(commonValue) <= len(values) / 2 and type(commonValue) != str:
-				commonValue = np.mean(values)
-			differenceFromCommonValue = map(lambda v: abs(v - commonValue), values)
-			self.sprs.update({scouts[c] : (self.sprs.get(scouts[c]) or 0) + differenceFromCommonValue[c] for c in range(len(differenceFromCommonValue))})
+		if len(dicts) != 0:
+			consolidationDict = {}
+			for key in dicts[0].keys():
+				consolidationDict[key] = []
+				for aDict in dicts:
+					consolidationDict[key] += [aDict[key]]
+			#see descriptions in findOddScoutForDataPoint for this section
+			for key in consolidationDict.keys():
+				values = consolidationDict[key]
+				valueFrequencies = map(values.count, values)
+				commonValue = values[valueFrequencies.index(max(valueFrequencies))]
+				if values.count(commonValue) <= len(values) / 2 and type(commonValue) != str:
+					commonValue = np.mean(values)
+				differenceFromCommonValue = map(lambda v: abs(v - commonValue), values)
+				self.sprs.update({scouts[c] : (self.sprs.get(scouts[c]) or 0) + differenceFromCommonValue[c] for c in range(len(differenceFromCommonValue))})
 
 	#Similar to findOddScoutForDict, but matching each dict in lists of dicts
 	def findOddScoutForListOfDicts(self, tempTIMDs, key):
 		scouts = filter(lambda v: v != None, map(lambda k: k.get('scoutName'), tempTIMDs))
-		lists = filter(lambda k: k!= None, map(lambda t: t[key] if t.get('scoutName') != None else None, tempTIMDs))
+		lists = filter(lambda k: k!= None, map(lambda t: t.get(key) if t.get('scoutName') != None else None, tempTIMDs))
 		#This gets the most common number of dicts within each list (e.g. if there is disagreement on how many shots a robot took)
 		listOfLengths = []
 		for aScout in lists:
 			listOfLengths += [len(aScout)]
 		lengthFrequencies = map(listOfLengths.count, listOfLengths)
-		mostCommonNum = listOfLengths[lengthFrequencies.index(max(lengthFrequencies))]
+		if len(lists) != 0:
+			mostCommonNum = listOfLengths[lengthFrequencies.index(max(lengthFrequencies))]
+		else:
+			mostCommonNum = 0
 		#If someone missed a dict (for a shot) (that is, they did not include one that most of the scouts did), this makes one with no values
 		for aScout in lists:
 			if len(aScout) < mostCommonNum:
@@ -118,13 +125,14 @@ class ScoutPrecision(object):
 				for aDict in dicts:
 					consolidationDict[key] += [aDict[key]]
 			for key in consolidationDict.keys():
-				values = consolidationDict[key]
-				valueFrequencies = map(values.count, values)
-				commonValue = values[valueFrequencies.index(max(valueFrequencies))]
-				if values.count(commonValue) <= len(values) / 2 and type(commonValue) != str:
-					commonValue = np.mean(values)
-				differenceFromCommonValue = map(lambda v: abs(v - commonValue), values)
-				self.sprs.update({scouts[c] : (self.sprs.get(scouts[c]) or 0) + differenceFromCommonValue[c] for c in range(len(differenceFromCommonValue))})
+				if key != 'position':
+					values = consolidationDict[key]
+					valueFrequencies = map(values.count, values)
+					commonValue = values[valueFrequencies.index(max(valueFrequencies))]
+					if values.count(commonValue) <= len(values) / 2 and type(commonValue) != str:
+						commonValue = np.mean(values)
+					differenceFromCommonValue = map(lambda v: abs(v - commonValue), values)
+					self.sprs.update({scouts[c] : (self.sprs.get(scouts[c]) or 0) + differenceFromCommonValue[c] for c in range(len(differenceFromCommonValue))})
 
 	def calculateScoutPrecisionScores(self, temp, available):
 		if temp != None:

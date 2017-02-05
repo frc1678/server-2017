@@ -56,7 +56,7 @@ class DataChecker(multiprocessing.Process):
 
 	#Gets the most common bool of a list of inputted bools (several times)
 	def joinBools(self, bools):
-		return bool(False) if values.count(False) > len(bools) / 2 else True
+		return bool(False) if bools.count(False) > len(bools) / 2 else True
 
 	#Returns the most common or average value out of a list
 	def joinList(self, values):
@@ -98,7 +98,7 @@ class DataChecker(multiprocessing.Process):
 		for aScout in lis:
 			if len(aScout) < mostCommonNum:
 				for x in range(mostCommonNum - len(aScout)):
-					aScout += [{'numShots': 0, 'position': 0, 'time': 0}]
+					aScout += [{key: 0 for key in self.boilerKeys}]
 		returnList = []
 		for num in range(mostCommonNum):
 			returnList += [{}]
@@ -159,5 +159,3 @@ class DataChecker(multiprocessing.Process):
 			self.consolidationGroups = self.getConsolidationGroups(tempTIMDs)
 			map(lambda key: firebase.child("TeamInMatchDatas").child(key).update(self.joinValues(key)), self.consolidationGroups.keys())
 			time.sleep(10)
-
-DataChecker().run()

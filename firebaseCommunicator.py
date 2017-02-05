@@ -56,7 +56,7 @@ class FirebaseCommunicator(object):
 		calculatedTeamDataDict = utils.makeDictFromCalculatedData(team.calculatedData)
 		FBLocation = "/Teams/" + str(team.number)
 		try: firebase.put(FBLocation, 'calculatedData', calculatedTeamDataDict)
-		except: 
+		except:
 			print calculatedTeamDataDict.items()
 
 	def addCalculatedTIMDataToFirebase(self, timd):
@@ -113,4 +113,4 @@ class FirebaseCommunicator(object):
 			except: pass
 
 def getPythonObjectForFirebaseDataAtLocation(location):
-	return utils.makeASCIIFromJSON((firebase.get(location, None)))
+	return utils.makeASCIIFromJSON(firebase.get(location, None))
