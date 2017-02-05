@@ -5,16 +5,23 @@ import time
 import pdb
 import multiprocessing
 
+# config = {
+# 	"apiKey": "mykey",
+# 	"authDomain": "scouting-2017-5f51c.firebaseapp.com",
+# 	"databaseURL": "https://scouting-2017-5f51c.firebaseio.com/",
+# 	"storageBucket": "scouting-2017-5f51c.appspot.com"
+# }
+
 config = {
 	"apiKey": "mykey",
-	"authDomain": "scouting-2017-5f51c.firebaseapp.com",
-	"databaseURL": "https://scouting-2017-5f51c.firebaseio.com/",
-	"storageBucket": "scouting-2017-5f51c.appspot.com"
+	"authDomain": "1678-scouting-2016.firebaseapp.com",
+	"databaseURL": "https://1678-scouting-2016.firebaseio.com/",
+	"storageBucket": "1678-scouting-2016.appspot.com"
 }
 
 listKeys = ["highShotTimesForBoilerTele", "highShotTimesForBoilerAuto", "lowShotTimesForBoilerAuto", "lowShotTimesForBoilerTele"]
 constants = ['matchNumber', 'teamNumber']
-boilerKeys = ['time', 'numShots']
+boilerKeys = ['time', 'numShots', 'position']
 standardDictKeys = ['gearsPlacedByLiftAuto', 'gearsPlacedByLiftTele']
 firebase = pyrebase.initialize_app(config)
 firebase = firebase.database()
@@ -60,13 +67,17 @@ class DataChecker(multiprocessing.Process):
 		return {k : self.findCommonValuesForKeys(map(lambda tm: (tm.get(k) or []), self.consolidationGroups[key])) if k in listKeys else self.consolidationGroups[key][0][k] if k in constants else self.avgDict(map(lambda c: (c.get(k) or {}), self.consolidationGroups[key])) if k in standardDictKeys else self.commonValue(map(lambda tm: tm.get(k) or 0, self.consolidationGroups[key]), k) for k in self.getAllKeys(map(lambda v: v.keys(), self.consolidationGroups[key]))}
 
 	def findCommonValuesForKeys(self, lis):
+		print lis
 		length = int(self.commonValue(map(len, lis), 'none'))
 		valuesList = map(lambda t: t[:length], lis)
-		for i in boilerKeys:
-			for v in range(len(valuesList[0])):
-				cv = self.commonValue(filter(lambda t: t!=None, map(lambda val: val[v][i] if len(i) > v else None, valuesList)), 'none')
-				for j in valuesList:
-					j[v][i] = cv
+		a = []
+		for k in range(len(valuesList[0])):
+			for i in boilerKeys:
+				for v in valuesList:
+					cv = self.commonValue(map(v[k].get(i), valuesList), 'none')
+			
+		pdb.set_trace()
+
 
 	def getAllKeys(self, keyArrays):
 		return list(set([v for l in keyArrays for v in l]))
@@ -83,11 +94,11 @@ class DataChecker(multiprocessing.Process):
 		while True:
 			tempTIMDs = firebase.child("TempTeamInMatchDatas").get().val()
 			if tempTIMDs == None:
-				print "No data"
 				continue
+				time.sleep(5) 
 			self.consolidationGroups = self.getConsolidationGroups(tempTIMDs)
 			map(lambda key: firebase.child("TeamInMatchDatas").child(key).update(self.joinValues(key)), self.consolidationGroups.keys())
-			time.sleep(10) 
+			time.sleep(5) 
 
-DataChecker().run()
+# DataChecker().run()
 
