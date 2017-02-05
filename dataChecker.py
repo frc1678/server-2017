@@ -23,8 +23,8 @@ listKeys = ["highShotTimesForBoilerTele", "highShotTimesForBoilerAuto", "lowShot
 constants = ['matchNumber', 'teamNumber']
 boilerKeys = ['time', 'numShots', 'position']
 standardDictKeys = ['gearsPlacedByLiftAuto', 'gearsPlacedByLiftTele']
-firebase = pyrebase.initialize_app(config)
-firebase = firebase.database()
+fb = pyrebase.initialize_app(config)
+firebase = fb.database()
 
 class DataChecker(multiprocessing.Process):
 	"""Checks data..."""
@@ -32,29 +32,33 @@ class DataChecker(multiprocessing.Process):
 		super(DataChecker, self).__init__()
 		self.consolidationGroups = {}
 
-	def commonValue(self, vals, key):
-		if len(set(map(type, vals))) != 1: 
+	#Used many times, gets a common value for a list depending on the data type
+	def commonValue(self, vals):
+		#If there are several types, they are probably misformatted bools, so attempt tries turning them into bools and trying again
+		if len(set(map(type, vals))) != 1:
 			return self.attempt(vals)
-		if map(type, vals).count(bool) == len(map(type, vals)):
-			return bool(self.joinBools(vals))
-		elif list(set(map(type, vals)))[0] == unicode:
+		#If the values are bools, it goes to a function for bools
+		elif type(vals[0]) == bool:
+			return self.joinBools(vals)
+		#Text does not need to be joined
+		elif type(vals[0]) == unicode:
 			return vals
+		#otherwise, if it is something like ints or floats, it goes to a general purpose function
 		else:
 			return self.joinList(vals)
 
+	#Uses commonValue if at least one value is a bool, on the basis that they should all be the same type, but some are just not written properly as bools
 	def attempt(self, vals):
 		if map(type, vals).count(bool) > 0:
-			return self.commonValue(map(bool, vals), 'none')
-		else: return
+			return self.commonValue(map(bool, vals))
+		else:
+			return
 
+	#Gets the most common bool of a list of inputted bools (several times)
 	def joinBools(self, bools):
-		a = map(bools.count, bools)
-		mCV = bools[a.index(max(a))]
-		try:
-			return bool(mCV) if values.count(mCV) > len(bools) / 2 else True if np.mean(bools) >= 0.5 else False
-		except:
-			return None 
+		return bool(False) if values.count(False) > len(bools) / 2 else True
 
+	#Returns the most common or average value out of a list
 	def joinList(self, values):
 		a = map(values.count, values)
 		mCV = values[a.index(max(a))]
@@ -64,28 +68,84 @@ class DataChecker(multiprocessing.Process):
 			return None
 
 	def joinValues(self, key):
-		return {k : self.findCommonValuesForKeys(map(lambda tm: (tm.get(k) or []), self.consolidationGroups[key])) if k in listKeys else self.consolidationGroups[key][0][k] if k in constants else self.avgDict(map(lambda c: (c.get(k) or {}), self.consolidationGroups[key])) if k in standardDictKeys else self.commonValue(map(lambda tm: tm.get(k) or 0, self.consolidationGroups[key]), k) for k in self.getAllKeys(map(lambda v: v.keys(), self.consolidationGroups[key]))}
+		returnDict = {}
+		#flattens the list of lists of keys into a list of keys
+		for k in self.getAllKeys(map(lambda v: v.keys(), self.consolidationGroups[key])):
+			if k in listKeys:
+				#Gets a common value for lists of dicts (for thing such as boiler/ball values) and puts it into the dict
+				returnDict.update({k: self.findCommonValuesForKeys(map(lambda tm: (tm.get(k) or []), self.consolidationGroups[key]))})
+			elif k in constants:
+				#Constants should be the same across all tempTIMDs, so the common value is just the value in one of them
+				returnDict.update({k: self.consolidationGroups[key][0][k]})
+			elif k in standardDictKeys:
+				#Gets a common value for dicts (which in this are placed gears)
+				returnDict.update({k: self.avgDict(map(lambda c: (c.get(k) or {}), self.consolidationGroups[key]))})
+			else:
+				#Gets a common value across any kind of list of values
+				returnDict.update({k: self.commonValue(map(lambda tm: tm.get(k) or 0, self.consolidationGroups[key]))})
+		return returnDict
+		#The line below is supposed to do the same thing as this function, and may or may not work
+		#return {k : self.findCommonValuesForKeys(map(lambda tm: (tm.get(k) or []), self.consolidationGroups[key])) if k in listKeys else self.consolidationGroups[key][0][k] if k in constants else self.avgDict(map(lambda c: (c.get(k) or {}), self.consolidationGroups[key])) if k in standardDictKeys else self.commonValue(map(lambda tm: tm.get(k) or 0, self.consolidationGroups[key])) for k in self.getAllKeys(map(lambda v: v.keys(), self.consolidationGroups[key]))}
 
 	def findCommonValuesForKeys(self, lis):
-		print lis
-		length = int(self.commonValue(map(len, lis), 'none'))
-		valuesList = map(lambda t: t[:length], lis)
-		a = []
-		for k in range(len(valuesList[0])):
-			for i in boilerKeys:
-				for v in valuesList:
-					cv = self.commonValue(map(v[k].get(i), valuesList), 'none')
-			
-		pdb.set_trace()
+		#Finds the most common number of dict within each list in the larger list
+		listOfLengths = []
+		for aScout in lis:
+			listOfLengths += [len(aScout)]
+		lengthFrequencies = map(listOfLengths.count, listOfLengths)
+		mostCommonNum = listOfLengths[lengthFrequencies.index(max(lengthFrequencies))]
+		#If someone missed a dict (for a shot) (that is, they did not include one that most of the scouts did), this makes one with no values
+		for aScout in lis:
+			if len(aScout) < mostCommonNum:
+				for x in range(mostCommonNum - len(aScout)):
+					aScout += [{'numShots': 0, 'position': 0, 'time': 0}]
+		returnList = []
+		for num in range(mostCommonNum):
+			returnList += [{}]
+			#finds dicts that should be the same (e.g. each shot time dict for the same shot) within the tempTIMDs
+			#This means comparisons such as the first shot in teleop by a given robot, as recorded by multiple scouts
+			dicts = [scout[num] for scout in lis]
+			consolidationDict = {}
+			#combines dicts that should be the same into a consolidation dict
+			for key in dicts[0].keys():
+				consolidationDict[key] = []
+				for aDict in dicts:
+					consolidationDict[key] += [aDict[key]]
+			#The time and number of shots can be compared to get a common value
+			for key in consolidationDict.keys():
+				if key != 'position':
+					values = consolidationDict[key]
+					valueFrequencies = map(values.count, values)
+					commonValue = values[valueFrequencies.index(max(valueFrequencies))]
+					if values.count(commonValue) <= len(values) / 2 and type(commonValue) != str:
+						commonValue = np.mean(values)
+					returnList[num].update({key: commonValue})
+			#If there is only one scout, their statement about position is accepted as right
+			if len(consolidationDict['position']) == 1:
+				returnList[num].update({'position': consolidationDict['position']})
+			#If there are 2 scouts, pick one that isn't the key unless they are both in agreement
+			elif len(consolidationDict['position']) == 2:
+				if consolidationDict['position'][0].lower() != 'key':
+					returnList[num].update({'position': consolidationDict['position'][0]})
+				else:
+					returnList[num].update({'position': consolidationDict['position'][1]})
+			#If there are 3 scouts, the position value is the most common position value
+			else:
+				positionFrequencies = map(consolidationDict['position'].count, consolidationDict['position'])
+				commonPosition = consolidationDict['position'][positionFrequencies.index(max(positionFrequencies))]
+				returnList[num].update({'position': commonPosition})
+		return returnList
 
-
+	#flattens the list of lists of keys into a list of keys
 	def getAllKeys(self, keyArrays):
 		return list(set([v for l in keyArrays for v in l]))
 
+	#Gets common values for values in each of a list of dicts
 	def avgDict(self, dicts):
 		keys = self.getAllKeys(map(lambda d: d.keys(), dicts))
-		return {k : self.commonValue(map(lambda v: (v.get(k) or 0), dicts), k) for k in keys}
+		return {k : self.commonValue(map(lambda v: (v.get(k) or 0), dicts)) for k in keys}
 
+	#Combines tempTIMDs for the same team and match
 	def getConsolidationGroups(self, tempTIMDs):
 		actualKeys = list(set([key.split('-')[0] for key in tempTIMDs.keys()]))
 		return {key : [v for k, v in tempTIMDs.items() if k.split('-')[0] == key] for key in actualKeys}
@@ -97,8 +157,9 @@ class DataChecker(multiprocessing.Process):
 				continue
 				time.sleep(5) 
 			self.consolidationGroups = self.getConsolidationGroups(tempTIMDs)
+			print self.consolidationGroups
 			map(lambda key: firebase.child("TeamInMatchDatas").child(key).update(self.joinValues(key)), self.consolidationGroups.keys())
-			time.sleep(5) 
+			time.sleep(10)
+			print "I completed a cycle"
 
-# DataChecker().run()
-
+DataChecker().run()
