@@ -77,6 +77,7 @@ class DataChecker(multiprocessing.Process):
 				#Gets a common value across any kind of list of values
 				returnDict.update({k: self.commonValue(map(lambda tm: tm.get(k) or 0, self.consolidationGroups[key]))})
 		return returnDict
+		#The line below is supposed to do the same thing as this function, and may or may not work
 		#return {k : self.findCommonValuesForKeys(map(lambda tm: (tm.get(k) or []), self.consolidationGroups[key])) if k in listKeys else self.consolidationGroups[key][0][k] if k in constants else self.avgDict(map(lambda c: (c.get(k) or {}), self.consolidationGroups[key])) if k in standardDictKeys else self.commonValue(map(lambda tm: tm.get(k) or 0, self.consolidationGroups[key])) for k in self.getAllKeys(map(lambda v: v.keys(), self.consolidationGroups[key]))}
 
 	def findCommonValuesForKeys(self, lis):
