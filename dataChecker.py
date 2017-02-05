@@ -154,11 +154,10 @@ class DataChecker(multiprocessing.Process):
 		while True:
 			tempTIMDs = firebase.child("TempTeamInMatchDatas").get().val()
 			if tempTIMDs == None:
-				continue
 				time.sleep(5)
+				continue
 			self.consolidationGroups = self.getConsolidationGroups(tempTIMDs)
 			map(lambda key: firebase.child("TeamInMatchDatas").child(key).update(self.joinValues(key)), self.consolidationGroups.keys())
 			time.sleep(10)
-			print "I completed a cycle"
 
 DataChecker().run()
