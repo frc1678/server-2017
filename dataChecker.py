@@ -94,7 +94,10 @@ class DataChecker(multiprocessing.Process):
 		for aScout in lis:
 			listOfLengths += [len(aScout)]
 		lengthFrequencies = map(listOfLengths.count, listOfLengths)
-		mostCommonNum = listOfLengths[lengthFrequencies.index(max(lengthFrequencies))]
+		if len(lis) != 0:
+			mostCommonNum = listOfLengths[lengthFrequencies.index(max(lengthFrequencies))]
+		else:
+			mostCommonNum = 0
 		#If someone missed a dict (for a shot) (that is, they did not include one that most of the scouts did), this makes one with no values
 		for aScout in lis:
 			if len(aScout) < mostCommonNum:

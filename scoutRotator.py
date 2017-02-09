@@ -4,6 +4,7 @@ import time
 import SPR
 import multiprocessing
 import random
+import time
 
 config = {
 	"apiKey": "mykey",
@@ -28,7 +29,7 @@ def resetAvailability():
 #Set to true if scouts in firebase do not exist, or there are the wrong number
 #otherwise, set to false
 def resetScouts():
-	scouts = {'scout' + str(num) : {'currentUser': ''} for num in range(18)}
+	scouts = {'scout' + str(num) : {'currentUser': ''} for num in range(1,19)}
 	fb.child('scouts').set(scouts)
 
 def doThing(newMatchNumber):
@@ -47,4 +48,18 @@ def doThing(newMatchNumber):
 	fb.child("scouts").update(newAssignments)
 
 def doThingStream():
+	resetScouts()
+	resetAvailability()
+	while True:
+		available = [k for (k, v) in fb.child("availability").get().val().items() if v == 1]
+		scoutRotatorDict = fb.child("scouts").get().val()
+		scoutsWithNames = filter(lambda v: v.get('currentUser') != None and v.get('currentUser') != '', scoutRotatorDict.values())
+		namesOfScouts = map(lambda v: v.get('currentUser'), scoutsWithNames)
+		print available
+		print namesOfScouts
+		if set(namesOfScouts) == set(available):
+			break
+		time.sleep(1)
 	fb.child("currentMatchNum").stream(doThing)
+
+doThingStream()
