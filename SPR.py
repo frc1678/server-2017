@@ -68,12 +68,10 @@ class ScoutPrecision(object):
 			#If less than half of the values agree, the best estimate is the average
 			if values.count(commonValue) <= len(values) / 2 and type(commonValue) != str:
 				commonValue = np.mean(values)
-		else:
-			commonValue = 0
-		#makes a list of the differences from the common value
-		differenceFromCommonValue = map(lambda v: abs(v - commonValue), values)
-		#adds the difference from this tempTIMDs to each scout's previous differences
-		self.sprs.update({scouts[c] : (self.sprs.get(scouts[c]) or 0) + differenceFromCommonValue[c] for c in range(len(differenceFromCommonValue))})
+			#makes a list of the differences from the common value
+			differenceFromCommonValue = map(lambda v: abs(v - commonValue), values)
+			#adds the difference from this tempTIMDs to each scout's previous differences
+			self.sprs.update({scouts[c] : (self.sprs.get(scouts[c]) or 0) + differenceFromCommonValue[c] for c in range(len(differenceFromCommonValue))})
 
 	#Similar to findOddScoutForDataPoint, but for each data point inside of a dict
 	def findOddScoutForDict(self, tempTIMDs, key):
@@ -247,7 +245,7 @@ class ScoutPrecision(object):
 
 	#Updates a dict going to firebase with information about scouts for the next match
 	def assignScoutsToRobots(self, available, currentTeams, scoutRotatorDict):
-		scoutsWithNames = filter(lambda v: v.get('currentUser') != None, scoutRotatorDict.values())
+		scoutsWithNames = filter(lambda v: v.get('currentUser') != None and v.get('currentUser') =! '', scoutRotatorDict.values())
 		namesOfScouts = map(lambda v: v.get('currentUser'), scoutsWithNames)
 		scoutSpots = len(scoutRotatorDict.keys())
 		#assigns available scouts to robots, and shows exactly which availabe scouts will be scouting

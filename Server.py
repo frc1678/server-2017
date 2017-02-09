@@ -33,8 +33,6 @@ emailer = CrashReporter.EmailThread()
 consolidator = dataChecker.DataChecker()
 consolidator.start()
 firebaseCacher.startFirebaseCacheStream(FBC)
-#scoutRotator.resetAvailability()
-#scoutRotator.resetScouts()
 scoutRotator.doThingStream()
 
 def checkForMissingData():
