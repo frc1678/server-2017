@@ -154,7 +154,7 @@ class Calculator(object):
         return self.standardDeviationForRetrievalFunctionForAlliance(self.getStandardDevShotPointsForTeam, alliance)
     
     def getAutoShootingPositions(self, team):
-        timds = self.getCompletedTIMDsForTeam(team)
+        timds = self.su.getCompletedTIMDsForTeam(team)
         return list(set([d.get('position') for timd in timds for d in timd.highShotTimesForBoilerAuto + timd.lowShotTimesForBoilerAuto]))
     
     # GEARS DATA
@@ -181,11 +181,9 @@ class Calculator(object):
     def getRotorsTurningForDatasForGearFunc(self, datas, gearFuncTele, gearFuncAuto):
         totalAutoGears = sum(map(gearFuncTele, datas))
         totalTeleGears = sum(map(gearFuncAuto, datas))
-        print map(lambda t: str(t.teamNumber) + "Q" + str(t.matchNumber), filter(lambda t: t.calculatedData.__dict__.get('numGearsPlacedAuto') == None, datas))
         incrementsReached = filter(lambda p: totalAutoGears >= p, self.autoGearIncrements)
         gearPtsAuto = 60 * (self.autoGearIncrements.index(max(incrementsReached)) + 1) if len(incrementsReached) > 0 else 0
-        leftOverGearsAuto = (totalAutoGears - max(incrementsReached)) if len(incrementsReached) > 0 else 0
-        gearPtsTele = 40 * (self.teleGearIncrements.index(max(filter(lambda p: (totalTeleGears +  leftOverGearsAuto) >= p, self.teleGearIncrements))) + 1)
+        gearPtsTele = 40 * (self.teleGearIncrements.index(max(filter(lambda p: (totalTeleGears +  totalAutoGears) >= p, self.teleGearIncrements[self.autoGearIncrements.index(max(incrementsReached)):]))) + 1)
         return gearPtsAuto + gearPtsTele
 
     # OVERALL DATA
@@ -199,10 +197,11 @@ class Calculator(object):
         if len(values) == 0:
             return None
         initialValue = values[0]
-        impossible = bool(len(map(lambda v: v != initialValue, values[1:])))
-        if impossible:
+        for value in values[1:]:
+            if value != initialValue: impossible = False
+        if impossible: 
             zscores = [0.0 for v in values]
-        else:
+        else: 
             zscores = stats.zscore(values)
         for i in range(len(self.cachedComp.teamsWithMatchesCompleted)):
             d[self.cachedComp.teamsWithMatchesCompleted[i].number] = zscores[i]
@@ -255,7 +254,7 @@ class Calculator(object):
     def overallSecondPickAbility(self, team):
         freqLiftOurTeam = self.getMostFrequentLift(self.su.getTeamForNumber(self.ourTeamNum))
         gA = self.gearPlacementAbilityExcludeLift(team, freqLiftOurTeam)
-        return gA + team.calculatedData.avgDefense * 1.0 + team.calculatedData.avgGearControl * 1.0
+        return gA + team.calculatedData.avgDefense * 1.0 + team.calculatedData.liftoffAbility
 
     def predictedScoreForMatchForAlliance(self, match, allianceIsRed):
         return match.calculatedData.predictedRedScore if allianceIsRed else match.calculatedData.predictedBlueScore
@@ -520,6 +519,7 @@ class Calculator(object):
             self.cacheSecondTeamData()
             self.doMatchesCalculations()
             self.doSecondTeamCalculations()
+            pdb.set_trace()
             map(lambda o: FirebaseWriteObjectProcess(o, FBC).start(), self.cachedComp.teamsWithMatchesCompleted + self.su.getCompletedTIMDsInCompetition() + self.comp.matches)
             FBC.addCompInfoToFirebase()
             endTime = time.time()

@@ -80,7 +80,7 @@ class Team(object):
 		self.number = None
 		self.calculatedData = CalculatedTeamData()
 		self.pitSelectedImageURL = None
-		self.allImageURLs = {
+		self.pitAllImageURLs = {
 			 'not0' : None
 		}
 		self.pitAvailableWeight = None

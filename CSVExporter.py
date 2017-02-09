@@ -1,23 +1,27 @@
 # CSV Exporter, by Bryton 2/10/16
 import utils
-
+from collections import OrderedDict
+import pdb
 
 def TSVExportAll(comp):
 	s = ""
 	firstTeam = True
-	excluded = ['calculatedData', 'name', 'number']
+	excluded = ['calculatedData', 'name', 'number', 'imageKeys']
 	with open('./dataExportAll.tsv', 'w') as file:
 		for team in comp.teams:
 			tDict = {k : v for k,v in team.__dict__.items() if k not in excluded}
 			cd = team.calculatedData.__dict__
+			d = cd
+			d.update(tDict)
+			dic = OrderedDict(sorted(d.items(), key=lambda t: t[0].lower()))
 			if firstTeam:
 				firstTeam = False
 				s += "number" + "	"
-				for key in cd.keys() + tDict.keys():
+				for key in dic.keys():
 					s += key + "	"
 				s += "\n"
 			s += str(team.number) + "	"
-			for value in cd.values() + tDict.values():
+			for value in dic.values():
 				s += str(value) + "	"
 			s += "\n"
 		file.write(s)
