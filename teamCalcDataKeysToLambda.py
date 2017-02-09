@@ -47,6 +47,7 @@ def secondCalculationDict(team, calc):
 	cd.actualNumRPs = calc.actualNumberOfRPs(team)
 	cd.firstPickAbility = calc.firstPickAbility(team)
 	cd.overallSecondPickAbility = calc.overallSecondPickAbility(team)
+	cd.firstPickRotorBonusChance = calc.firstPickAllRotorsChance(team)
 	try:
 		cd.predictedSeed = calc.cachedComp.predictedSeedings.index(team) + 1
 		cd.actualNumRPs = calc.getTeamRPsFromTBA(team)
@@ -60,6 +61,7 @@ def secondCalculationDict(team, calc):
 	cd.RScoreGearControl = calc.cachedComp.gearControlZScores[team.number]
 	cd.RScoreSpeed = calc.cachedComp.speedZScores[team.number]
 	cd.RScoreAgility = calc.cachedComp.agilityZScores[team.number]
+	cd.RScoreDrivingAbility = calc.cachedComp.drivingAbilityZScores[team.number]	
 
 def averageTeamDict(calc):
 	a = calc.averageTeam.calculatedData
@@ -91,18 +93,18 @@ def averageTeamDict(calc):
 	print("Completed first calcs for team " + str(calc.averageTeam.number))
 
 def matchDict(match, calc):
-		if calc.su.matchIsCompleted(match):
-			match.calculatedData.actualBlueRPs = calc.RPsGainedFromMatchForAlliance(True, match)
-			match.calculatedData.actualRedRPs = calc.RPsGainedFromMatchForAlliance(False, match)
-		match.calculatedData.predictedBlueScore = calc.predictedScoreForAllianceWithNumbers(match.blueAllianceTeamNumbers)
-		match.calculatedData.predictedRedScore = calc.predictedScoreForAllianceWithNumbers(match.redAllianceTeamNumbers)
-		match.calculatedData.sdPredictedBlueScore = calc.stdDevPredictedScoreForAllianceNumbers(match.blueAllianceTeamNumbers)
-		match.calculatedData.sdPredictedRedScore = calc.stdDevPredictedScoreForAllianceNumbers(match.redAllianceTeamNumbers)
-		match.calculatedData.fortyKilopascalChanceRed = calc.get40KilopascalChanceForAllianceWithNumbers(match.redAllianceTeamNumbers)
-		match.calculatedData.fortyKilopascalChanceBlue = calc.get40KilopascalChanceForAllianceWithNumbers(match.blueAllianceTeamNumbers)
-		match.calculatedData.allRotorsTurningChanceRed = calc.getAllRotorsTurningChanceForAllianceWithNumbers(match.redAllianceTeamNumbers)
-		match.calculatedData.allRotorsTurningChanceBlue = calc.getAllRotorsTurningChanceForAllianceWithNumbers(match.blueAllianceTeamNumbers)
-		match.calculatedData.blueWinChance = calc.winChanceForMatchForAllianceIsRed(match, False)
-		match.calculatedData.redWinChance = calc.winChanceForMatchForAllianceIsRed(match, True)
-		match.calculatedData.predictedBlueRPs = calc.predictedRPsForAllianceForMatch(False, match)
-		match.calculatedData.predictedRedRPs = calc.predictedRPsForAllianceForMatch(True, match)
+	if calc.su.matchIsCompleted(match):
+		match.calculatedData.actualBlueRPs = calc.RPsGainedFromMatchForAlliance(True, match)
+		match.calculatedData.actualRedRPs = calc.RPsGainedFromMatchForAlliance(False, match)
+	match.calculatedData.predictedBlueScore = calc.predictedScoreForAllianceWithNumbers(match.blueAllianceTeamNumbers)
+	match.calculatedData.predictedRedScore = calc.predictedScoreForAllianceWithNumbers(match.redAllianceTeamNumbers)
+	match.calculatedData.sdPredictedBlueScore = calc.stdDevPredictedScoreForAllianceNumbers(match.blueAllianceTeamNumbers)
+	match.calculatedData.sdPredictedRedScore = calc.stdDevPredictedScoreForAllianceNumbers(match.redAllianceTeamNumbers)
+	match.calculatedData.fortyKilopascalChanceRed = calc.get40KilopascalChanceForAllianceWithNumbers(match.redAllianceTeamNumbers)
+	match.calculatedData.fortyKilopascalChanceBlue = calc.get40KilopascalChanceForAllianceWithNumbers(match.blueAllianceTeamNumbers)
+	match.calculatedData.allRotorsTurningChanceRed = calc.getAllRotorsTurningChanceForAllianceWithNumbers(match.redAllianceTeamNumbers)
+	match.calculatedData.allRotorsTurningChanceBlue = calc.getAllRotorsTurningChanceForAllianceWithNumbers(match.blueAllianceTeamNumbers)
+	match.calculatedData.blueWinChance = calc.winChanceForMatchForAllianceIsRed(match, False)
+	match.calculatedData.redWinChance = calc.winChanceForMatchForAllianceIsRed(match, True)
+	match.calculatedData.predictedBlueRPs = calc.predictedRPsForAllianceForMatch(False, match)
+	match.calculatedData.predictedRedRPs = calc.predictedRPsForAllianceForMatch(True, match)

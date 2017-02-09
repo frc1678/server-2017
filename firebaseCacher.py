@@ -1,5 +1,6 @@
 import pyrebase
-def startFirebaseCacheStream(FBC):	
+def startFirebaseCacheStream(data):	
+	print "cache"
 	config = {
 		"apiKey": "mykey",
 		"authDomain": "scouting-2017-5f51c.firebaseapp.com",
@@ -9,4 +10,7 @@ def startFirebaseCacheStream(FBC):
 
 	f = pyrebase.initialize_app(config)
 	fb = f.database()
-	fb.stream(FBC.cacheFirebase)
+
+	fb.stream(startFirebaseCacheStream)
+
+

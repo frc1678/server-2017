@@ -159,3 +159,4 @@ class DataChecker(multiprocessing.Process):
 			self.consolidationGroups = self.getConsolidationGroups(tempTIMDs)
 			map(lambda key: firebase.child("TeamInMatchDatas").child(key).update(self.joinValues(key)), self.consolidationGroups.keys())
 			time.sleep(10)
+

@@ -153,6 +153,10 @@ class Calculator(object):
     def getStandardDevShotPointsForAlliance(self, alliance):
         return self.standardDeviationForRetrievalFunctionForAlliance(self.getStandardDevShotPointsForTeam, alliance)
     
+    def getAutoShootingPositions(self, team):
+        timds = self.getCompletedTIMDsForTeam(team)
+        return list(set([d.get('position') for timd in timds for d in timd.highShotTimesForBoilerAuto + timd.lowShotTimesForBoilerAuto]))
+    
     # GEARS DATA
     
     def getTotalValueForValueDict(self, valueDict):
@@ -175,11 +179,9 @@ class Calculator(object):
         return self.lifts[a.index(max(a))]
 
     def getRotorsTurningForDatasForGearFunc(self, datas, gearFuncTele, gearFuncAuto):
-        try:
-            totalAutoGears = sum(map(gearFuncTele, datas))
-            totalTeleGears = sum(map(gearFuncAuto, datas))
-        except:
-            print map(lambda t: str(t.teamNumber) + "Q" + str(t.matchNumber), filter(lambda t: t.calculatedData.__dict__.get('numGearsPlacedAuto') == None, datas))
+        totalAutoGears = sum(map(gearFuncTele, datas))
+        totalTeleGears = sum(map(gearFuncAuto, datas))
+        print map(lambda t: str(t.teamNumber) + "Q" + str(t.matchNumber), filter(lambda t: t.calculatedData.__dict__.get('numGearsPlacedAuto') == None, datas))
         incrementsReached = filter(lambda p: totalAutoGears >= p, self.autoGearIncrements)
         gearPtsAuto = 60 * (self.autoGearIncrements.index(max(incrementsReached)) + 1) if len(incrementsReached) > 0 else 0
         leftOverGearsAuto = (totalAutoGears - max(incrementsReached)) if len(incrementsReached) > 0 else 0

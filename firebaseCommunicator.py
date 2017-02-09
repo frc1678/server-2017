@@ -88,6 +88,19 @@ class FirebaseCommunicator(object):
 		addTIMD = lambda m: map(lambda t: timdFunc(t, m), m.redAllianceTeamNumbers + m.blueAllianceTeamNumbers)
 		map(addTIMD, matches)
 
+	def cacheFirebase(data):
+		if not data['data']: return
+		print "CACHED"
+		while True:
+			try:
+				data = json.dumps(firebase.get("/", None))
+				now = str(datetime.datetime.now())
+				with open("./CachedFirebases/" + now + '.json', 'w') as f:
+					f.write(data)
+					f.close()
+					break
+			except: 
+				print "whaaat"
 
 	def addCompInfoToFirebase(self): #Doing these keys manually so less clicking in firebase is better and because just easier
 		FBLocation = "/"
@@ -99,18 +112,6 @@ class FirebaseCommunicator(object):
 		print "\nWARNING: Wiping Firebase..."
 		FBLocation = "/"
 		firebase.delete(FBLocation, None)
-
-	def cacheFirebase(self, data):
-		if not data['data']: return
-		while True:
-			try:
-				data = json.dumps(firebase.get("/", None))
-				now = str(datetime.datetime.now())
-				with open("./CachedFirebases/" + now + '.json', 'w') as f:
-					f.write(data)
-					f.close()
-					break
-			except: pass
 
 def getPythonObjectForFirebaseDataAtLocation(location):
 	return utils.makeASCIIFromJSON(firebase.get(location, None))

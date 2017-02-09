@@ -18,7 +18,7 @@ import numpy as np
 import dataChecker
 import multiprocessing
 import firebaseCacher
-import scoutRotator
+# import scoutRotator
 
 print "starting"
 comp = DataModel.Competition()
@@ -31,11 +31,12 @@ cycle = 1
 shouldEmail = False
 emailer = CrashReporter.EmailThread()
 consolidator = dataChecker.DataChecker()
-consolidator.start()
-firebaseCacher.startFirebaseCacheStream(FBC)
+# consolidator.start()
+# firebaseCacher.startFirebaseCacheStream(FBC)
 #scoutRotator.resetAvailability()
 #scoutRotator.resetScouts()
-scoutRotator.doThingStream()
+# scoutRotator.doThingStream()
+
 
 def checkForMissingData():
 	with open('missing_data.txt', 'w') as missingDataFile:

@@ -5,17 +5,19 @@ import utils
 def TSVExportAll(comp):
 	s = ""
 	firstTeam = True
+	excluded = ['calculatedData', 'name', 'number']
 	with open('./dataExportAll.tsv', 'w') as file:
 		for team in comp.teams:
+			tDict = {k : v for k,v in team.__dict__.items() if k not in excluded}
 			cd = team.calculatedData.__dict__
 			if firstTeam:
 				firstTeam = False
 				s += "number" + "	"
-				for key in cd.keys():
+				for key in cd.keys() + tDict.keys():
 					s += key + "	"
 				s += "\n"
 			s += str(team.number) + "	"
-			for value in cd.values():
+			for value in cd.values() + tDict.values():
 				s += str(value) + "	"
 			s += "\n"
 		file.write(s)
