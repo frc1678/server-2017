@@ -16,7 +16,7 @@ config = {
 f = pyrebase.initialize_app(config)
 fb = f.database()
 testScouts = "ethan ben calvin kenny ryan peter shane".split()
-scouts = "Westley MX Tim Jesse Sage Alex Janet Livy Gemma Justin Berin Aiden Rolland Rachel Zoe Ayush Jona Angela Kyle Wesley".split()
+scouts = "westley mx tim jesse sage alex janet livy gemma justin berin aiden rolland rachel zoe ayush jona angela kyle wesley".split()
 SPR = SPR.ScoutPrecision()
 #Note: set to true when starting to run and everyone is available, or the list of scouts on this file has been updated
 #	   set to false when maintaining availability already in firebase, or leaving in scouts on firebase but not the list here
@@ -50,14 +50,18 @@ def doThing(newMatchNumber):
 def doThingStream():
 	resetScouts()
 	resetAvailability()
+	#Once all of the scouts have logged onto tablets, it starts assignments and things
 	while True:
 		available = [k for (k, v) in fb.child("availability").get().val().items() if v == 1]
 		scoutRotatorDict = fb.child("scouts").get().val()
-		scoutsWithNames = filter(lambda v: v.get('currentUser') != None and v.get('currentUser') != '', scoutRotatorDict.values())
+		scoutsWithNames = filter(lambda v: v.get('currentUser') != (None or ''), scoutRotatorDict.values())
 		namesOfScouts = map(lambda v: v.get('currentUser'), scoutsWithNames)
 		print available
 		print namesOfScouts
-		if set(namesOfScouts) == set(available):
+		nameIsIn = True
+		for name in namesOfScouts:
+			nameIsIn = nameIsIn and (name in available)
+		if nameIsIn:
 			break
 		time.sleep(1)
 	fb.child("currentMatchNum").stream(doThing)

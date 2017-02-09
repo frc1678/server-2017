@@ -245,7 +245,7 @@ class ScoutPrecision(object):
 
 	#Updates a dict going to firebase with information about scouts for the next match
 	def assignScoutsToRobots(self, available, currentTeams, scoutRotatorDict):
-		scoutsWithNames = filter(lambda v: v.get('currentUser') != None and v.get('currentUser') =! '', scoutRotatorDict.values())
+		scoutsWithNames = filter(lambda v: v.get('currentUser') != (None or ''), scoutRotatorDict.values())
 		namesOfScouts = map(lambda v: v.get('currentUser'), scoutsWithNames)
 		scoutSpots = len(scoutRotatorDict.keys())
 		#assigns available scouts to robots, and shows exactly which availabe scouts will be scouting
