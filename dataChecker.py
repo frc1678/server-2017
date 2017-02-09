@@ -4,20 +4,21 @@ import utils
 import time
 import pdb
 import multiprocessing
-
-# config = {
-# 	"apiKey": "mykey",
-# 	"authDomain": "scouting-2017-5f51c.firebaseapp.com",
-# 	"databaseURL": "https://scouting-2017-5f51c.firebaseio.com/",
-# 	"storageBucket": "scouting-2017-5f51c.appspot.com"
-# }
+import pprint
 
 config = {
 	"apiKey": "mykey",
-	"authDomain": "1678-scouting-2016.firebaseapp.com",
-	"databaseURL": "https://1678-scouting-2016.firebaseio.com/",
-	"storageBucket": "1678-scouting-2016.appspot.com"
+	"authDomain": "scouting-2017-5f51c.firebaseapp.com",
+ 	"databaseURL": "https://scouting-2017-5f51c.firebaseio.com/",
+ 	"storageBucket": "scouting-2017-5f51c.appspot.com"
 }
+
+#config = {
+#	"apiKey": "mykey",
+#	"authDomain": "1678-scouting-2016.firebaseapp.com",
+#	"databaseURL": "https://1678-scouting-2016.firebaseio.com/",
+#	"storageBucket": "1678-scouting-2016.appspot.com"
+#}
 
 listKeys = ["highShotTimesForBoilerTele", "highShotTimesForBoilerAuto", "lowShotTimesForBoilerAuto", "lowShotTimesForBoilerTele"]
 constants = ['matchNumber', 'teamNumber']
@@ -157,6 +158,6 @@ class DataChecker(multiprocessing.Process):
 				time.sleep(5)
 				continue
 			self.consolidationGroups = self.getConsolidationGroups(tempTIMDs)
-			map(lambda key: firebase.child("TeamInMatchDatas").child(key).update(self.joinValues(key)), self.consolidationGroups.keys())
+			map(lambda key: firebase.child("TeamInMatchDatas").child(key).set(self.joinValues(key)), self.consolidationGroups.keys())
 			time.sleep(10)
 
