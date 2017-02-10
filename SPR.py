@@ -98,21 +98,17 @@ class ScoutPrecision(object):
 	def findOddScoutForListOfDicts(self, tempTIMDs, key):
 		scouts = filter(lambda v: v != None, map(lambda k: k.get('scoutName'), tempTIMDs))
 		lists = filter(lambda k: k!= None, map(lambda t: t.get(key) if t.get('scoutName') != None else None, tempTIMDs))
-		#This gets the most common number of dicts within each list (e.g. if there is disagreement on how many shots a robot took)
-		listOfLengths = []
-		for aScout in lists:
-			listOfLengths += [len(aScout)]
-		lengthFrequencies = map(listOfLengths.count, listOfLengths)
-		if len(lists) != 0:
-			mostCommonNum = listOfLengths[lengthFrequencies.index(max(lengthFrequencies))]
+		#Finds the most largest of dicts within each list in the larger list (within each scout's observations)
+		#(i.e. if there is disagreement over how many shots a robot took)
+		if len(lis) > 0:
+			largestListLength = max(map(lambda x: len(x), lis))
 		else:
-			mostCommonNum = 0
-		#If someone missed a dict (for a shot) (that is, they did not include one that most of the scouts did), this makes one with no values
+			largestListLength = 0
+		#If someone missed a dict (for a shot) (that is, they did not include one that another scout did), this makes one with no values
 		for aScout in lists:
-			if len(aScout) < mostCommonNum:
-				for x in range(mostCommonNum - len(aScout)):
-					aScout += [{'numShots': 0, 'position': 0, 'time': 0}]
-		for num in range(mostCommonNum):
+			if len(aScout) < largestListLength:
+				aScout += [{'numShots': 0, 'position': 0, 'time': 0}] * (largestListLength - len(aScout))
+		for num in range(largestListLength):
 			#comparing dicts that should be the same (e.g. each shot time dict for the same shot) within the tempTIMDs
 			#This means comparisons such as the first shot in teleop by a given robot, as recorded by multiple scouts
 			#The actual comparison is the same as the other findOddScout functions
@@ -127,7 +123,7 @@ class ScoutPrecision(object):
 					values = consolidationDict[key]
 					valueFrequencies = map(values.count, values)
 					commonValue = values[valueFrequencies.index(max(valueFrequencies))]
-					if values.count(commonValue) <= len(values) / 2 and type(commonValue) != str:
+					if values.count(commonValue) <= len(values) / 2:
 						commonValue = np.mean(values)
 					differenceFromCommonValue = map(lambda v: abs(v - commonValue), values)
 					self.sprs.update({scouts[c] : (self.sprs.get(scouts[c]) or 0) + differenceFromCommonValue[c] for c in range(len(differenceFromCommonValue))})
