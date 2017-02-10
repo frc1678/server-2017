@@ -2,9 +2,7 @@ import pyrebase
 import numpy as np
 import utils
 import time
-import pdb
 import multiprocessing
-import pprint
 
 config = {
 	"apiKey": "mykey",
@@ -59,14 +57,67 @@ class DataChecker(multiprocessing.Process):
 	def joinBools(self, bools):
 		return bool(False) if bools.count(False) > len(bools) / 2 else True
 
-	#Returns the most common or average value out of a list
+	#Returns the most common value in a list, or the average if no value is common enough
 	def joinList(self, values):
-		a = map(values.count, values)
-		mCV = values[a.index(max(a))]
-		try:
-			return mCV if values.count(mCV) > len(values) / 2 else np.mean(values)
-		except:
+		if len(values) > 0:
+			a = map(values.count, values)
+			mCV = values[a.index(max(a))]
+			try:
+				return mCV if values.count(mCV) > len(values) / 2 else np.mean(values)
+			except:
+				return None
+		else:
 			return None
+
+	#This is the common value function for lists of dicts
+	#It consolidates the data on shots from scouts, by comparing each shot to other scouts' info on the same shot
+	def findCommonValuesForKeys(self, lis):
+		#Finds the most largest of dicts within each list in the larger list (within each scout's observations)
+		#(i.e. if there is disagreement over how many shots a robot took in a particular match)
+		if len(lis) > 0:
+			largestListLength = max(map(lambda x: len(x), lis))
+		else:
+			largestListLength = 0
+		#If someone missed a dict (for a shot) (that is, they did not include one that another scout did), this makes one with no values
+		for aScout in lists:
+			if len(aScout) < largestListLength:
+				aScout += [{'numShots': 0, 'position': 0, 'time': 0}] * (largestListLength - len(aScout))
+		returnList = []
+		for num in range(largestListLength):
+			returnList += [{}]
+			#finds dicts that should be the same (e.g. each shot time dict for the same shot) within the tempTIMDs
+			#This means comparisons such as the first shot in teleop by a given robot, as recorded by multiple scouts
+			dicts = [scout[num] for scout in lis]
+			consolidationDict = {}
+			#combines dicts that should be the same into a consolidation dict
+			for key in dicts[0].keys():
+				consolidationDict[key] = []
+				for aDict in dicts:
+					consolidationDict[key] += [aDict[key]]
+			#The time and number of shots can be compared to get a common value
+			for key in consolidationDict.keys():
+				if key != 'position':
+					values = consolidationDict[key]
+					valueFrequencies = map(values.count, values)
+					commonValue = values[valueFrequencies.index(max(valueFrequencies))]
+					if values.count(commonValue) <= len(values) / 2:
+						commonValue = np.mean(values)
+					returnList[num].update({key: commonValue})
+			#If there is only one scout, their statement about position is accepted as right
+			if len(consolidationDict['position']) == 1:
+				returnList[num].update({'position': consolidationDict['position']})
+			#If there are 2 scouts, pick one that isn't the key unless they are both in agreement
+			elif len(consolidationDict['position']) % 2 == 0:
+				if consolidationDict['position'][0].lower() != 'key':
+					returnList[num].update({'position': consolidationDict['position'][0]})
+				else:
+					returnList[num].update({'position': consolidationDict['position'][1]})
+			#If there are 3 scouts, the position value is the most common position value
+			else:
+				positionFrequencies = map(consolidationDict['position'].count, consolidationDict['position'])
+				commonPosition = consolidationDict['position'][positionFrequencies.index(max(positionFrequencies))]
+				returnList[num].update({'position': commonPosition})
+		return returnList
 
 	def joinValues(self, key):
 		returnDict = {}
@@ -85,60 +136,8 @@ class DataChecker(multiprocessing.Process):
 				#Gets a common value across any kind of list of values
 				returnDict.update({k: self.commonValue(map(lambda tm: tm.get(k) or 0, self.consolidationGroups[key]))})
 		return returnDict
-		#The line below is supposed to do the same thing as this function, and may or may not work
+		#The line below is supposed to do the same thing as this function, and may or may not work, and may or may not have correct parenthesis
 		#return {k : self.findCommonValuesForKeys(map(lambda tm: (tm.get(k) or []), self.consolidationGroups[key])) if k in listKeys else self.consolidationGroups[key][0][k] if k in constants else self.avgDict(map(lambda c: (c.get(k) or {}), self.consolidationGroups[key])) if k in standardDictKeys else self.commonValue(map(lambda tm: tm.get(k) or 0, self.consolidationGroups[key])) for k in self.getAllKeys(map(lambda v: v.keys(), self.consolidationGroups[key]))}
-
-	def findCommonValuesForKeys(self, lis):
-		#Finds the most common number of dict within each list in the larger list
-		listOfLengths = []
-		for aScout in lis:
-			listOfLengths += [len(aScout)]
-		lengthFrequencies = map(listOfLengths.count, listOfLengths)
-		if len(lis) != 0:
-			mostCommonNum = listOfLengths[lengthFrequencies.index(max(lengthFrequencies))]
-		else:
-			mostCommonNum = 0
-		#If someone missed a dict (for a shot) (that is, they did not include one that most of the scouts did), this makes one with no values
-		for aScout in lis:
-			if len(aScout) < mostCommonNum:
-				for x in range(mostCommonNum - len(aScout)):
-					aScout += [{key: 0 for key in self.boilerKeys}]
-		returnList = []
-		for num in range(mostCommonNum):
-			returnList += [{}]
-			#finds dicts that should be the same (e.g. each shot time dict for the same shot) within the tempTIMDs
-			#This means comparisons such as the first shot in teleop by a given robot, as recorded by multiple scouts
-			dicts = [scout[num] for scout in lis]
-			consolidationDict = {}
-			#combines dicts that should be the same into a consolidation dict
-			for key in dicts[0].keys():
-				consolidationDict[key] = []
-				for aDict in dicts:
-					consolidationDict[key] += [aDict[key]]
-			#The time and number of shots can be compared to get a common value
-			for key in consolidationDict.keys():
-				if key != 'position':
-					values = consolidationDict[key]
-					valueFrequencies = map(values.count, values)
-					commonValue = values[valueFrequencies.index(max(valueFrequencies))]
-					if values.count(commonValue) <= len(values) / 2 and type(commonValue) != str:
-						commonValue = np.mean(values)
-					returnList[num].update({key: commonValue})
-			#If there is only one scout, their statement about position is accepted as right
-			if len(consolidationDict['position']) == 1:
-				returnList[num].update({'position': consolidationDict['position']})
-			#If there are 2 scouts, pick one that isn't the key unless they are both in agreement
-			elif len(consolidationDict['position']) == 2:
-				if consolidationDict['position'][0].lower() != 'key':
-					returnList[num].update({'position': consolidationDict['position'][0]})
-				else:
-					returnList[num].update({'position': consolidationDict['position'][1]})
-			#If there are 3 scouts, the position value is the most common position value
-			else:
-				positionFrequencies = map(consolidationDict['position'].count, consolidationDict['position'])
-				commonPosition = consolidationDict['position'][positionFrequencies.index(max(positionFrequencies))]
-				returnList[num].update({'position': commonPosition})
-		return returnList
 
 	#flattens the list of lists of keys into a list of keys
 	def getAllKeys(self, keyArrays):
@@ -163,4 +162,3 @@ class DataChecker(multiprocessing.Process):
 			self.consolidationGroups = self.getConsolidationGroups(tempTIMDs)
 			map(lambda key: firebase.child("TeamInMatchDatas").child(key).set(self.joinValues(key)), self.consolidationGroups.keys())
 			time.sleep(10)
-
