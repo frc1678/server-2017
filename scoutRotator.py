@@ -3,7 +3,6 @@ import DataModel
 import time
 import SPR
 import multiprocessing
-import random
 import time
 
 config = {
@@ -18,16 +17,14 @@ fb = f.database()
 testScouts = "ethan ben calvin kenny ryan peter shane".split()
 scouts = "westley mx tim jesse sage alex janet livy gemma justin berin aiden rolland rachel zoe ayush jona angela kyle wesley".split()
 SPR = SPR.ScoutPrecision()
-#Note: set to true when starting to run and everyone is available, or the list of scouts on this file has been updated
-#	   set to false when maintaining availability already in firebase, or leaving in scouts on firebase but not the list here
+
+#creates list of availability values in firebase for each scout
 def resetAvailability():
 	availability = {name: 1 for name in testScouts}
 						#Note: change testScouts to scouts for actual use
 	fb.child('availability').set(availability)
 
-#If reset scouts is true, this makes firebase objects for 11 scouts (change 11 to 18 for actual use)
-#Set to true if scouts in firebase do not exist, or there are the wrong number
-#otherwise, set to false
+#creates firebase objects for 18 scouts
 def resetScouts():
 	scouts = {'scout' + str(num) : {'currentUser': ''} for num in range(1,19)}
 	fb.child('scouts').set(scouts)
@@ -50,14 +47,12 @@ def doThing(newMatchNumber):
 def doThingStream():
 	resetScouts()
 	resetAvailability()
-	#Once all of the scouts have logged onto tablets, it starts assignments and things
+	#Once all of the scouts have logged onto tablets (so scout names matches availability), it starts assignments and things
 	while True:
 		available = [k for (k, v) in fb.child("availability").get().val().items() if v == 1]
 		scoutRotatorDict = fb.child("scouts").get().val()
 		scoutsWithNames = filter(lambda v: v.get('currentUser') != (None or ''), scoutRotatorDict.values())
 		namesOfScouts = map(lambda v: v.get('currentUser'), scoutsWithNames)
-		print available
-		print namesOfScouts
 		nameIsIn = True
 		for name in namesOfScouts:
 			nameIsIn = nameIsIn and (name in available)
@@ -65,5 +60,3 @@ def doThingStream():
 			break
 		time.sleep(1)
 	fb.child("currentMatchNum").stream(doThing)
-
-doThingStream()

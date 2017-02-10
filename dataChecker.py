@@ -2,9 +2,7 @@ import pyrebase
 import numpy as np
 import utils
 import time
-import pdb
 import multiprocessing
-import pprint
 
 config = {
 	"apiKey": "mykey",
@@ -71,6 +69,8 @@ class DataChecker(multiprocessing.Process):
 		else:
 			return None
 
+	#This is the common value function for lists of dicts
+	#It consolidates the data on shots from scouts, by comparing each shot to other scouts' info on the same shot
 	def findCommonValuesForKeys(self, lis):
 		#Finds the most largest of dicts within each list in the larger list (within each scout's observations)
 		#(i.e. if there is disagreement over how many shots a robot took in a particular match)

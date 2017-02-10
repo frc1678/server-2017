@@ -10,7 +10,7 @@ from StringIO import StringIO
 ''' If there were too many more of these, or if this
 were actual server code, I would make a module, but
 for fake database creation purposes it is not worth it'''
-
+#?????
 
 def sumStdDevs(stdDevs):
 	return sum(map(lambda x: x ** 2 , filter(lambda s: s != None, stdDevs))) ** 0.5
@@ -53,6 +53,7 @@ def dictDivideConstant(d, constant):
 def stdDictSum(dict1, dict2):
 	return dictOperation(dict1, dict2, lambda x, y: sumStdDevs([x, y]))
 
+#Does this actually work?
 def setDictionaryValue(dict, key, value):
 	dict[key] = value
 
@@ -134,10 +135,12 @@ def printWarningForSeconds(numSeconds):
 	print str(numSeconds) + ' SECONDS UNTIL FIREBASE WIPES'
 	time.sleep(1)
 
+#Turns a list of lists into one big list
 def extendList(lis):
 	return [v for l in lis for v in l]
 
 #Finds possible groupings of individuals (n of them) into a specified number of groups (size) with each group's maximum size of limit
+#e.g. sum_to_n(6, 3) -> (2,2,2), (1,2,3), etc.
 def sum_to_n(n, size, limit=None):
     if size == 1:
         yield [n]

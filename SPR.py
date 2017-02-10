@@ -94,7 +94,7 @@ class ScoutPrecision(object):
 				differenceFromCommonValue = map(lambda v: abs(v - commonValue), values)
 				self.sprs.update({scouts[c] : (self.sprs.get(scouts[c]) or 0) + differenceFromCommonValue[c] for c in range(len(differenceFromCommonValue))})
 
-	#Similar to findOddScoutForDict, but matching each dict in lists of dicts
+	#Similar to findOddScoutForDict, but for lists of several dicts instead of individual dicts
 	def findOddScoutForListOfDicts(self, tempTIMDs, key):
 		scouts = filter(lambda v: v != None, map(lambda k: k.get('scoutName'), tempTIMDs))
 		lists = filter(lambda k: k!= None, map(lambda t: t.get(key) if t.get('scoutName') != None else None, tempTIMDs))
@@ -158,7 +158,7 @@ class ScoutPrecision(object):
 		return sorted(self.sprs.keys(), key=lambda k: self.sprs[k])
 
 	#orders available scouts by spr ranking, then makes a list of how frequently each scout should be selected
-	#(better (lower scoring) scouts more frequently)
+	#better (lower scoring) scouts appear more frequently
 	def getScoutFrequencies(self, available):
 		rankedScouts = self.rankScouts(available)
 		#It is reversed so the scouts with lower spr are later, causing them to be repeated more
@@ -182,6 +182,7 @@ class ScoutPrecision(object):
 		#used to make better scouts more likely to be picked
 		freqs = self.getScoutFrequencies(available)
 		#Gets the scouts who are alone on a robot
+		#Note: This setup makes better scouts more likely to scout alone, since lonely scouts are picked from the list first
 		indScouts = self.getIndividualScouts(freqs, scoutsPGrp.count(1))
 		unusedScouts = filter(lambda s: s not in indScouts, available)
 		nonIndScouts = []

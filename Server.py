@@ -18,7 +18,7 @@ import numpy as np
 import dataChecker
 import multiprocessing
 import firebaseCacher
-# import scoutRotator
+import scoutRotator
 
 print "starting"
 comp = DataModel.Competition()
