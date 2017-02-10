@@ -111,7 +111,8 @@ class Calculator(object):
         try:
             numerator = ((s1**4/n1) + (s2**4/n2)) ** 2 
             denominator = (s1**8/((n1**2)*(n1-1))) + (s2**8/((n2**2)*(n2-1))) 
-        except:
+        except Exception as e:
+            print e
             numerator = 0.0
             denominator = 0.0
         return numerator / denominator if denominator != 0 else 0.0
@@ -192,13 +193,11 @@ class Calculator(object):
         return 50 * utils.convertFirebaseBoolean(timd.didLiftoff)
 
     def rValuesForAverageFunctionForDict(self, averageFunction, d):
-        impossible = True
         values = map(averageFunction, self.cachedComp.teamsWithMatchesCompleted)
         if len(values) == 0:
             return None
         initialValue = values[0]
-        for value in values[1:]:
-            if value != initialValue: impossible = False
+        impossible = not len(filter(lambda v: v != initialValue, values[1:]))
         if impossible: 
             zscores = [0.0 for v in values]
         else: 
@@ -253,8 +252,8 @@ class Calculator(object):
 
     def overallSecondPickAbility(self, team):
         freqLiftOurTeam = self.getMostFrequentLift(self.su.getTeamForNumber(self.ourTeamNum))
-        gA = self.gearPlacementAbilityExcludeLift(team, freqLiftOurTeam)
-        return gA + team.calculatedData.avgDefense * 1.0 + team.calculatedData.liftoffAbility
+        gA = self.gearPlacementAbilityExcludeLift(team, freqLiftOurTeam) #convert to some number of points
+        return gA * 1.0 + team.calculatedData.avgDefense * 1.0 + team.calculatedData.liftoffAbility
 
     def predictedScoreForMatchForAlliance(self, match, allianceIsRed):
         return match.calculatedData.predictedRedScore if allianceIsRed else match.calculatedData.predictedBlueScore
@@ -314,9 +313,6 @@ class Calculator(object):
     def get40KilopascalChanceForAllianceWithNumbers(self, allianceNumbers):
         self.get40KilopascalChanceForAlliance(self.su.teamsForTeamNumbersOnAlliance(allianceNumbers))
 
-    def zProbTeam(self, team, number, gearProbs):
-        return (gearProbs(team).get(number) or 0.0)
-
     def totalZProbTeam(self, team, number):
         return self.cachedComp.zGearProbabilities[team.number].get(number) or 0.0
       
@@ -326,7 +322,7 @@ class Calculator(object):
 
     def getAllRotorsTurningChanceForTwoRobotAlliance(self, alliance):        
         alliance = map(self.su.replaceWithAverageIfNecessary, alliance)
-        return sum(map(lambda x: sum(map(lambda y: self.totalZProbTeam(alliance[0], x) * self.totalZProbTeam(alliance[1], y), range(13))), range(12, 25)))
+        return sum(map(lambda w: sum(map(lambda y: self.totalZProbTeam(alliance[0], w-y) * self.totalZProbTeam(alliance[1], y), range(13))), range(12, 25)))
 
     def totalGearsPlacedForTIMD(self, timd):
         return timd.calculatedData.numGearsPlacedAuto + timd.calculatedData.numGearsPlacedTele
@@ -519,7 +515,6 @@ class Calculator(object):
             self.cacheSecondTeamData()
             self.doMatchesCalculations()
             self.doSecondTeamCalculations()
-            pdb.set_trace()
             map(lambda o: FirebaseWriteObjectProcess(o, FBC).start(), self.cachedComp.teamsWithMatchesCompleted + self.su.getCompletedTIMDsInCompetition() + self.comp.matches)
             FBC.addCompInfoToFirebase()
             endTime = time.time()

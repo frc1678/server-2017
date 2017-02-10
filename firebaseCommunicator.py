@@ -105,7 +105,6 @@ class FirebaseCommunicator(object):
 	def addCompInfoToFirebase(self): #Doing these keys manually so less clicking in firebase is better and because just easier
 		FBLocation = "/"
 		result = firebase.put(FBLocation, 'code', self.competition.code)
-		result = firebase.put(FBLocation, 'currentMatchNum', self.competition.currentMatchNum)
 
 	def wipeDatabase(self):
 		map(utils.printWarningForSeconds, range(10, 0, -1))

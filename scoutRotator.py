@@ -66,4 +66,3 @@ def doThingStream():
 		time.sleep(1)
 	fb.child("currentMatchNum").stream(doThing)
 
-doThingStream()
