@@ -11,7 +11,7 @@ class SchemaUtils(object):
      # Team utility functions
     def getTeamForNumber(self, teamNumber):
         try: return [team for team in self.comp.teams if team.number == teamNumber][0]
-        except: 
+        except:
             print str(teamNumber) + " doesn't exist."
             return None
 
@@ -31,7 +31,7 @@ class SchemaUtils(object):
         return calculatedData.avgHighShotsTele != None
 
     def replaceWithAverageIfNecessary(self, team):
-        return team if self.teamCalculatedDataHasValues(team.calculatedData) and len(self.getCompletedMatchesForTeam(team)) > 0 else self.calc.averageTeam
+        return team if team != None and self.teamCalculatedDataHasValues(team.calculatedData) and len(self.getCompletedMatchesForTeam(team)) > 0 else self.calc.averageTeam
 
     # Match utility functions
     def getMatchForNumber(self, matchNumber):
@@ -43,9 +43,9 @@ class SchemaUtils(object):
 
     def teamInMatch(self, team, match):
         return team in self.teamsInMatch(match)
-        
+
     def matchIsCompleted(self, match):
-        return len(self.getCompletedTIMDsForMatch(match)) == 6 and self.matchHasValuesSet(match)   
+        return len(self.getCompletedTIMDsForMatch(match)) == 6 and self.matchHasValuesSet(match)
 
     def getCompletedMatchesInCompetition(self):
         return filter(self.matchIsCompleted, self.comp.matches)
@@ -69,7 +69,7 @@ class SchemaUtils(object):
     def getTeamAllianceIsRedInMatch(self, team, match):
         if team.number == -1 or team.number in match.redAllianceTeamNumbers: return True
         if team.number in match.blueAllianceTeamNumbers: return False
-        else: 
+        else:
             pdb.set_trace()
             raise ValueError(str(team.number) not in "Q" + str(match.number))
 
@@ -84,7 +84,7 @@ class SchemaUtils(object):
         return filter(self.timdIsCompleted, self.getTIMDsForTeam(team))
 
     def getTIMDsForMatchForAllianceIsRed(self, match, allianceIsRed):
-        return filter(lambda t: t.teamNumber in match.redAllianceTeamNumbers, self.getTIMDsForMatch(match)) if allianceIsRed else filter(lambda t: t.teamNumber in match.blueAllianceTeamNumbers, self.getTIMDsForMatch(match)) 
+        return filter(lambda t: t.teamNumber in match.redAllianceTeamNumbers, self.getTIMDsForMatch(match)) if allianceIsRed else filter(lambda t: t.teamNumber in match.blueAllianceTeamNumbers, self.getTIMDsForMatch(match))
 
     def getCompletedTIMDsForMatchForAllianceIsRed(self, match, allianceIsRed):
         return filter(self.timdIsCompleted, self.getTIMDsForMatchForAllianceIsRed(match, allianceIsRed))
@@ -96,10 +96,10 @@ class SchemaUtils(object):
         return filter(self.timdIsCompleted, self.comp.TIMDs)
 
     def TIMCalculatedDataHasValues(self, calculatedData):
-        return calculatedData.liftoffAbility != None 
+        return calculatedData.liftoffAbility != None
 
     def timdIsCompleted(self, timd):
-        return timd.rankSpeed != None and timd.numGearGroundIntakesTele != None 
+        return timd.rankSpeed != None and timd.numGearGroundIntakesTele != None
 
     def matchHasValuesSet(self, match):
         return match.redScore != None and match.blueScore != None

@@ -156,7 +156,13 @@ class Calculator(object):
 
     def getAutoShootingPositions(self, team):
         timds = self.su.getCompletedTIMDsForTeam(team)
-        return list(set([d.get('position') for timd in timds for d in timd.highShotTimesForBoilerAuto + timd.lowShotTimesForBoilerAuto]))
+        returnList = []
+        for timd in timds:
+            for d in timd.highShotTimesForBoilerAuto + timd.lowShotTimesForBoilerAuto:
+                if d.get('position') != None:
+                    returnList += d.get('position')
+        return list(set(returnList))
+        #return list(set([d.get('position') for timd in timds for d in timd.highShotTimesForBoilerAuto + timd.lowShotTimesForBoilerAuto]))
 
     # GEARS DATA
 
