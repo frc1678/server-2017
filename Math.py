@@ -79,7 +79,7 @@ class Calculator(object):
 
     def getAverageOfDataFunctionAcrossCompetition(self, dataFunction):
         validData = filter(lambda x: x != None, map(dataFunction, self.su.teamsWithCalculatedData()))
-        return np.mean(validData) if len(validData) > 0 else None
+        return np.mean(validData) if len(validData) > 0 else 0
 
     def getStandardDeviationOfDataFunctionAcrossCompetition(self, dataFunction):
         return utils.rms(map(dataFunction, self.su.teamsWithCalculatedData()))
@@ -233,7 +233,8 @@ class Calculator(object):
 
     def predictedScoreForAlliance(self, alliance):
         alliance = map(self.su.replaceWithAverageIfNecessary, alliance)
-        baselinePts = sum(map(lambda t: t.calculatedData.baselineReachedPercentage * 5, alliance))
+        pdb.set_trace()
+        baselinePts = sum(map(lambda t: (t.calculatedData.baselineReachedPercentage * 5 or 0), alliance))
         fuelPts = self.getTotalAverageShotPointsForAlliance(alliance)
         liftoffPoints = sum(map(lambda t: t.calculatedData.liftoffAbility, alliance))
         gearPts = self.getRotorsTurningForDatasForGearFunc(alliance, lambda t: t.calculatedData.avgGearsPlacedTele, lambda t: t.calculatedData.avgGearsPlacedAuto)
@@ -500,6 +501,7 @@ class Calculator(object):
             file.close()
 
     def doCalculations(self, FBC):
+        pdb.set_trace()
         isData = len(self.su.getCompletedTIMDsInCompetition()) > 0
         if isData:
             print "THERE IS DATA"

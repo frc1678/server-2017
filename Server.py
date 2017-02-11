@@ -30,10 +30,10 @@ calculator = Math.Calculator(comp)
 cycle = 1
 shouldEmail = False
 emailer = CrashReporter.EmailThread()
-consolidator = dataChecker.DataChecker()
-consolidator.start()
-firebaseCacher.startFirebaseCacheStream(FBC)
-scoutRotator.doThingStream()
+# consolidator = dataChecker.DataChecker()
+# consolidator.start()
+# firebaseCacher.startFirebaseCacheStream(FBC)
+# scoutRotator.doThingStream()
 
 def checkForMissingData():
 	with open('missing_data.txt', 'w') as missingDataFile:
