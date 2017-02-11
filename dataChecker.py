@@ -79,7 +79,7 @@ class DataChecker(multiprocessing.Process):
 		else:
 			largestListLength = 0
 		#If someone missed a dict (for a shot) (that is, they did not include one that another scout did), this makes one with no values
-		for aScout in lists:
+		for aScout in lis:
 			if len(aScout) < largestListLength:
 				aScout += [{'numShots': 0, 'position': 0, 'time': 0}] * (largestListLength - len(aScout))
 		returnList = []
@@ -108,7 +108,7 @@ class DataChecker(multiprocessing.Process):
 				returnList[num].update({'position': consolidationDict['position']})
 			#If there are 2 scouts, pick one that isn't the key unless they are both in agreement
 			elif len(consolidationDict['position']) % 2 == 0:
-				if consolidationDict['position'][0].lower() != 'key':
+				if consolidationDict['position'][0] != 'Key':
 					returnList[num].update({'position': consolidationDict['position'][0]})
 				else:
 					returnList[num].update({'position': consolidationDict['position'][1]})
@@ -160,5 +160,5 @@ class DataChecker(multiprocessing.Process):
 				time.sleep(5)
 				continue
 			self.consolidationGroups = self.getConsolidationGroups(tempTIMDs)
-			map(lambda key: firebase.child("TeamInMatchDatas").child(key).set(self.joinValues(key)), self.consolidationGroups.keys())
+			map(lambda key: firebase.child("TeamInMatchDatas").child(key).update(self.joinValues(key)), self.consolidationGroups.keys())
 			time.sleep(10)

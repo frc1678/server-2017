@@ -44,6 +44,9 @@ def doThing(newMatchNumber):
 	#and it is put on firebase
 	fb.child("scouts").update(newAssignments)
 
+def emptyTIMDs():
+	fb.child('TeamInMatchDatas').set({})
+
 def doThingStream():
 	resetScouts()
 	resetAvailability()
@@ -54,9 +57,12 @@ def doThingStream():
 		scoutsWithNames = filter(lambda v: v.get('currentUser') != (None or ''), scoutRotatorDict.values())
 		namesOfScouts = map(lambda v: v.get('currentUser'), scoutsWithNames)
 		nameIsIn = True
-		for name in namesOfScouts:
-			nameIsIn = nameIsIn and (name in available)
+		for name in available:
+			nameIsIn = nameIsIn and (name in namesOfScouts)
 		if nameIsIn:
 			break
 		time.sleep(1)
+	fb.child("currentMatchNum").stream(doThing)
+
+def simpleStream():
 	fb.child("currentMatchNum").stream(doThing)
