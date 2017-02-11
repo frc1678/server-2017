@@ -10,16 +10,14 @@ def TSVExportAll(comp):
 	firstTeam = True
 	excluded = ['calculatedData', 'name', 'number', 'imageKeys']
 	with open('./dataExportAll.csv', 'w') as f:
-		defaultKeys = [k for k in Team().__dict__.keys() if k not in excluded]
+		defaultKeys = ['number'] + [k for k in Team().__dict__.keys() if k not in excluded]
 		defaultKeys += Team().calculatedData.__dict__.keys()
-		pdb.set_trace()
 		writer = csv.DictWriter(f, fieldnames=defaultKeys)
 		writer.writeheader()
 		for team in comp.teams:
-			tDict = {k : v for k,v in team.__dict__.items() if k not in excluded}
+			tDict = {"number" : team.number}
+			tDict.update({k : v for k,v in team.__dict__.items() if k in defaultKeys})
 			tDict.update(team.calculatedData.__dict__)
-			tDict = {k : tDict.get(k) for k in sorted(tDict.keys(), key=lambda key: key.lower()) if k in defaultKeys}
-			pdb.set_trace()
 			writer.writerow(tDict)
 
 def TSVExportCVR(comp):
