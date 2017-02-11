@@ -18,6 +18,9 @@ class Competition(object):
 	def updateTIMDsFromFirebase(self):
 		self.TIMDs = utils.makeTIMDsFromDicts(firebaseCommunicator.getPythonObjectForFirebaseDataAtLocation("/TeamInMatchDatas"))
 
+	def updateCurrentMatchNum(self):
+		self.currentMatchNum = firebaseCommunicator.getPythonObjectForFirebaseDataAtLocation("/currentMatchNum")
+
 class CalculatedTeamData(object):
 	"""c"""
 	def __init__(self, **args):

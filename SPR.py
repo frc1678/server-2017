@@ -100,8 +100,8 @@ class ScoutPrecision(object):
 		lists = filter(lambda k: k!= None, map(lambda t: t.get(key) if t.get('scoutName') != None else None, tempTIMDs))
 		#Finds the most largest of dicts within each list in the larger list (within each scout's observations)
 		#(i.e. if there is disagreement over how many shots a robot took)
-		if len(lis) > 0:
-			largestListLength = max(map(lambda x: len(x), lis))
+		if len(lists) > 0:
+			largestListLength = max(map(lambda x: len(x), lists))
 		else:
 			largestListLength = 0
 		#If someone missed a dict (for a shot) (that is, they did not include one that another scout did), this makes one with no values

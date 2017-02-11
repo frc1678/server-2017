@@ -23,17 +23,20 @@ import scoutRotator
 print "starting"
 comp = DataModel.Competition()
 comp.updateTeamsAndMatchesFromFirebase()
+#scoutRotator.emptyTIMDs()
+FBC = firebaseCommunicator.FirebaseCommunicator(comp)
+#FBC.addTIMDsToFirebase(comp.matches)
 comp.updateTIMDsFromFirebase()
 CSVExporter.TSVExportAll(comp)
-FBC = firebaseCommunicator.FirebaseCommunicator(comp)
 calculator = Math.Calculator(comp)
 cycle = 1
 shouldEmail = False
 emailer = CrashReporter.EmailThread()
 consolidator = dataChecker.DataChecker()
 consolidator.start()
-firebaseCacher.startFirebaseCacheStream(FBC)
-scoutRotator.doThingStream()
+#firebaseCacher.startFirebaseCacheStream(FBC)
+#scoutRotator.doThingStream()
+scoutRotator.simpleStream()
 
 def checkForMissingData():
 	with open('missing_data.txt', 'w') as missingDataFile:
@@ -43,6 +46,7 @@ def checkForMissingData():
 
 while(True):
 	print("\nCalcs Cycle " + str(cycle) + "...")
+	comp.updateCurrentMatchNum()
 	comp.updateTeamsAndMatchesFromFirebase()
 	comp.updateTIMDsFromFirebase()
 	checkForMissingData()
