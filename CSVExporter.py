@@ -2,30 +2,25 @@
 import utils
 from collections import OrderedDict
 import pdb
+import csv
+from DataModel import Team
 
 def TSVExportAll(comp):
 	s = ""
 	firstTeam = True
 	excluded = ['calculatedData', 'name', 'number', 'imageKeys']
-	with open('./dataExportAll.csv', 'w') as file:
+	with open('./dataExportAll.csv', 'w') as f:
+		defaultKeys = [k for k in Team().__dict__.keys() if k not in excluded]
+		defaultKeys += Team().calculatedData.__dict__.keys()
+		pdb.set_trace()
+		writer = csv.DictWriter(f, fieldnames=defaultKeys)
+		writer.writeheader()
 		for team in comp.teams:
 			tDict = {k : v for k,v in team.__dict__.items() if k not in excluded}
-			cd = team.calculatedData.__dict__
-			d = cd
-			d.update(tDict)
-			dic = OrderedDict(sorted(d.items(), key=lambda t: t[0].lower()))
-			if firstTeam:
-				firstTeam = False
-				s += "number" + "	"
-				for key in dic.keys():
-					s += key + "	"
-				s += "\n"
-			s += str(team.number) + "	"
-			for value in dic.values():
-				s += str(value) + "	"
-			s += "\n"
-		file.write(s)
-		file.close()
+			tDict.update(team.calculatedData.__dict__)
+			tDict = {k : tDict.get(k) for k in sorted(tDict.keys(), key=lambda key: key.lower()) if k in defaultKeys}
+			pdb.set_trace()
+			writer.writerow(tDict)
 
 def TSVExportCVR(comp):
 	s = ""
