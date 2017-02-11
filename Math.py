@@ -187,6 +187,10 @@ class Calculator(object):
         gearPtsTele = 40 * (self.teleGearIncrements.index(max(filter(lambda p: (totalTeleGears +  totalAutoGears) >= p, self.teleGearIncrements[self.autoGearIncrements.index(max(incrementsReached)):]))) + 1)
         return gearPtsAuto + gearPtsTele
 
+    def getGearScoringPositionsAuto(self, team):
+        timds = self.su.getCompletedTIMDsForTeam(team)
+        return list(set([k for tm in timds for k in tm.gearsPlacedByLiftAuto.keys() if not tm.gearsPlacedByLiftAuto.get(k)]))
+
     # OVERALL DATA
 
     def liftoffAbilityForTIMD(self, timd):
