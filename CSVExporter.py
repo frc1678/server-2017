@@ -7,7 +7,7 @@ def TSVExportAll(comp):
 	s = ""
 	firstTeam = True
 	excluded = ['calculatedData', 'name', 'number', 'imageKeys']
-	with open('./dataExportAll.tsv', 'w') as file:
+	with open('./dataExportAll.csv', 'w') as file:
 		for team in comp.teams:
 			tDict = {k : v for k,v in team.__dict__.items() if k not in excluded}
 			cd = team.calculatedData.__dict__
