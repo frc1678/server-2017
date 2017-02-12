@@ -517,7 +517,6 @@ class Calculator(object):
             file.close()
 
     def doCalculations(self, FBC):
-        pdb.set_trace()
         isData = len(self.su.getCompletedTIMDsInCompetition()) > 0
         if isData:
             print "THERE IS DATA"

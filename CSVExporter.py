@@ -15,10 +15,10 @@ def TSVExportAll(comp):
 		writer = csv.DictWriter(f, fieldnames=defaultKeys)
 		writer.writeheader()
 		for team in comp.teams:
-			tDict = {"number" : team.number}
-			tDict.update({k : v for k,v in team.__dict__.items() if k in defaultKeys})
+			tDict = team.__dict__
+			keys = sorted(defaultKeys,key=lambda k: (k != "number", k.lower()))
 			tDict.update(team.calculatedData.__dict__)
-			writer.writerow(tDict)
+			writer.writerow({k : tDict[k] for k in keys})
 
 def TSVExportCVR(comp):
 	s = ""

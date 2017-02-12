@@ -39,7 +39,7 @@ def firstCalculationDict(team, calc):
 	cd.avgGearsFumbledTele = calc.getAverageForDataFunctionForTeam(team, lambda tm: tm.numGearsFumbledTele)
 	cd.avgDrivingAbility = calc.drivingAbility(team)
 	cd.autoShootingPositions = calc.getAutoShootingPositions(team)
-	cd.gearScoringPositionsAuto = calc.getGearPlacingPositionsAuto(team)
+	cd.gearScoringPositionsAuto = calc.getGearScoringPositionsAuto(team)
 	calc.getAvgFuncForKeys(team, cd.avgGearsPlacedByLiftAuto, lambda tm: tm.gearsPlacedByLiftAuto, calc.lifts)
 	calc.getAvgFuncForKeys(team, cd.avgGearsPlacedByLiftTele, lambda tm: tm.gearsPlacedByLiftTele, calc.lifts)
 
