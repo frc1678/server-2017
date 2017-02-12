@@ -25,7 +25,7 @@ class TeamInMatchData(object):
 		self.calculatedData = CalculatedTeamInMatchData().__dict__
 		self.teamNumber = args['teamNumber']
 		self.matchNumber = args['matchNumber']
-		self.scoutName = 'sammy'
+		self.scoutName = args['scoutName']
 		self.numGearGroundIntakesTele = random.randint(0,3)
 		self.numGearLoaderIntakesTele = random.randint(0,3)
 		self.numGearsEjectedTele = random.randint(0,3)
@@ -128,7 +128,7 @@ class CalculatedMatchData(object):
 (superSecret, url) = ('93Ybz7MldpSj6HQHW1zb4ddcGGmpCMlNlOBoI9V3', 'https://scouting-2017-5f51c.firebaseio.com/')
 
 auth = fb.FirebaseAuthentication(superSecret, "1678programming@gmail.com", True, True)
-testScouts = "arman Sam so asdf abhi fgh aScout anotherScout aThirdScout".split()
+testScouts = "a b c d e f g h i j k l m n o p q r".split()
 testScouts = zip(testScouts, range(len(testScouts)))
 firebase = fb.FirebaseApplication(url, auth)
 cm = 1
@@ -137,8 +137,9 @@ while True:
 	m = Match(number=cm,redAllianceTeamNumbers=match['redAllianceTeamNumbers'],blueAllianceTeamNumbers=match['blueAllianceTeamNumbers'], calculatedData=CalculatedMatchData().__dict__)
 	firebase.put('/Matches/', str(cm), m.__dict__)
 	for t in match['redAllianceTeamNumbers'] + match['blueAllianceTeamNumbers']:
-		k = str(t) + "Q" + str(cm)
-		firebase.put('/TeamInMatchDatas/', k, TeamInMatchData(teamNumber=t, matchNumber=cm).__dict__)
+		for i in range(3):
+			k = str(t) + "Q" + str(cm)
+			firebase.put('/TempTeamInMatchDatas/', k + '-' + str(i), TeamInMatchData(teamNumber=t, matchNumber=cm, scoutName=testScouts[i]).__dict__)
 	cm += 1
 	time.sleep(4)
 

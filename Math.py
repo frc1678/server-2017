@@ -156,13 +156,7 @@ class Calculator(object):
 
     def getAutoShootingPositions(self, team):
         timds = self.su.getCompletedTIMDsForTeam(team)
-        returnList = []
-        for timd in timds:
-            for d in timd.highShotTimesForBoilerAuto + timd.lowShotTimesForBoilerAuto:
-                if d.get('position') != None:
-                    returnList += d.get('position')
-        return list(set(returnList))
-        #return list(set([d.get('position') for timd in timds for d in timd.highShotTimesForBoilerAuto + timd.lowShotTimesForBoilerAuto]))
+        return list(set([d.get('position') for timd in timds for d in timd.highShotTimesForBoilerAuto + timd.lowShotTimesForBoilerAuto]))
 
     # GEARS DATA
 
@@ -175,7 +169,7 @@ class Calculator(object):
         [utils.setDictionaryValue(dic, l, getAvgForKey(l)) for l in keys]
 
     def getGearPtsForAllianceTIMDs(self, timds):
-        return self.getRotorsTurningForDatasForGearFunc(timds, lambda t: t.calculatedData.numGearsPlacedTele, lambda t: t.calculatedData.numGearsPlacedAuto)
+        return self.getRotorsTurningForDatasForGearFunc(timds, lambda t: (t.calculatedData.numGearsPlacedTele or 0), lambda t: (t.calculatedData.numGearsPlacedAuto or 0))
 
     def liftUsedTIMD(self, lift, timd):
         return lift in timd.gearsPlacedByLiftAuto.keys() if timd.gearsPlacedByLiftAuto else False
@@ -186,22 +180,13 @@ class Calculator(object):
         return self.lifts[a.index(max(a))]
 
     def getRotorsTurningForDatasForGearFunc(self, datas, gearFuncTele, gearFuncAuto):
-        autoDatas = []
-        teleDatas = []
-        for data in datas:
-            if gearFuncAuto(data) != None:
-                autoDatas += [data]
-            if gearFuncTele(data) != None:
-                teleDatas += [data]
-        totalAutoGears = sum(map(gearFuncAuto, autoDatas))
-        totalTeleGears = sum(map(gearFuncTele, teleDatas))
-        incrementsReached = filter(lambda p: totalAutoGears >= p, self.autoGearIncrements)
-        gearPtsAuto = 60 * (self.autoGearIncrements.index(max(incrementsReached)) + 1) if len(incrementsReached) > 0 else 0
-        try:
-            locationOfReachedIncrements = self.autoGearIncrements.index(max(incrementsReached))
-        except:
-            locationOfReachedIncrements = 0
-        gearPtsTele = 40 * (self.teleGearIncrements.index(max((filter(lambda p: (totalTeleGears +  totalAutoGears) >= p, self.teleGearIncrements[locationOfReachedIncrements:])) or 0)) + 1)
+        totalAutoGears = sum(map(gearFuncAuto or 0, datas))
+        totalTeleGears = sum(map(gearFuncTele or 0, datas))
+        incsReached = filter(lambda p: totalAutoGears >= p, self.autoGearIncrements)
+        nextGearLevel = self.autoGearIncrements.index(max(incsReached)) + 1 if len(incsReached) > 0 else 0
+        incsReachedTele = filter(lambda p: (totalTeleGears +  totalAutoGears) >= p, self.teleGearIncrements[nextGearLevel:])
+        gearPtsAuto = 60 * nextGearLevel
+        gearPtsTele = 40 * (self.teleGearIncrements.index(max(incsReachedTele)) + 1 if len(incsReachedTele) > 0 else 0)
         return gearPtsAuto + gearPtsTele
 
     def getGearScoringPositionsAuto(self, team):

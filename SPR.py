@@ -7,6 +7,7 @@ import Math
 import random
 import pyrebase
 import numpy as np
+import pdb
 
 # Scout Performance Analysis
 class ScoutPrecision(object):

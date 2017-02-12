@@ -73,6 +73,7 @@ class CalculatedTeamData(object):
 		self.disfunctionalPercentage = None
 		self.firstPickRotorBonusChance = None
 		self.autoShootingPositions = None
+		self.gearScoringPositionsAuto = None
 		self.__dict__.update(args)
 
 class Team(object):

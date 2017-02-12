@@ -14,7 +14,7 @@ config = {
 
 f = pyrebase.initialize_app(config)
 fb = f.database()
-testScouts = "ethan ben calvin kenny ryan peter shane".split()
+testScouts = "a b c d e f g h i j k l m n o p q r".split()
 scouts = "westley mx tim jesse sage alex janet livy gemma justin berin aiden rolland rachel zoe ayush jona angela kyle wesley".split()
 SPR = SPR.ScoutPrecision()
 
@@ -30,7 +30,7 @@ def resetScouts():
 	fb.child('scouts').set(scouts)
 
 def doThing(newMatchNumber):
-	print 'Setting scouts for match ' + str(fb.child('currentMatchNum').get().val())
+	print 'Setting scouts for match ' + str(fb.child('currentMatchNumber').get().val())
 	if not newMatchNumber.get("data"): return
 	currentMatchNum = int(newMatchNumber["data"])
 	#gets the teams we need to scout for
@@ -62,7 +62,7 @@ def doThingStream():
 		if nameIsIn:
 			break
 		time.sleep(1)
-	fb.child("currentMatchNum").stream(doThing)
+	fb.child("currentMatchNumber").stream(doThing)
 
 def simpleStream():
-	fb.child("currentMatchNum").stream(doThing)
+	fb.child("currentMatchNumber").stream(doThing)

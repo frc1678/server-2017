@@ -16,8 +16,8 @@ def TSVExportAll(comp):
 		writer.writeheader()
 		for team in comp.teams:
 			tDict = team.__dict__
-			keys = sorted(defaultKeys,key=lambda k: (k != "number", k.lower()))
 			tDict.update(team.calculatedData.__dict__)
+			keys = sorted(defaultKeys,key=lambda k: (k != "number", k.lower()))
 			writer.writerow({k : tDict[k] for k in keys})
 
 def TSVExportCVR(comp):
