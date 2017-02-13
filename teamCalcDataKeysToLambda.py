@@ -55,7 +55,7 @@ def secondCalculationDict(team, calc):
 		cd.actualNumRPs = calc.getTeamRPsFromTBA(team)
 		cd.actualSeed = calc.getTeamSeed(team)
 	except:
-		if team not in calc.cachedComp.actualSeedings: pdb.set_trace()
+		# if team not in calc.cachedComp.actualSeedings: pdb.set_trace()
 		cd.actualSeed = calc.cachedComp.actualSeedings.index(team) + 1
 		cd.actualNumRPs = calc.actualNumberOfRPs(team)
 	cd.RScoreDefense = calc.cachedComp.defenseZScores[team.number]

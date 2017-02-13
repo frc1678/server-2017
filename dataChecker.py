@@ -3,6 +3,7 @@ import numpy as np
 import utils
 import time
 import multiprocessing
+import pdb
 
 config = {
 	"apiKey": "mykey",
@@ -105,7 +106,7 @@ class DataChecker(multiprocessing.Process):
 					returnList[num].update({key: commonValue})
 			#If there is only one scout, their statement about position is accepted as right
 			if len(consolidationDict['position']) == 1:
-				returnList[num].update({'position': consolidationDict['position']})
+				returnList[num].update({'position': consolidationDict['position'][0]})
 			#If there are 2 scouts, pick one that isn't the key unless they are both in agreement
 			elif len(consolidationDict['position']) % 2 == 0:
 				if consolidationDict['position'][0] != 'Key':
@@ -162,3 +163,5 @@ class DataChecker(multiprocessing.Process):
 			self.consolidationGroups = self.getConsolidationGroups(tempTIMDs)
 			map(lambda key: firebase.child("TeamInMatchDatas").child(key).update(self.joinValues(key)), self.consolidationGroups.keys())
 			time.sleep(10)
+
+DataChecker().start()

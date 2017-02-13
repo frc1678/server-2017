@@ -100,8 +100,7 @@ class FirebaseCommunicator(object):
 					f.close()
 					break
 			except Exception as e:
-				print e
-
+				pass
 	def addCompInfoToFirebase(self): #Doing these keys manually so less clicking in firebase is better and because just easier
 		FBLocation = "/"
 		result = firebase.put(FBLocation, 'code', self.competition.code)

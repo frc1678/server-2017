@@ -147,7 +147,7 @@ class ScoutPrecision(object):
 			#any team without and sprs score is set to the average score
 			for a in available:
 				if a not in self.sprs.keys():
-					avgScore = np.mean(self.sprs.values())
+					avgScore = np.mean(self.sprs.values()) if len(self.sprs) else 0
 					self.sprs[a] = avgScore
 		#If there are no tempTIMDs, everyone is set to 1
 		else:
@@ -238,8 +238,8 @@ class ScoutPrecision(object):
 
 	#Returns the first scout key that doesn't have a current user
 	def findFirstEmptySpotForScout(self, scoutRotatorDict, available):
-		emptyScouts = filter(lambda k: scoutRotatorDict[k].get('currentUser') == None or scoutRotatorDict[k].get ('currentUser') == "" or scoutRotatorDict[k].get('currentUser') not in available, scoutRotatorDict.keys())
-		return emptyScouts[0]
+		emptyScouts = filter(lambda k: scoutRotatorDict[k].get('currentUser') == None or scoutRotatorDict[k].get('currentUser') == "" or scoutRotatorDict[k].get('currentUser') not in available, scoutRotatorDict.keys())
+		return emptyScouts
 
 	#Updates a dict going to firebase with information about scouts for the next match
 	def assignScoutsToRobots(self, available, currentTeams, scoutRotatorDict):
@@ -262,6 +262,7 @@ class ScoutPrecision(object):
 		for scout in available:
 			#Each available scout is put into the dict to send to firebase, in an appropriate spot and with a team number
 			scoutRotatorDict = self.assignScoutToRobot(scout, teams, scoutRotatorDict, available, namesOfScouts)
+		print self.sprs
 		return scoutRotatorDict
 
 	#Finds a spot and a robot for an inputted available scout
@@ -272,6 +273,9 @@ class ScoutPrecision(object):
 			scoutRotatorDict[scoutNum].update({'team': teams[availableScout], 'currentUser': availableScout})
 		else:
 			#If they aren't, it needs to find an empty scout spot in firebase and put the available scout there
-			newSpace = self.findFirstEmptySpotForScout(scoutRotatorDict, available)
-			scoutRotatorDict[newSpace].update({'team': teams[availableScout], 'currentUser': availableScout})
+			if len(self.findFirstEmptySpotForScout(scoutRotatorDict, available)) <= 0:
+				pass
+			else:
+				newSpace = self.findFirstEmptySpotForScout(scoutRotatorDict, available)[0]
+				scoutRotatorDict[newSpace].update({'team': teams[availableScout], 'currentUser': availableScout})
 		return scoutRotatorDict

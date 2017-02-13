@@ -34,7 +34,7 @@ emailer = CrashReporter.EmailThread()
 consolidator = dataChecker.DataChecker()
 consolidator.start()
 firebaseCacher.startFirebaseCacheStream(FBC)
-scoutRotator.simpleStream()
+scoutRotator.simpleStream(False)
 
 def checkForMissingData():
 	with open('missing_data.txt', 'w') as missingDataFile:
@@ -44,9 +44,12 @@ def checkForMissingData():
 
 while(True):
 	print("\nCalcs Cycle " + str(cycle) + "...")
-	comp.updateCurrentMatchNum()
-	comp.updateTeamsAndMatchesFromFirebase()
-	comp.updateTIMDsFromFirebase()
+	while(True):
+		try:
+			comp.updateTeamsAndMatchesFromFirebase()
+			comp.updateTIMDsFromFirebase()
+			break
+		except: pass
 	checkForMissingData()
 	try:
 		calculator.doCalculations(FBC)

@@ -473,7 +473,7 @@ class Calculator(object):
             print "Completed first calcs for " + str(team.number)
 
     def doSecondCalculationsForTeam(self, team):
-        if not len(self.su.getCompletedTIMDsForTeam(team)) <= 0:
+        if not 0 in [len(self.su.getCompletedTIMDsForTeam(team)), len(self.su.getCompletedMatchesForTeam(team))]:
             secondCalculationDict(team, self)
             print "Completed second calculations for team " + str(team.number)
 

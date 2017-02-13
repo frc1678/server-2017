@@ -17,7 +17,6 @@ fb = f.database()
 testScouts = "a b c d e f g h i j k l m n o p q r".split()
 scouts = "janet justin alex wesley kyle mx aiden westley katie jesse jack sage jon ayush sam evan mingyo zoe gemma carter".split()
 SPR = SPR.ScoutPrecision()
-
 #creates list of availability values in firebase for each scout
 def resetAvailability():
 	availability = {name: 1 for name in testScouts}
@@ -26,12 +25,12 @@ def resetAvailability():
 
 #creates firebase objects for 18 scouts
 def resetScouts():
-	scouts = {'scout' + str(num) : {'currentUser': ''} for num in range(1,19)}
+	scouts = {'scout' + str(num) : {'currentUser': ''} for num in range(1,13)}
 	fb.child('scouts').set(scouts)
 
-def doThing(newMatchNumber):
+def doThing(newMatchNumber, update):
 	print 'Setting scouts for match ' + str(fb.child('currentMatchNumber').get().val())
-	if not newMatchNumber.get("data"): return
+	if newMatchNumber.get("data") == None or not update: return
 	currentMatchNum = int(newMatchNumber["data"])
 	scoutDict = fb.child("scouts").get().val()
 	[scoutDict[k].update({'mostRecentUser' : scoutDict[k].get('currentUser')}) for k in scoutDict.keys()]
@@ -46,12 +45,12 @@ def doThing(newMatchNumber):
 	newAssignments = SPR.assignScoutsToRobots(available, redTeams + blueTeams, fb.child("scouts").get().val())
 	#and it is put on firebase
 	fb.child("scouts").update(newAssignments)
+	[fb.child("scouts").child("scout" + str(n)).update({'scoutStatus' : 'requested'}) for n in range(1,19)]
 
 def emptyTIMDs():
 	fb.child('TeamInMatchDatas').set({})
 
-def simpleStream():
+def simpleStream(update):
 	resetScouts()
 	resetAvailability()
-	# resetScouts()
-	fb.child("currentMatchNumber").stream(doThing)
+	fb.child("currentMatchNumber").stream(lambda d: doThing(d, True))
