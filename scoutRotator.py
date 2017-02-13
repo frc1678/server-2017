@@ -15,7 +15,7 @@ config = {
 f = pyrebase.initialize_app(config)
 fb = f.database()
 testScouts = "a b c d e f g h i j k l m n o p q r".split()
-scouts = "westley mx tim jesse sage alex janet livy gemma justin berin aiden rolland rachel zoe ayush jona angela kyle wesley".split()
+scouts = "janet justin alex wesley kyle mx aiden westley katie jesse jack sage jon ayush sam evan mingyo zoe gemma carter".split()
 SPR = SPR.ScoutPrecision()
 
 #creates list of availability values in firebase for each scout
@@ -33,6 +33,9 @@ def doThing(newMatchNumber):
 	print 'Setting scouts for match ' + str(fb.child('currentMatchNumber').get().val())
 	if not newMatchNumber.get("data"): return
 	currentMatchNum = int(newMatchNumber["data"])
+	scoutDict = fb.child("scouts").get().val()
+	[scoutDict[k].update({'mostRecentUser' : scoutDict[k].get('currentUser')}) for k in scoutDict.keys()]
+	fb.child("scouts").update(scoutDict)
 	#gets the teams we need to scout for
 	blueTeams = fb.child("Matches").child(str(currentMatchNum)).get().val()['blueAllianceTeamNumbers']
 	redTeams = fb.child("Matches").child(str(currentMatchNum)).get().val()['redAllianceTeamNumbers']
@@ -47,22 +50,8 @@ def doThing(newMatchNumber):
 def emptyTIMDs():
 	fb.child('TeamInMatchDatas').set({})
 
-def doThingStream():
+def simpleStream():
 	resetScouts()
 	resetAvailability()
-	#Once all of the scouts have logged onto tablets (so scout names matches availability), it starts assignments and things
-	while True:
-		available = [k for (k, v) in fb.child("availability").get().val().items() if v == 1]
-		scoutRotatorDict = fb.child("scouts").get().val()
-		scoutsWithNames = filter(lambda v: v.get('currentUser') != (None or ''), scoutRotatorDict.values())
-		namesOfScouts = map(lambda v: v.get('currentUser'), scoutsWithNames)
-		nameIsIn = True
-		for name in available:
-			nameIsIn = nameIsIn and (name in namesOfScouts)
-		if nameIsIn:
-			break
-		time.sleep(1)
-	fb.child("currentMatchNumber").stream(doThing)
-
-def simpleStream():
+	# resetScouts()
 	fb.child("currentMatchNumber").stream(doThing)

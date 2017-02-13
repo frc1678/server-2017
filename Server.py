@@ -25,17 +25,16 @@ print "starting"
 comp = DataModel.Competition()
 comp.updateTeamsAndMatchesFromFirebase()
 FBC = firebaseCommunicator.FirebaseCommunicator(comp)
-updater = multiprocessing.Process(target=scheduleUpdater.update)
+scheduleUpdater.updateSchedule()
 CSVExporter.TSVExportAll(comp)
 calculator = Math.Calculator(comp)
 cycle = 1
 shouldEmail = False
 emailer = CrashReporter.EmailThread()
-# consolidator = dataChecker.DataChecker()
-# consolidator.start()
-# firebaseCacher.startFirebaseCacheStream(FBC)
-# scoutRotator.simpleStream()
-# updater.start()
+consolidator = dataChecker.DataChecker()
+consolidator.start()
+firebaseCacher.startFirebaseCacheStream(FBC)
+scoutRotator.simpleStream()
 
 def checkForMissingData():
 	with open('missing_data.txt', 'w') as missingDataFile:
