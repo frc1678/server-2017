@@ -7,7 +7,6 @@ import Math
 import random
 import pyrebase
 import numpy as np
-import pdb
 
 # Scout Performance Analysis
 class ScoutPrecision(object):
@@ -77,7 +76,7 @@ class ScoutPrecision(object):
 	#Similar to findOddScoutForDataPoint, but for each data point inside of a dict
 	def findOddScoutForDict(self, tempTIMDs, key):
 		scouts = filter(lambda v: v != None, map(lambda k: k.get('scoutName'), tempTIMDs))
-		dicts = filter(lambda k: k!= None, map(lambda t: t[key] if t.get('scoutName') != None else None, tempTIMDs))
+		dicts = filter(lambda k: k != None, map(lambda t: t[key] if t.get('scoutName') != None else None, tempTIMDs))
 		# This section groups keys of the dicts found earlier
 		if len(dicts) != 0:
 			consolidationDict = {}
@@ -163,7 +162,7 @@ class ScoutPrecision(object):
 	def getScoutFrequencies(self, available):
 		rankedScouts = self.rankScouts(available)
 		#It is reversed so the scouts with lower spr are later, causing them to be repeated more
-		rankedScouts.reverse()
+		rankedScouts.reverse()	
 		#lower sprs, so higher number list index scouts are repeated more frequently, but less if there are more scouts
 		func = lambda s: [s] * (rankedScouts.index(s) + 1) * ((100/(len(rankedScouts))) + 1)
 		return utils.extendList(map(func, available))
@@ -262,7 +261,6 @@ class ScoutPrecision(object):
 		for scout in available:
 			#Each available scout is put into the dict to send to firebase, in an appropriate spot and with a team number
 			scoutRotatorDict = self.assignScoutToRobot(scout, teams, scoutRotatorDict, available, namesOfScouts)
-		print self.sprs
 		return scoutRotatorDict
 
 	#Finds a spot and a robot for an inputted available scout

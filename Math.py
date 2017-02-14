@@ -111,8 +111,7 @@ class Calculator(object):
         try:
             numerator = ((s1**4/n1) + (s2**4/n2)) ** 2
             denominator = (s1**8/((n1**2)*(n1-1))) + (s2**8/((n2**2)*(n2-1)))
-        except Exception as e:
-            print e
+        except:
             numerator = 0.0
             denominator = 0.0
         return numerator / denominator if denominator != 0 else 0.0
@@ -182,12 +181,9 @@ class Calculator(object):
     def getRotorsTurningForDatasForGearFunc(self, datas, gearFuncTele, gearFuncAuto):
         totalAutoGears = sum(map(gearFuncAuto or 0, datas))
         totalTeleGears = sum(map(gearFuncTele or 0, datas))
-        incsReached = filter(lambda p: totalAutoGears >= p, self.autoGearIncrements)
-        nextGearLevel = self.autoGearIncrements.index(max(incsReached)) + 1 if len(incsReached) > 0 else 0
-        incsReachedTele = filter(lambda p: (totalTeleGears +  totalAutoGears) >= p, self.teleGearIncrements[nextGearLevel:])
-        gearPtsAuto = 60 * nextGearLevel
-        gearPtsTele = 40 * (self.teleGearIncrements.index(max(incsReachedTele)) + 1 if len(incsReachedTele) > 0 else 0)
-        return gearPtsAuto + gearPtsTele
+        rotorsAuto = self.getRotorForGearsForIncrement(totalAutoGears, self.autoGearIncrements)
+        rotorsTele = self.getRotorForGearsForIncrement(totalAutoGears + totalAutoGears, self.teleGearIncrements[rotorsAuto:])
+        return 60 * rotorsAuto + 40 * rotorsTele
 
     def getGearScoringPositionsAuto(self, team):
         timds = self.su.getCompletedTIMDsForTeam(team)
@@ -257,9 +253,12 @@ class Calculator(object):
         return sum([(team.calculatedData.avgGearsPlacedByLiftAuto.get(lift) or 0) for lift in self.lifts if lift != eLift])
 
     def overallSecondPickAbility(self, team):
+        defense = team.calculatedData.RScoreDefense * 1.0
+        gearControl = team.calculatedData.RScoreGearControl * 1.0
+        functionalPercentage = (1 - team.calculatedData.disfunctionalPercentage)
         freqLiftOurTeam = self.getMostFrequentLift(self.su.getTeamForNumber(self.ourTeamNum))
         gA = self.gearPlacementAbilityExcludeLift(team, freqLiftOurTeam) #convert to some number of points
-        return gA * 1.0 + team.calculatedData.avgDefense * 1.0 + team.calculatedData.liftoffAbility
+        return functionalPercentage * (gA + defense + gearControl + team.calculatedData.liftoffAbility)
 
     def predictedScoreForMatchForAlliance(self, match, allianceIsRed):
         return match.calculatedData.predictedRedScore if allianceIsRed else match.calculatedData.predictedBlueScore
@@ -286,7 +285,6 @@ class Calculator(object):
     def getRotorForGearsForIncrement(self, gears, inc):
         incrementsReached = filter(lambda g: gears >= g, inc)
         return inc.index(max(incrementsReached)) + 1 if len(incrementsReached) > 0 else 0
-
 
     #PROBABILITIES
 

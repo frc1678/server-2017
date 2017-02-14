@@ -8,10 +8,11 @@ from DataModel import Team
 def TSVExportAll(comp):
 	s = ""
 	firstTeam = True
-	excluded = ['calculatedData', 'name', 'number', 'imageKeys']
+	excluded = ['calculatedData', 'name', 'imageKeys']
 	with open('./dataExportAll.csv', 'w') as f:
-		defaultKeys = ['number'] + [k for k in Team().__dict__.keys() if k not in excluded]
+		defaultKeys = [k for k in Team().__dict__.keys() if k not in excluded]
 		defaultKeys += Team().calculatedData.__dict__.keys()
+		defaultKeys = sorted(defaultKeys, key=lambda k: (k != "number", k.lower()))
 		writer = csv.DictWriter(f, fieldnames=defaultKeys)
 		writer.writeheader()
 		for team in comp.teams:

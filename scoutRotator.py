@@ -42,7 +42,7 @@ def doThing(newMatchNumber, update):
 	available = [k for (k, v) in fb.child("availability").get().val().items() if v == 1]
 	#Each scout is assigned to a robot in the next 2 lines
 	SPR.calculateScoutPrecisionScores(fb.child("TempTeamInMatchDatas").get().val(), available)
-	newAssignments = SPR.assignScoutsToRobots(available, redTeams + blueTeams, fb.child("scouts").get().val())
+	newAssignments = SPR.assignScoutsToRobots(available, redTeams + blueTeams, fb.child("scouts").get().val())	
 	#and it is put on firebase
 	fb.child("scouts").update(newAssignments)
 	[fb.child("scouts").child("scout" + str(n)).update({'scoutStatus' : 'requested'}) for n in range(1,19)]
@@ -51,6 +51,7 @@ def emptyTIMDs():
 	fb.child('TeamInMatchDatas').set({})
 
 def simpleStream(update):
-	resetScouts()
-	resetAvailability()
+	# resetScouts()
+	# resetAvailability()
 	fb.child("currentMatchNumber").stream(lambda d: doThing(d, True))
+
