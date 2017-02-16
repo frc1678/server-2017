@@ -47,6 +47,7 @@ while(True):
 		try:
 			comp.updateTeamsAndMatchesFromFirebase()
 			comp.updateTIMDsFromFirebase()
+			comp.updateCurrentMatchNum()
 			break
 		except: pass
 	checkForMissingData()
