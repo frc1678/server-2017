@@ -268,12 +268,12 @@ class ScoutPrecision(object):
 		#If the available scout already has a spot on firebase, all that needs to be updated is the robot they scout for
 		if availableScout in names:
 			scoutNum = self.getScoutNumFromName(availableScout, scoutRotatorDict)
-			scoutRotatorDict[scoutNum].update({'team': teams[availableScout], 'currentUser': availableScout})
+			scoutRotatorDict[scoutNum].update({'team': teams[availableScout], 'currentUser': availableScout, 'scoutStatus': 'requested'})
 		else:
 			#If they aren't, it needs to find an empty scout spot in firebase and put the available scout there
 			if len(self.findFirstEmptySpotForScout(scoutRotatorDict, available)) <= 0:
 				pass
 			else:
 				newSpace = self.findFirstEmptySpotForScout(scoutRotatorDict, available)[0]
-				scoutRotatorDict[newSpace].update({'team': teams[availableScout], 'currentUser': availableScout})
+				scoutRotatorDict[newSpace].update({'team': teams[availableScout], 'currentUser': availableScout, 'scoutStatus': 'requested'})
 		return scoutRotatorDict

@@ -43,7 +43,6 @@ def doThing(newMatchNumber, update):
 	newAssignments = SPR.assignScoutsToRobots(available, redTeams + blueTeams, fb.child("scouts").get().val())
 	#and it is put on firebase
 	fb.child("scouts").update(newAssignments)
-	[fb.child("scouts").child("scout" + str(n)).update({'scoutStatus' : 'requested'}) for n in range(1,19)]
 
 def emptyTIMDs():
 	fb.child('TeamInMatchDatas').set({})
