@@ -31,7 +31,6 @@ calculator = Math.Calculator(comp)
 cycle = 1
 shouldEmail = False
 consolidator = dataChecker.DataChecker()
-<<<<<<< HEAD
 consolidator.start()
 #firebaseCacher.startFirebaseCacheStream(FBC)
 scoutRotator.doThingStream()
