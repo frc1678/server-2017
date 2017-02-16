@@ -142,7 +142,7 @@ class ScoutPrecision(object):
 			[self.findOddScoutForDict(v, k) for v in g.values() for k in self.gradingDicts]
 			[self.findOddScoutForListOfDicts(v, k) for v in g.values() for k in self.gradingListsOfDicts]
 			#divides values for scouts by number of TIMDs the scout has participated in
-			self.sprs = {k:(v/float(self.getTotalTIMDsForScoutName(k, temp))) for (k,v) in self.sprs.items()}
+			self.sprs = {k:((v/float(self.getTotalTIMDsForScoutName(k, temp))) or 0) for (k,v) in self.sprs.items()}
 			#any team without and sprs score is set to the average score
 			for a in available:
 				if a not in self.sprs.keys():
@@ -164,7 +164,7 @@ class ScoutPrecision(object):
 		#It is reversed so the scouts with lower spr are later, causing them to be repeated more
 		rankedScouts.reverse()
 		#lower sprs, so higher number list index scouts are repeated more frequently, but less if there are more scouts
-		func = lambda s: [s] * (rankedScouts.index(s) + 1) * ((100/(len(rankedScouts))) + 1)
+		func = lambda s: [s] * (rankedScouts.index(s) + 1) * ((100/(len(rankedScouts) + 1)) + 1)
 		return utils.extendList(map(func, available))
 
 	def organizeScouts(self, available, currentTeams, scoutSpots):

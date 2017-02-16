@@ -136,10 +136,10 @@ class Calculator(object):
         return fields[0] - fields[3] - gearPts - baselinePts - liftoffPts if None not in fields else None
 
     def getTotalAverageShotPointsForTeam(self, team):
-        return sum([(team.calculatedData.avgHighShotsTele or 0) / 3.0, (team.calculatedData.avgLowShotsTele or 0) / 9.0, (team.calculatedData.avgHighShotsAuto or 0), (team.calculatedData.avgLowShotsAuto or 0) / 3.0])
+        return sum([(team.calculatedData.avgHighShotsTele or 0) / 3.0, (team.calculatedData.avgLowShotsTele or 0) / 9.0, team.calculatedData.avgHighShotsAuto, (team.calculatedData.avgLowShotsAuto or 0) / 3.0])
 
     def getStandardDevShotPointsForTeam(self, team):
-        return utils.sumStdDevs([team.calculatedData.sdHighShotsTele / 3.0, team.calculatedData.sdLowShotsTele / 9.0, team.calculatedData.sdHighShotsAuto, team.calculatedData.sdLowShotsAuto / 3.0])
+        return utils.sumStdDevs([(team.calculatedData.sdHighShotsTele or 0) / 3.0, (team.calculatedData.sdLowShotsTele or 0) / 9.0, (team.calculatedData.sdHighShotsAuto or 0), (team.calculatedData.sdLowShotsAuto or 0) / 3.0])
 
     def getAllBoilerFieldsAtKey(self, timd):
         shots = timd.highShotTimesForBoilerTele + timd.highShotTimesForBoilerAuto + timd.lowShotTimesForBoilerAuto + timd.lowShotTimesForBoilerTele
@@ -350,7 +350,7 @@ class Calculator(object):
 
     def probabilityForGearsPlacedForNumberForTeam(self, team, number, gearFunc):
         gearTimds = map(gearFunc, self.su.getCompletedTIMDsForTeam(team))
-        return gearTimds.count(number)/float(len(gearTimds))
+        return (gearTimds.count(number)/float(len(gearTimds))) or 0
 
     def getAllRotorsTurningChanceForAllianceWithNumbers(self, allianceNumbers):
         return self.getAllRotorsTurningChanceForAlliance(self.su.teamsForTeamNumbersOnAlliance(allianceNumbers))
@@ -517,7 +517,6 @@ class Calculator(object):
             file.close()
 
     def doCalculations(self, FBC):
-        pdb.set_trace()
         isData = len(self.su.getCompletedTIMDsInCompetition()) > 0
         if isData:
             print "THERE IS DATA"
