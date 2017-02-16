@@ -1,1 +1,0 @@
-{u'Sam': 0.0, u'popo': 0.0, u'abhi': 0.0, u'so': 0.0, u'anotherScout': 0.0, u'fgh': 0.0, u'aThirdScout': 0.0, u'arman': 0.0, u'peter': 0.0, u'hen': 0.0, u'asdf': 0.0}

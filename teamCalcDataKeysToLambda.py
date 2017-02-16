@@ -39,7 +39,7 @@ def firstCalculationDict(team, calc):
 	cd.avgGearsFumbledTele = calc.getAverageForDataFunctionForTeam(team, lambda tm: tm.numGearsFumbledTele)
 	cd.avgDrivingAbility = calc.drivingAbility(team)
 	cd.autoShootingPositions = calc.getAutoShootingPositions(team)
-	cd.gearScoringPositionsAuto = calc.getGearPlacingPositionsAuto(team)
+	cd.gearScoringPositionsAuto = calc.getGearScoringPositionsAuto(team)
 	calc.getAvgFuncForKeys(team, cd.avgGearsPlacedByLiftAuto, lambda tm: tm.gearsPlacedByLiftAuto, calc.lifts)
 	calc.getAvgFuncForKeys(team, cd.avgGearsPlacedByLiftTele, lambda tm: tm.gearsPlacedByLiftTele, calc.lifts)
 
@@ -55,7 +55,7 @@ def secondCalculationDict(team, calc):
 		cd.actualNumRPs = calc.getTeamRPsFromTBA(team)
 		cd.actualSeed = calc.getTeamSeed(team)
 	except:
-		if team not in calc.cachedComp.actualSeedings: pdb.set_trace()
+		# if team not in calc.cachedComp.actualSeedings: pdb.set_trace()
 		cd.actualSeed = calc.cachedComp.actualSeedings.index(team) + 1
 		cd.actualNumRPs = calc.actualNumberOfRPs(team)
 	cd.RScoreDefense = calc.cachedComp.defenseZScores[team.number]

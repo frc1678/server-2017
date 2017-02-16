@@ -19,7 +19,7 @@ class Competition(object):
 		self.TIMDs = utils.makeTIMDsFromDicts(firebaseCommunicator.getPythonObjectForFirebaseDataAtLocation("/TeamInMatchDatas"))
 
 	def updateCurrentMatchNum(self):
-		self.currentMatchNum = firebaseCommunicator.getPythonObjectForFirebaseDataAtLocation("/currentMatchNum")
+		self.currentMatchNum = firebaseCommunicator.getPythonObjectForFirebaseDataAtLocation("/currentMatchNumber")
 
 class CalculatedTeamData(object):
 	"""c"""
@@ -73,6 +73,13 @@ class CalculatedTeamData(object):
 		self.disfunctionalPercentage = None
 		self.firstPickRotorBonusChance = None
 		self.autoShootingPositions = None
+		self.gearScoringPositionsAuto = None
+		self.RScoreAgility = None
+		self.RScoreDefense = None
+		self.RScoreSpeed = None
+		self.RScoreBallControl = None
+		self.RScoreGearControl = None
+		self.RScoreDrivingAbility = None
 		self.__dict__.update(args)
 
 class Team(object):

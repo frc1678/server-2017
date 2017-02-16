@@ -13,26 +13,25 @@ import time
 import CSVExporter
 import utils
 import pdb
-import CrashReporter
+from CrashReporter import reportServerCrash
 import numpy as np
 import dataChecker
 import multiprocessing
 import firebaseCacher
 import scoutRotator
+import scheduleUpdater
 
 print "starting"
 comp = DataModel.Competition()
 comp.updateTeamsAndMatchesFromFirebase()
-#scoutRotator.emptyTIMDs()
 FBC = firebaseCommunicator.FirebaseCommunicator(comp)
-#FBC.addTIMDsToFirebase(comp.matches)
-comp.updateTIMDsFromFirebase()
+# scheduleUpdater.updateSchedule()
 CSVExporter.TSVExportAll(comp)
 calculator = Math.Calculator(comp)
 cycle = 1
 shouldEmail = False
-emailer = CrashReporter.EmailThread()
 consolidator = dataChecker.DataChecker()
+<<<<<<< HEAD
 consolidator.start()
 #firebaseCacher.startFirebaseCacheStream(FBC)
 scoutRotator.doThingStream()
@@ -46,16 +45,19 @@ def checkForMissingData():
 
 while(True):
 	print("\nCalcs Cycle " + str(cycle) + "...")
-	comp.updateCurrentMatchNum()
-	comp.updateTeamsAndMatchesFromFirebase()
-	comp.updateTIMDsFromFirebase()
+	while(True):
+		try:
+			comp.updateTeamsAndMatchesFromFirebase()
+			comp.updateTIMDsFromFirebase()
+			break
+		except: pass
 	checkForMissingData()
 	try:
 		calculator.doCalculations(FBC)
 	except:
 		print "SOMETHING BAD KINDA HAPPENED"
 		if shouldEmail:
-			emailer.reportServerCrash(traceback.format_exc())
+			reportServerCrash(traceback.format_exc())
 		else:
 			print traceback.format_exc()
 		sys.exit(0)

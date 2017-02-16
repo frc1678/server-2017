@@ -1,5 +1,5 @@
 import pyrebase
-def startFirebaseCacheStream(data):	
+def startFirebaseCacheStream(FBC):	
 	print "cache"
 	config = {
 		"apiKey": "mykey",
@@ -11,6 +11,6 @@ def startFirebaseCacheStream(data):
 	f = pyrebase.initialize_app(config)
 	fb = f.database()
 
-	fb.stream(startFirebaseCacheStream)
+	fb.child("TeamInMatchDatas").stream(FBC.cacheFirebase)
 
 

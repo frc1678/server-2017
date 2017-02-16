@@ -76,7 +76,7 @@ class ScoutPrecision(object):
 	#Similar to findOddScoutForDataPoint, but for each data point inside of a dict
 	def findOddScoutForDict(self, tempTIMDs, key):
 		scouts = filter(lambda v: v != None, map(lambda k: k.get('scoutName'), tempTIMDs))
-		dicts = filter(lambda k: k!= None, map(lambda t: t[key] if t.get('scoutName') != None else None, tempTIMDs))
+		dicts = filter(lambda k: k != None, map(lambda t: t[key] if t.get('scoutName') != None else None, tempTIMDs))
 		# This section groups keys of the dicts found earlier
 		if len(dicts) != 0:
 			consolidationDict = {}
@@ -146,7 +146,7 @@ class ScoutPrecision(object):
 			#any team without and sprs score is set to the average score
 			for a in available:
 				if a not in self.sprs.keys():
-					avgScore = np.mean(self.sprs.values())
+					avgScore = np.mean(self.sprs.values()) if len(self.sprs) else 0
 					self.sprs[a] = avgScore
 		#If there are no tempTIMDs, everyone is set to 1
 		else:
@@ -162,7 +162,7 @@ class ScoutPrecision(object):
 	def getScoutFrequencies(self, available):
 		rankedScouts = self.rankScouts(available)
 		#It is reversed so the scouts with lower spr are later, causing them to be repeated more
-		rankedScouts.reverse()
+		rankedScouts.reverse()	
 		#lower sprs, so higher number list index scouts are repeated more frequently, but less if there are more scouts
 		func = lambda s: [s] * (rankedScouts.index(s) + 1) * ((100/(len(rankedScouts) + 1)) + 1)
 		return utils.extendList(map(func, available))
@@ -237,8 +237,8 @@ class ScoutPrecision(object):
 
 	#Returns the first scout key that doesn't have a current user
 	def findFirstEmptySpotForScout(self, scoutRotatorDict, available):
-		emptyScouts = filter(lambda k: scoutRotatorDict[k].get('currentUser') == None or scoutRotatorDict[k].get ('currentUser') == "", scoutRotatorDict.keys())
-		return emptyScouts[0]
+		emptyScouts = filter(lambda k: scoutRotatorDict[k].get('currentUser') == None or scoutRotatorDict[k].get('currentUser') == "" or scoutRotatorDict[k].get('currentUser') not in available, scoutRotatorDict.keys())
+		return emptyScouts
 
 	#Updates a dict going to firebase with information about scouts for the next match
 	def assignScoutsToRobots(self, available, currentTeams, scoutRotatorDict):
@@ -271,6 +271,9 @@ class ScoutPrecision(object):
 			scoutRotatorDict[scoutNum].update({'team': teams[availableScout], 'currentUser': availableScout})
 		else:
 			#If they aren't, it needs to find an empty scout spot in firebase and put the available scout there
-			newSpace = self.findFirstEmptySpotForScout(scoutRotatorDict, available)
-			scoutRotatorDict[newSpace].update({'team': teams[availableScout], 'currentUser': availableScout})
+			if len(self.findFirstEmptySpotForScout(scoutRotatorDict, available)) <= 0:
+				pass
+			else:
+				newSpace = self.findFirstEmptySpotForScout(scoutRotatorDict, available)[0]
+				scoutRotatorDict[newSpace].update({'team': teams[availableScout], 'currentUser': availableScout})
 		return scoutRotatorDict

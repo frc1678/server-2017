@@ -30,6 +30,6 @@ class FirstTIMDProcess(multiprocessing.Process):
             c.numLowShotsTele = self.calculator.weightFuelShotsForDataPoint(self.timd, match, self.timd.lowShotTimesForBoilerTele) 
             c.numLowShotsAuto = self.calculator.weightFuelShotsForDataPoint(self.timd, match, self.timd.lowShotTimesForBoilerAuto) 
             c.liftoffAbility = self.calculator.liftoffAbilityForTIMD(self.timd)           
-            c.wasDisfunctional = bool(utils.convertFirebaseBoolean(self.timd.didStartDisabled) + utils.convertFirebaseBoolean(self.timd.didBecomeIncapacitated))
+            c.wasDisfunctional = utils.convertFirebaseBoolean(self.timd.didStartDisabled + utils.convertFirebaseBoolean(self.timd.didBecomeIncapacitated))
             c.numRPs = self.calculator.RPsGainedFromMatchForAlliance(team.number in match.redAllianceTeamNumbers, match)
             self.calculatedTIMDsList.append(self.timd)            
