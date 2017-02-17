@@ -14,7 +14,7 @@ config = {
 
 f = pyrebase.initialize_app(config)
 fb = f.database()
-testScouts = "a b c d e f g h i j k l".split()
+testScouts = "scout1 scout10 scout11 scout12 scout13 scout14 scout15 scout16 scout17 scout18 scout2 scout3".split()
 scouts = "janet justin alex wesley kyle mx aiden westley katie jesse jack sage jon ayush sam evan mingyo zoe gemma carter".split()
 SPR = SPR.ScoutPrecision()
 #creates list of availability values in firebase for each scout
@@ -44,6 +44,6 @@ def doThing(newMatchNumber):
 	fb.child("scouts").update(newAssignments)
 
 def simpleStream():
-	#resetScouts()
-	#resetAvailability()
+	resetScouts()
+	resetAvailability()
 	fb.child("currentMatchNumber").stream(doThing)
