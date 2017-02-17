@@ -28,14 +28,13 @@ def resetScouts():
 	scouts = {'scout' + str(num) : {'currentUser': ''} for num in range(1,19)}
 	fb.child('scouts').set(scouts)
 
-def doThing(newMatchNumber, update):
-	print 'Setting scouts for match ' + str(fb.child('currentMatchNumber').get().val())
-	if newMatchNumber.get("data") == None or not update: return
-	currentMatchNum = int(newMatchNumber["data"])
+def doThing(newMatchNumber):
+	print 'Setting scouts for match ' + str(fb.child('currentMatchNum').get().val())
+	newMatchNumber = str(fb.child('currentMatchNum').get().val())
 	scoutDict = fb.child("scouts").get().val()
 	#gets the teams we need to scout for
-	blueTeams = fb.child("Matches").child(str(currentMatchNum)).get().val()['blueAllianceTeamNumbers']
-	redTeams = fb.child("Matches").child(str(currentMatchNum)).get().val()['redAllianceTeamNumbers']
+	blueTeams = fb.child("Matches").child(newMatchNumber).get().val()['blueAllianceTeamNumbers']
+	redTeams = fb.child("Matches").child(newMatchNumber).get().val()['redAllianceTeamNumbers']
 	#These next lines find and assign available scouts
 	available = [k for (k, v) in fb.child("availability").get().val().items() if v == 1]
 	#Each scout is assigned to a robot in the next 2 lines
@@ -44,10 +43,7 @@ def doThing(newMatchNumber, update):
 	#and it is put on firebase
 	fb.child("scouts").update(newAssignments)
 
-def emptyTIMDs():
-	fb.child('TeamInMatchDatas').set({})
-
 def simpleStream():
-	resetScouts()
-	resetAvailability()
-	fb.child("currentMatchNumber").stream(lambda d: doThing(d, True))
+	#resetScouts()
+	#resetAvailability()
+	fb.child("currentMatchNumber").stream(doThing)

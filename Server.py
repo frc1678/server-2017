@@ -24,6 +24,7 @@ import scheduleUpdater
 print "starting"
 comp = DataModel.Competition()
 comp.updateTeamsAndMatchesFromFirebase()
+comp.updateCurrentMatchNum()
 FBC = firebaseCommunicator.FirebaseCommunicator(comp)
 # scheduleUpdater.updateSchedule()
 CSVExporter.TSVExportAll(comp)
