@@ -21,7 +21,7 @@ import firebaseCacher
 import scoutRotator
 import scheduleUpdater
 
-print "starting"
+print "Starting"
 comp = DataModel.Competition()
 comp.updateTeamsAndMatchesFromFirebase()
 comp.updateCurrentMatchNum()
@@ -30,11 +30,12 @@ FBC = firebaseCommunicator.FirebaseCommunicator(comp)
 CSVExporter.TSVExportAll(comp)
 calculator = Math.Calculator(comp)
 cycle = 1
+shouldCacheSecsCounter = 0
 shouldEmail = False
 consolidator = dataChecker.DataChecker()
-consolidator.start()
+# consolidator.start()
 #firebaseCacher.startFirebaseCacheStream(FBC)
-scoutRotator.simpleStream()
+# scoutRotator.simpleStream()
 
 def checkForMissingData():
 	with open('missing_data.txt', 'w') as missingDataFile:
@@ -43,6 +44,11 @@ def checkForMissingData():
 		missingDataFile.write(str(missingDatas))
 
 while(True):
+	if((shouldCacheSecsCounter / (10)) == 1):
+		shouldCacheSecsCounter = 0
+	if(shouldCacheSecsCounter == 0):
+		FBC.cacheFirebase()
+	shouldCacheSecsCounter += 1
 	print("\nCalcs Cycle " + str(cycle) + "...")
 	while(True):
 		try:

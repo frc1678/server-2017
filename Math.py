@@ -118,7 +118,7 @@ class Calculator(object):
 
     #SHOTS DATA
     def fieldsForShots(self, timd):
-        return sum([sum(map(lambda v: (v.get('numShots') or 0.0), timd.highShotTimesForBoilerTele)), sum(map(lambda v: (v.get('numShots') or 0), timd.highShotTimesForBoilerAuto)), sum(map(lambda v: (v.get('numShots') or 0), timd.lowShotTimesForBoilerTele)), sum(map(lambda v: (v.get('numShots') or 0), timd.lowShotTimesForBoilerAuto))])
+        return sum([sum(map(lambda v: (v.get('numShots') or 0.0), timd.highShotTimesForBoilerTele)) / 3.0, sum(map(lambda v: (v.get('numShots') or 0), timd.highShotTimesForBoilerAuto)), sum(map(lambda v: (v.get('numShots') or 0), timd.lowShotTimesForBoilerTele)) / 9.0, sum(map(lambda v: (v.get('numShots') or 0), timd.lowShotTimesForBoilerAuto)) / 3.0])
 
     def weightFuelShotsForDataPoint(self, timd, match, boilerPoint):
         timds = self.su.getCompletedTIMDsForMatchForAllianceIsRed(match, timd.teamNumber in match.redAllianceTeamNumbers)
@@ -522,6 +522,9 @@ class Calculator(object):
             self.cacheSecondTeamData()
             self.doMatchesCalculations()
             self.doSecondTeamCalculations()
+            # map(FBC.addCalculatedTIMDataToFirebase, self.su.getCompletedTIMDsInCompetition())
+            # map(FBC.addCalculatedTeamDataToFirebase, self.cachedComp.teamsWithMatchesCompleted)
+            # map(FBC.addCalculatedMatchDataToFirebase, self.comp.matches)
             map(lambda o: FirebaseWriteObjectProcess(o, FBC).start(), self.cachedComp.teamsWithMatchesCompleted + self.su.getCompletedTIMDsInCompetition() + self.comp.matches)
             FBC.addCompInfoToFirebase()
             endTime = time.time()

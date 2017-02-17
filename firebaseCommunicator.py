@@ -88,8 +88,7 @@ class FirebaseCommunicator(object):
 		addTIMD = lambda m: map(lambda t: timdFunc(t, m), m.redAllianceTeamNumbers + m.blueAllianceTeamNumbers)
 		map(addTIMD, matches)
 
-	def cacheFirebase(self, data):
-		if not data['data']: return
+	def cacheFirebase(self):
 		print "CACHED"
 		while True:
 			try:
@@ -98,7 +97,7 @@ class FirebaseCommunicator(object):
 				with open("./CachedFirebases/" + now + '.json', 'w') as f:
 					f.write(data)
 					f.close()
-					break
+				break
 			except Exception as e:
 				pass
 	def addCompInfoToFirebase(self): #Doing these keys manually so less clicking in firebase is better and because just easier
