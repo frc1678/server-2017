@@ -89,17 +89,22 @@ class FirebaseCommunicator(object):
 		map(addTIMD, matches)
 
 	def cacheFirebase(self):
-		print "CACHED"
+		print "trying to cache"
 		while True:
 			try:
-				data = json.dumps(firebase.get("/", None))
+				data = firebase.get("/", None)
+				print "part 1 works"
 				now = str(datetime.datetime.now())
-				with open("./CachedFirebases/" + now + '.json', 'w') as f:
-					f.write(data)
-					f.close()
+				print "part 2 works"
+				with open("./CachedFirebases/" + now + '.json', 'w+') as f:
+					json.dump(data, f)
+					print "is caching"
+				print "part 3 works"
 				break
 			except Exception as e:
-				pass
+				print "is not caching"
+				continue
+		print "CACHED"
 
 	def addCompInfoToFirebase(self): #Doing these keys manually so less clicking in firebase is better and because just easier
 		FBLocation = "/"

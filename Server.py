@@ -30,7 +30,7 @@ FBC = firebaseCommunicator.FirebaseCommunicator(comp)
 CSVExporter.TSVExportAll(comp)
 calculator = Math.Calculator(comp)
 cycle = 1
-shouldCacheSecsCounter = 0
+shouldCacheCounter = 0
 shouldEmail = False
 consolidator = dataChecker.DataChecker()
 consolidator.start()
@@ -45,11 +45,12 @@ def checkForMissingData():
 		missingDataFile.write(str(missingDatas))
 
 while(True):
-	# if((shouldCacheSecsCounter / (10)) == 1):
-	# 	shouldCacheSecsCounter = 0
-	# if(shouldCacheSecsCounter == 0):
-	# 	FBC.cacheFirebase()
-	shouldCacheSecsCounter += 1
+	if((shouldCacheCounter / (10)) == 1):
+	 	shouldCacheCounter = 0
+	if(shouldCacheCounter == 0):
+		FBC.cacheFirebase()
+	shouldCacheCounter += 1
+	print "shouldCacheCounter = " + str(shouldCacheCounter)
 	print("\nCalcs Cycle " + str(cycle) + "...")
 	while(True):
 		try:
