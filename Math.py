@@ -254,8 +254,8 @@ class Calculator(object):
         return sum([(team.calculatedData.avgGearsPlacedByLiftAuto.get(lift) or 0) for lift in self.lifts if lift != eLift])
 
     def overallSecondPickAbility(self, team):
-        defense = team.calculatedData.RScoreDefense * 1.0
-        gearControl = team.calculatedData.RScoreGearControl * 1.0
+        defense = (team.calculatedData.RScoreDefense or 0) * 1.0
+        gearControl = (team.calculatedData.RScoreGearControl or 0) * 1.0
         functionalPercentage = (1 - team.calculatedData.disfunctionalPercentage)
         freqLiftOurTeam = self.getMostFrequentLift(self.su.getTeamForNumber(self.ourTeamNum))
         gA = self.gearPlacementAbilityExcludeLift(team, freqLiftOurTeam) #convert to some number of points
@@ -344,7 +344,10 @@ class Calculator(object):
         timds = self.su.getTIMDsForMatchForAllianceIsRed(match, team.number in match.redAllianceTeamNumbers)
         fuelPts = sum(map(lambda t: t.calculatedData.numHighShotsAuto + t.calculatedData.numLowShotsAuto / 3.0, timds))
         baselinePts = sum(map(lambda t: utils.convertFirebaseBoolean(t.didReachBaselineAuto) * 5, timds))
-        gearPts = 60 * (self.autoGearIncrements.index(max(filter(lambda p: sum(map(lambda t: t.calculatedData.numGearsPlacedAuto, timds)) >= p, self.autoGearIncrements))) + 1)
+        try:
+            gearPts = 60 * (self.autoGearIncrements.index(max(filter(lambda p: sum(map(lambda t: t.calculatedData.numGearsPlacedAuto, timds)) >= p, self.autoGearIncrements))) + 1)
+        except:
+            gearPts = 0
         return fuelPts + baselinePts + gearPts
 
     def predictedAutoPointsForAlliance(self, alliance):
