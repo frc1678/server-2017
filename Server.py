@@ -8,15 +8,12 @@ import traceback
 import DataModel
 import firebaseCommunicator
 import Math
-import unicodedata
 import time
 import CSVExporter
 import utils
 import pdb
 from CrashReporter import reportServerCrash
-import numpy as np
 import dataChecker
-import multiprocessing
 import firebaseCacher
 import scoutRotator
 import scheduleUpdater
