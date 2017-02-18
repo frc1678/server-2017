@@ -93,16 +93,11 @@ class FirebaseCommunicator(object):
 		while True:
 			try:
 				data = firebase.get("/", None)
-				print "part 1 works"
 				now = str(datetime.datetime.now())
-				print "part 2 works"
 				with open("./CachedFirebases/" + now + '.json', 'w+') as f:
 					json.dump(data, f)
-					print "is caching"
-				print "part 3 works"
 				break
 			except Exception as e:
-				print "is not caching"
 				continue
 		print "CACHED"
 

@@ -146,7 +146,7 @@ class ScoutPrecision(object):
 			#any team without and sprs score is set to the average score
 			for a in available:
 				if a not in self.sprs.keys():
-					avgScore = np.mean(self.sprs.values()) if len(self.sprs) else 0
+					avgScore = np.mean(self.sprs.values()) if len(self.sprs) else 1
 					self.sprs[a] = avgScore
 		#If there are no tempTIMDs, everyone is set to 1
 		else:

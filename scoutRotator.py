@@ -39,7 +39,7 @@ def doThing(newMatchNumber):
 	available = [k for (k, v) in fb.child("availability").get().val().items() if v == 1]
 	#Each scout is assigned to a robot in the next 2 lines
 	SPR.calculateScoutPrecisionScores(fb.child("TempTeamInMatchDatas").get().val(), available)
-	print SPR.sprs
+	# print SPR.sprs
 	newAssignments = SPR.assignScoutsToRobots(available, redTeams + blueTeams, fb.child("scouts").get().val())
 	#and it is put on firebase
 	fb.child("scouts").update(newAssignments)

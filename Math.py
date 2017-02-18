@@ -208,11 +208,11 @@ class Calculator(object):
             d[self.cachedComp.teamsWithMatchesCompleted[i].number] = zscores[i]
 
     def drivingAbility(self, team):
-        gCWeight = 1.0
-        bCWeight = 1.0
-        spWeight = 1.0
-        agWeight = 1.0
-        dfWeight = 1.0
+        gCWeight = 0.0
+        bCWeight = 0.0
+        spWeight = 0.4
+        agWeight = 0.4
+        dfWeight = 0.0
         return team.calculatedData.avgSpeed * spWeight + team.calculatedData.avgGearControl * gCWeight + team.calculatedData.avgBallControl * bCWeight + team.calculatedData.avgAgility * agWeight + team.calculatedData.avgDefense * dfWeight
 
     def predictedScoreForAllianceWithNumbers(self, allianceNumbers):
