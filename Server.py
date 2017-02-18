@@ -44,10 +44,10 @@ def checkForMissingData():
 		missingDataFile.write(str(missingDatas))
 
 while(True):
-	if((shouldCacheSecsCounter / (10)) == 1):
-		shouldCacheSecsCounter = 0
-	if(shouldCacheSecsCounter == 0):
-		FBC.cacheFirebase()
+	# if((shouldCacheSecsCounter / (10)) == 1):
+	# 	shouldCacheSecsCounter = 0
+	# if(shouldCacheSecsCounter == 0):
+	# 	FBC.cacheFirebase()
 	shouldCacheSecsCounter += 1
 	print("\nCalcs Cycle " + str(cycle) + "...")
 	while(True):
