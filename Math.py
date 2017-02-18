@@ -56,8 +56,8 @@ class Calculator(object):
         playedTIMDs = [timd for timd in self.comp.TIMDs if timd.matchNumber < self.comp.currentMatchNum]
         incompletePlayedSuperTIMDs = [timd for timd in playedTIMDs if timd.rankAgility == None]
         incompletePlayedScoutTIMDs = filter(lambda timd: timd.didLiftoff == None, playedTIMDs)
-        incompletePlayedSuperTIMDStrings = ['Scout: ' + str(timd.teamNumber) + 'Q' + str(timd.matchNumber) for timd in incompletePlayedSuperTIMDs]
-        incompletePlayedScoutTIMDStrings = ['Super: ' + str(timd.teamNumber) + 'Q' + str(timd.matchNumber) for timd in incompletePlayedScoutTIMDs]
+        incompletePlayedSuperTIMDStrings = ['Scout: ' + str(timd.teamNumber) + 'Q' + str(timd.matchNumber) for timd in incompletePlayedSuperTIMDs if timd.teamNumber != None]
+        incompletePlayedScoutTIMDStrings = ['Super: ' + str(timd.teamNumber) + 'Q' + str(timd.matchNumber) for timd in incompletePlayedScoutTIMDs if timd.teamNumber != None]
         incompletePlayedSuperTIMDStrings.extend(incompletePlayedScoutTIMDStrings)
         return incompletePlayedSuperTIMDStrings
 
@@ -131,7 +131,6 @@ class Calculator(object):
         gearPts = self.getGearPtsForAllianceTIMDs(timds)
         baselinePts = 5 * sum(map(lambda t: utils.convertFirebaseBoolean(t.didReachBaselineAuto), timds))
         liftoffPts = 50 * sum(map(lambda t: utils.convertFirebaseBoolean(t.didLiftoff), timds))
-        if match.number == 1: print gearPts
         fields = self.su.getFieldsForAllianceForMatch(allianceIsRed, match)
         return fields[0] - fields[3] - gearPts - baselinePts - liftoffPts if None not in fields else None
 
