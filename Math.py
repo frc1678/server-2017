@@ -354,7 +354,10 @@ class Calculator(object):
         fuelPts = sum(map(lambda t: t.calculatedData.avgHighShotsAuto + t.calculatedData.avgLowShotsAuto / 3.0, alliance))
         baselinePts = sum(map(lambda t: t.calculatedData.baselineReachedPercentage * 5, alliance))
         incsReached = filter(lambda p: sum(map(lambda t: t.calculatedData.avgGearsPlacedAuto, alliance)) >= p, self.autoGearIncrements)
-        gearPts = 60 * (self.autoGearIncrements.index((max(incsReached) if len(incsReached) > 0 else 0)) + 1)
+        try:
+            gearPts = 60 * (self.autoGearIncrements.index((max(incsReached) if len(incsReached) > 0 else 0)) + 1)
+        except:
+            gearPts = 0
         return fuelPts + baselinePts + gearPts
 
     def cumulativeAutoPointsForTeam(self, team):

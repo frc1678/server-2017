@@ -33,9 +33,9 @@ cycle = 1
 shouldCacheSecsCounter = 0
 shouldEmail = False
 consolidator = dataChecker.DataChecker()
-# consolidator.start()
+consolidator.start()
 #firebaseCacher.startFirebaseCacheStream(FBC)
-# scoutRotator.simpleStream()
+scoutRotator.simpleStream()
 
 def checkForMissingData():
 	with open('missing_data.txt', 'w') as missingDataFile:
@@ -46,8 +46,8 @@ def checkForMissingData():
 while(True):
 	if((shouldCacheSecsCounter / (10)) == 1):
 		shouldCacheSecsCounter = 0
-	if(shouldCacheSecsCounter == 0):
-		FBC.cacheFirebase()
+	#if(shouldCacheSecsCounter == 0):
+		#FBC.cacheFirebase()
 	shouldCacheSecsCounter += 1
 	print("\nCalcs Cycle " + str(cycle) + "...")
 	while(True):
