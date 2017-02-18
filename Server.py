@@ -1,6 +1,5 @@
 # by Bryton Moeller (2015-2016)
 
-import json
 import sys
 import traceback
 
@@ -10,7 +9,6 @@ import firebaseCommunicator
 import Math
 import time
 import CSVExporter
-import utils
 import pdb
 from CrashReporter import reportServerCrash
 import dataChecker
