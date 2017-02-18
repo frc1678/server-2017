@@ -131,6 +131,7 @@ class Calculator(object):
         gearPts = self.getGearPtsForAllianceTIMDs(timds)
         baselinePts = 5 * sum(map(lambda t: utils.convertFirebaseBoolean(t.didReachBaselineAuto), timds))
         liftoffPts = 50 * sum(map(lambda t: utils.convertFirebaseBoolean(t.didLiftoff), timds))
+        if match.number == 1: print gearPts
         fields = self.su.getFieldsForAllianceForMatch(allianceIsRed, match)
         return fields[0] - fields[3] - gearPts - baselinePts - liftoffPts if None not in fields else None
 
@@ -179,10 +180,10 @@ class Calculator(object):
         return self.lifts[a.index(max(a))]
 
     def getRotorsTurningForDatasForGearFunc(self, datas, gearFuncTele, gearFuncAuto):
-        totalAutoGears = sum(map(gearFuncAuto or 0, datas))
-        totalTeleGears = sum(map(gearFuncTele or 0, datas))
+        totalAutoGears = sum(map(gearFuncAuto, datas))
+        totalTeleGears = sum(map(gearFuncTele, datas))
         rotorsAuto = self.getRotorForGearsForIncrement(totalAutoGears, self.autoGearIncrements)
-        rotorsTele = self.getRotorForGearsForIncrement(totalAutoGears + totalAutoGears, self.teleGearIncrements[rotorsAuto:])
+        rotorsTele = self.getRotorForGearsForIncrement(totalAutoGears + totalTeleGears, self.teleGearIncrements[rotorsAuto:])
         return 60 * rotorsAuto + 40 * rotorsTele
 
     def getGearScoringPositionsAuto(self, team):

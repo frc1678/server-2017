@@ -16,6 +16,7 @@ def sumStdDevs(stdDevs):
 	return sum(map(lambda x: x ** 2 , filter(lambda s: s != None, stdDevs))) ** 0.5
 
 def convertFirebaseBoolean(fbBool):
+	if type(fbBool) in [int, bool]: return bool(fbBool)
 	return True if fbBool == 'true' else False
 
 def rms(values):
