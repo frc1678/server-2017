@@ -1,9 +1,7 @@
 import pyrebase
 import DataModel
-import time
 import SPR
 import multiprocessing
-import time
 
 config = {
 	"apiKey": "mykey",
@@ -28,7 +26,7 @@ def resetScouts():
 	scouts = {'scout' + str(num) : {'currentUser': ''} for num in range(1,13)}
 	fb.child('scouts').set(scouts)
 
-def doThing(newMatchNumber):
+def doSPRsAndAssignments(newMatchNumber):
 	print 'Setting scouts for match ' + str(fb.child('currentMatchNum').get().val())
 	newMatchNumber = str(fb.child('currentMatchNum').get().val())
 	scoutDict = fb.child("scouts").get().val()
@@ -44,7 +42,7 @@ def doThing(newMatchNumber):
 	#and it is put on firebase
 	fb.child("scouts").update(newAssignments)
 
-def simpleStream():
+def assignmentStream():
 	#resetScouts()
 	#resetAvailability()
-	fb.child("currentMatchNum").stream(doThing)
+	fb.child("currentMatchNum").stream(doSPRsAndAssignments)

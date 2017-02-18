@@ -1,8 +1,6 @@
 import math
 from operator import attrgetter
-import re
 import pdb
-import time
 
 import numpy as np
 import scipy as sp
@@ -16,7 +14,6 @@ import TBACommunicator
 from teamCalcDataKeysToLambda import *
 
 import multiprocessing
-import copy
 import warnings
 from FirstTIMDProcess import FirstTIMDProcess
 from FirebaseWriterProcess import FirebaseWriteObjectProcess
@@ -88,16 +85,19 @@ class Calculator(object):
         return utils.sumStdDevs(map(retrievalFunction, alliance))
 
     def monteCarloForMeanForStDevForValueFunction(self, mean, stDev, valueFunction):
-        if stDev == 0.0: return 0.0
+        if stDev == 0.0:
+            return 0.0
         return np.std([valueFunction(np.random.normal(mean, stDev)) for i in range(self.monteCarloIterations)])
 
     def probabilityDensity(self, x, mu, sigma):
         if sigma == 0.0:
             return int(x <= mu)
-        if None not in [x,mu,sigma]: return 1.0 - stats.norm.cdf(x, mu, sigma)
+        if None not in [x,mu,sigma]:
+            return 1.0 - stats.norm.cdf(x, mu, sigma)
 
     def welchsTest(self, mean1, mean2, std1, std2, sampleSize1, sampleSize2):
-        if std1 == 0.0 or std2 == 0.0 or sampleSize1 <= 0 or sampleSize2 <= 0: return float(mean1 > mean2)
+        if std1 == 0.0 or std2 == 0.0 or sampleSize1 <= 0 or sampleSize2 <= 0:
+            return float(mean1 > mean2)
         numerator = mean1 - mean2
         denominator = ((std1 ** 2) / sampleSize1 + (std2 ** 2) / sampleSize2) ** 0.5
         return numerator / denominator
@@ -107,7 +107,8 @@ class Calculator(object):
         return np.mean(values) if len(values) > 0 else None
 
     def getDF(self, s1, s2, n1, n2):
-        if np.nan in [s1, s2, n1, n2] or 0.0 in [n1,n2]: return
+        if np.nan in [s1, s2, n1, n2] or 0.0 in [n1,n2]:
+            return
         try:
             numerator = ((s1**4/n1) + (s2**4/n2)) ** 2
             denominator = (s1**8/((n1**2)*(n1-1))) + (s2**8/((n2**2)*(n2-1)))
@@ -242,7 +243,8 @@ class Calculator(object):
 
     def firstPickAbility(self, team):
         ourTeam = self.su.getTeamForNumber(self.ourTeamNum)
-        if self.predictedScoreForAlliance([ourTeam, team, self.averageTeam]) == None or math.isnan(self.predictedScoreForAlliance([ourTeam, team, self.averageTeam])): return
+        if self.predictedScoreForAlliance([ourTeam, team, self.averageTeam]) == None or math.isnan(self.predictedScoreForAlliance([ourTeam, team, self.averageTeam])):
+            return
         return self.predictedPlayoffPointScoreForAlliance([ourTeam, team])
 
     def firstPickAllRotorsChance(self, team):
@@ -390,9 +392,12 @@ class Calculator(object):
         return self.getSumForDataFunctionForTeam(team, lambda tm: tm.calculatedData.numRPs)
 
     def scoreRPsGainedFromMatchWithScores(self, score, opposingScore):
-        if score > opposingScore: return 2
-        elif score == opposingScore: return 1
-        else: return 0
+        if score > opposingScore:
+            return 2
+        elif score == opposingScore:
+            return 1
+        else:
+            return 0
 
     def RPsGainedFromMatchForAlliance(self, allianceIsRed, match):
         ourFields = self.su.getFieldsForAllianceForMatch(allianceIsRed, match)

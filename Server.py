@@ -33,7 +33,7 @@ cycle = 1
 shouldEmail = False
 consolidator = dataChecker.DataChecker()
 consolidator.start()
-scoutRotator.simpleStream()
+scoutRotator.assignmentStream()
 
 def checkForMissingData():
 	with open('missing_data.txt', 'w') as missingDataFile:

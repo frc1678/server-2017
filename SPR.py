@@ -1,11 +1,7 @@
 import utils
-import numpy as np
 import CacheModel as cache
-import itertools
-import TBACommunicator
 import Math
 import random
-import pyrebase
 import numpy as np
 
 # Scout Performance Analysis
@@ -15,7 +11,6 @@ class ScoutPrecision(object):
 		super(ScoutPrecision, self).__init__()
 		self.sprs = {}
 		self.robotNumToScouts = []
-		self.TBAC = TBACommunicator.TBACommunicator()
 		#These keys are the names of sections of the tempTIMDs on which scouts will be graded
 		self.gradingKeys = [
 			'numGearGroundIntakesTele',
