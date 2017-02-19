@@ -39,14 +39,13 @@ class Calculator(object):
         self.teleGearIncrements = [0, 2, 6, 12]
         self.autoGearIncrements = [1, 3, 7, 13]
         self.lifts = ['lift1', 'lift2', 'lift3']
-        self.hops = ['hop1', 'hop2', 'hop3', 'hop4', 'hop5', 'hop6']
+        self.hops = ['hop1', 'hop2', 'hop3', 'hop4', 'hop5']
         self.cachedTeamDatas = {}
         self.cachedComp = cache.CachedCompetitionData()
         self.cachedTeamDatas[self.averageTeam.number] = cache.CachedTeamData(**{'teamNumber': self.averageTeam.number})
         for t in self.comp.teams:
             print("HEY ARE YOU GOING TO SING YA BUT IT'S NOT A SONG IT IS MY LIFE " + str(t.number))
             self.cachedTeamDatas[t.number] = cache.CachedTeamData(**{'teamNumber': t.number})
-
 
     def getMissingDataString(self):
         print "CURRENT MATCH NUM = " + str(self.comp.currentMatchNum)
@@ -57,7 +56,6 @@ class Calculator(object):
         incompletePlayedScoutTIMDStrings = ['Super: ' + str(timd.teamNumber) + 'Q' + str(timd.matchNumber) for timd in incompletePlayedScoutTIMDs if timd.teamNumber != None]
         incompletePlayedSuperTIMDStrings.extend(incompletePlayedScoutTIMDStrings)
         return incompletePlayedSuperTIMDStrings
-
 
     #Calculated Team Data
 
