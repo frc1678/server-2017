@@ -134,7 +134,7 @@ class Calculator(object):
         liftoffPts = 50 * sum(map(lambda t: t.didLiftoff, timds))
         fields = self.su.getFieldsForAllianceForMatch(allianceIsRed, match)
         return fields[0] - fields[3] - gearPts - baselinePts - liftoffPts if None not in [fields[0], fields[3]] else None
-
+        
     def getTotalAverageShotPointsForTeam(self, team):
         return sum([(team.calculatedData.avgHighShotsTele or 0) / 3.0, (team.calculatedData.avgLowShotsTele or 0) / 9.0, team.calculatedData.avgHighShotsAuto, (team.calculatedData.avgLowShotsAuto or 0) / 3.0])
 
@@ -213,7 +213,7 @@ class Calculator(object):
     def rValuesForAverageFunctionForDict(self, averageFunction, d):
         values = map(averageFunction, self.cachedComp.teamsWithMatchesCompleted)
         if len(values) == 0:
-            return 
+            return
         initialValue = values[0]
         impossible = not len(filter(lambda v: v != initialValue, values[1:]))
         if impossible:
@@ -238,7 +238,7 @@ class Calculator(object):
         alliance = map(self.su.replaceWithAverageIfNecessary, alliance)
         fuelPts = self.getStandardDevShotPointsForAlliance(alliance)
         liftoffPts = utils.sumStdDevs(map(lambda t: t.calculatedData.sdLiftoffAbility, alliance))
-        baselinePts = utils.sumStdDevs(map(lambda t: 5 * t.calculatedData.sdBaselineReachedPercentage, alliance))
+        baselinePts = utils.sumStdDevs(map(lambda t: 5 * (t.calculatedData.sdBaselineReachedPercentage or 0), alliance))
         gearPts = self.getStdDevGearPointsForAlliance(alliance)
         return utils.sumStdDevs([fuelPts, liftoffPts, baselinePts, gearPts])
 

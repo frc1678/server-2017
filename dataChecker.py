@@ -19,9 +19,13 @@ config = {
 #	"storageBucket": "1678-scouting-2016.appspot.com"
 #}
 
+#These are the keys that have lists of dicts
 listKeys = ["highShotTimesForBoilerTele", "highShotTimesForBoilerAuto", "lowShotTimesForBoilerAuto", "lowShotTimesForBoilerTele"]
+#These ought to be the same across all tempTIMDs
 constants = ['matchNumber', 'teamNumber']
+#These are the keys within each dict from the listKeys
 boilerKeys = ['time', 'numShots', 'position']
+#These are the keys that have dicts
 standardDictKeys = ['gearsPlacedByLiftAuto', 'gearsPlacedByLiftTele']
 fb = pyrebase.initialize_app(config)
 firebase = fb.database()
@@ -41,7 +45,7 @@ class DataChecker(multiprocessing.Process):
 		elif type(vals[0]) == bool:
 			return self.joinBools(vals)
 		#Text does not need to be joined
-		elif type(vals[0]) == unicode:
+		elif type(vals[0]) == unicode or type(vals[0]) == str:
 			return vals
 		#otherwise, if it is something like ints or floats, it goes to a general purpose function
 		else:
@@ -58,7 +62,7 @@ class DataChecker(multiprocessing.Process):
 	def joinBools(self, bools):
 		return False if bools.count(False) > len(bools) / 2 else True
 
-	#Returns the most common value in a list, or the average if no value is common enough
+	#Returns the most common value in a list, or the average if no value is more than half the list
 	def joinList(self, values):
 		if len(values) > 0:
 			a = map(values.count, values)
@@ -82,7 +86,7 @@ class DataChecker(multiprocessing.Process):
 		#If someone missed a dict (for a shot) (that is, they did not include one that another scout did), this makes one with no values
 		for aScout in lis:
 			if len(aScout) < largestListLength:
-				aScout += [{'numShots': 0, 'position': 'other', 'time': 0}] * (largestListLength - len(aScout))
+				aScout += [{'numShots': 0, 'position': 'Other  ', 'time': 0}] * (largestListLength - len(aScout))
 		returnList = []
 		for num in range(largestListLength):
 			returnList += [{}]
@@ -98,18 +102,13 @@ class DataChecker(multiprocessing.Process):
 			#The time and number of shots can be compared to get a common value
 			for key in consolidationDict.keys():
 				if key != 'position':
-					values = consolidationDict[key]
-					valueFrequencies = map(values.count, values)
-					commonValue = values[valueFrequencies.index(max(valueFrequencies))]
-					if values.count(commonValue) <= len(values) / 2:
-						commonValue = np.mean(values)
-					returnList[num].update({key: commonValue})
+					returnList[num].update({key: self.commonValue(consolidationDict[key])})
 			#If there is only one scout, their statement about position is accepted as right
 			if len(consolidationDict['position']) == 1:
 				returnList[num].update({'position': consolidationDict['position'][0]})
 			#If there are 2 scouts, pick one that isn't the key unless they are both in agreement
 			elif len(consolidationDict['position']) % 2 == 0:
-				if consolidationDict['position'][0] != 'Key':
+				if consolidationDict['position'][0].lower() != 'key':
 					returnList[num].update({'position': consolidationDict['position'][0]})
 				else:
 					returnList[num].update({'position': consolidationDict['position'][1]})

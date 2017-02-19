@@ -102,7 +102,7 @@ class ScoutPrecision(object):
 		#If someone missed a dict (for a shot) (that is, they did not include one that another scout did), this makes one with no values
 		for aScout in lists:
 			if len(aScout) < largestListLength:
-				aScout += [{'numShots': 0, 'position': 0, 'time': 0}] * (largestListLength - len(aScout))
+				aScout += [{'numShots': 0, 'position': 'Other  ', 'time': 0}] * (largestListLength - len(aScout))
 		for num in range(largestListLength):
 			#comparing dicts that should be the same (e.g. each shot time dict for the same shot) within the tempTIMDs
 			#This means comparisons such as the first shot in teleop by a given robot, as recorded by multiple scouts
