@@ -28,8 +28,8 @@ cycle = 1
 shouldEmail = False
 consolidator = dataChecker.DataChecker()
 consolidator.start()
-scoutRotator.assignmentStream()
-
+# scoutRotator.assignmentStream()
+"here"
 def checkForMissingData():
 	with open('missing_data.txt', 'w') as missingDataFile:
 		missingDatas = calculator.getMissingDataString()

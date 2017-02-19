@@ -80,7 +80,7 @@ class CalculatedTeamData(object):
 		self.RScoreBallControl = None
 		self.RScoreGearControl = None
 		self.RScoreDrivingAbility = None
-		self.__dict__.update(args)
+		self.__dict__.update(args) #DON'T DELETE THIS FOR ANY CLASS
 
 class Team(object):
 	"""FRC Team Object"""
@@ -89,10 +89,8 @@ class Team(object):
 		self.name = None
 		self.number = None
 		self.calculatedData = CalculatedTeamData()
-		self.pitSelectedImageURL = None
-		self.pitAllImageURLs = {
-			 'not0' : None
-		}
+		self.pitSelectedImageName = None
+		self.pitAllImageURLs = {}
 		self.pitAvailableWeight = None
 		self.pitNotes = None
 		self.pitOrganization = None
@@ -100,7 +98,6 @@ class Team(object):
 		self.pitCheesecake = None
 		self.pitProgrammingLanguage = None
 		self.__dict__.update(args)
-
 
 class CalculatedMatchData(object):
 	"""docstring for CalculatedMatchData"""

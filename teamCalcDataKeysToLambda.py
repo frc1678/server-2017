@@ -7,10 +7,10 @@ def firstCalculationDict(team, calc):
 	cd.avgHighShotsAuto = calc.getAverageForDataFunctionForTeam(team, lambda tm: tm.calculatedData.numHighShotsAuto)
 	cd.avgLowShotsAuto = calc.getAverageForDataFunctionForTeam(team, lambda tm: tm.calculatedData.numLowShotsAuto)
 	cd.avgLowShotsTele = calc.getAverageForDataFunctionForTeam(team, lambda tm: tm.calculatedData.numLowShotsTele)
-	cd.disabledPercentage = calc.getAverageForDataFunctionForTeam(team, lambda tm: utils.convertFirebaseBoolean(tm.didStartDisabled))
-	cd.incapacitatedPercentage = calc.getAverageForDataFunctionForTeam(team, lambda tm: utils.convertFirebaseBoolean(tm.didBecomeIncapacitated))
-	cd.liftoffPercentage = calc.getAverageForDataFunctionForTeam(team, lambda tm: utils.convertFirebaseBoolean(tm.didLiftoff))
-	cd.baselineReachedPercentage = calc.getAverageForDataFunctionForTeam(team, lambda tm: utils.convertFirebaseBoolean(tm.didReachBaselineAuto))
+	cd.disabledPercentage = calc.getAverageForDataFunctionForTeam(team, lambda tm: tm.didStartDisabled)
+	cd.incapacitatedPercentage = calc.getAverageForDataFunctionForTeam(team, lambda tm: tm.didBecomeIncapacitated)
+	cd.liftoffPercentage = calc.getAverageForDataFunctionForTeam(team, lambda tm: tm.didLiftoff)
+	cd.baselineReachedPercentage = calc.getAverageForDataFunctionForTeam(team, lambda tm: tm.didReachBaselineAuto)
 	cd.avgGearsPlacedTele = calc.getAverageForDataFunctionForTeam(team, lambda tm: tm.calculatedData.numGearsPlacedTele)
 	cd.avgGearsPlacedAuto = calc.getAverageForDataFunctionForTeam(team, lambda tm: tm.calculatedData.numGearsPlacedAuto)
 	cd.avgAgility = calc.getAverageForDataFunctionForTeam(team, lambda tm: tm.rankAgility)
@@ -47,15 +47,12 @@ def secondCalculationDict(team, calc):
 	cd = team.calculatedData
 	cd.predictedNumRPs = calc.predictedNumberOfRPs(team)
 	cd.actualNumRPs = calc.actualNumberOfRPs(team)
-	cd.firstPickAbility = calc.firstPickAbility(team)
-	cd.overallSecondPickAbility = calc.overallSecondPickAbility(team)
 	cd.firstPickRotorBonusChance = calc.firstPickAllRotorsChance(team)
 	try:
 		cd.predictedSeed = calc.cachedComp.predictedSeedings.index(team) + 1
 		cd.actualNumRPs = calc.getTeamRPsFromTBA(team)
 		cd.actualSeed = calc.getTeamSeed(team)
 	except:
-		# if team not in calc.cachedComp.actualSeedings: pdb.set_trace()
 		cd.actualSeed = calc.cachedComp.actualSeedings.index(team) + 1
 		cd.actualNumRPs = calc.actualNumberOfRPs(team)
 	cd.RScoreDefense = calc.cachedComp.defenseZScores[team.number]
@@ -63,7 +60,11 @@ def secondCalculationDict(team, calc):
 	cd.RScoreGearControl = calc.cachedComp.gearControlZScores[team.number]
 	cd.RScoreSpeed = calc.cachedComp.speedZScores[team.number]
 	cd.RScoreAgility = calc.cachedComp.agilityZScores[team.number]
-	cd.RScoreDrivingAbility = calc.cachedComp.drivingAbilityZScores[team.number]	
+	cd.RScoreDrivingAbility = calc.cachedComp.drivingAbilityZScores[team.number]
+	cd.firstPickAbility = calc.firstPickAbility(team)
+	cd.overallSecondPickAbility = calc.overallSecondPickAbility(team)
+
+	
 
 def averageTeamDict(calc):
 	a = calc.averageTeam.calculatedData

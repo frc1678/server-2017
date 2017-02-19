@@ -8,21 +8,21 @@ def remind(message):
 		"chat.postMessage",
 		channel="@" + u,
 		text=message
-	), ["bimbunky", "kylestach"])
+	), ["bimbunky"])
 
-remind("sick profile picture buddy.")
-# while True:
-# 	now = datetime.datetime.now()
-# 	if now.weekday() in [5,6]:
-# 		if (now.hour == 16 and now.minute >= 45) or (now.hour == 17 and now.minute <= 15):
-# 			remind("Remember to sign out!")
-# 		elif (now.hour == 8 and now.minute >= 55) or (now.hour == 9 and now.minute <= 15):
-# 			remind("Remember to sign in!")
-# 		time.sleep(18000)
-# 	elif now.weekday() in [2,3]:
-# 		if (now.hour == 20 and now.minute >= 45) or (now.hour == 21 and now.minute <= 15):
-# 			remind("Remember to sign out!")
-# 		elif (now.hour == 18 and now.minute >= 25) or (now.hour == 19 and now.minute <= 15):
-# 			remind("Remember to sign in!")
-# 		time.sleep(18000)
-# 	time.sleep(90)
+while True:
+	now = datetime.datetime.now()
+	if now.weekday() in [5,6]:
+		if (now.hour == 16 and now.minute >= 45) or (now.hour == 17 and now.minute <= 15):
+			remind("Remember to sign out!")
+		elif (now.hour == 11 and now.minute >= 55) or (now.hour == 9 and now.minute <= 15):
+			remind("Remember to sign in!")
+			print "reminded"
+		time.sleep(18000)
+	elif now.weekday() in [2,3]:
+		if (now.hour == 20 and now.minute >= 45) or (now.hour == 21 and now.minute <= 15):
+			remind("Remember to sign out!")
+		elif (now.hour == 18 and now.minute >= 25) or (now.hour == 19 and now.minute <= 15):
+			remind("Remember to sign in!")
+		time.sleep(18000)
+	time.sleep(90)
