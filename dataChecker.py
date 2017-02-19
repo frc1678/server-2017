@@ -19,9 +19,13 @@ config = {
 #	"storageBucket": "1678-scouting-2016.appspot.com"
 #}
 
+#These are the keys that have lists of dicts
 listKeys = ["highShotTimesForBoilerTele", "highShotTimesForBoilerAuto", "lowShotTimesForBoilerAuto", "lowShotTimesForBoilerTele"]
+#These ought to be the same across all tempTIMDs
 constants = ['matchNumber', 'teamNumber']
+#These are the keys within each dict from the listKeys
 boilerKeys = ['time', 'numShots', 'position']
+#These are the keys that have dicts
 standardDictKeys = ['gearsPlacedByLiftAuto', 'gearsPlacedByLiftTele']
 fb = pyrebase.initialize_app(config)
 firebase = fb.database()

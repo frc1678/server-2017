@@ -108,8 +108,8 @@ class FirebaseCommunicator(object):
 					json.dump(data, f)
 				print "Cached Firebase"
 				break
-			except Exception as e:
-				continue
+			except:
+				pass
 
 	def addCompInfoToFirebase(self): #Doing these keys manually so less clicking in firebase is better and because just easier
 		FBLocation = "/"
