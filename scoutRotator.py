@@ -43,9 +43,16 @@ def doSPRsAndAssignments(newMatchNumber):
 	#and it is put on firebase
 	fb.child("scouts").update(newAssignments)
 
-def assignmentStream():
-	#resetScouts()
-	#resetAvailability()
+#Use this if tablets are assigned to scouts by the server, and then given to the correct scouts
+def tabletHandoutStream():
+	resetScouts()
+	resetAvailability()
+	fb.child("currentMatchNum").stream(doSPRsAndAssignments)
+
+#Use this if scouts sign in on tablets and the rotation starts when they each have one
+def tabletLoginStream():
+	resetScouts()
+	resetAvailability()
 	while True:
 		scoutsAreIn = True
 		available = [k for (k, v) in fb.child("availability").get().val().items() if v == 1]

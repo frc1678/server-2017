@@ -28,7 +28,12 @@ cycle = 1
 shouldEmail = False
 consolidator = dataChecker.DataChecker()
 consolidator.start()
-#scoutRotator.assignmentStream()
+
+#Use this if tablets are assigned to scouts by the server, and then given to the correct scouts
+#scoutRotator.tabletHandoutStream()
+
+#Use this if scouts sign in on tablets and the rotation starts when they each have one
+#scoutRotator.tabletLoginStream()
 
 def checkForMissingData():
 	with open('missing_data.txt', 'w') as missingDataFile:
