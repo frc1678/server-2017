@@ -45,7 +45,7 @@ class DataChecker(multiprocessing.Process):
 		elif type(vals[0]) == bool:
 			return self.joinBools(vals)
 		#Text does not need to be joined
-	elif type(vals[0]) == unicode or type(vals[0]) == str:
+		elif type(vals[0]) == unicode or type(vals[0]) == str:
 			return vals
 		#otherwise, if it is something like ints or floats, it goes to a general purpose function
 		else:
@@ -102,7 +102,7 @@ class DataChecker(multiprocessing.Process):
 			#The time and number of shots can be compared to get a common value
 			for key in consolidationDict.keys():
 				if key != 'position':
-					returnList[num].update({key: commonValue(consolidationDict[key])})
+					returnList[num].update({key: self.commonValue(consolidationDict[key])})
 			#If there is only one scout, their statement about position is accepted as right
 			if len(consolidationDict['position']) == 1:
 				returnList[num].update({'position': consolidationDict['position'][0]})
