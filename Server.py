@@ -21,7 +21,7 @@ comp.updateTeamsAndMatchesFromFirebase()
 comp.updateCurrentMatchNum()
 FBC = firebaseCommunicator.FirebaseCommunicator(comp)
 # scheduleUpdater.updateSchedule()
-CSVExporter.TSVExportAll(comp)
+CSVExporter.CSVExportAll(comp)
 calculator = Math.Calculator(comp)
 cycle = 1
 shouldEmail = False
@@ -51,7 +51,8 @@ while(True):
 			comp.updateTIMDsFromFirebase()
 			comp.updateCurrentMatchNum()
 			break
-		except:
+		except Exception as e:
+			print e
 			pass
 	checkForMissingData()
 	try:
