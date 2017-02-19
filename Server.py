@@ -28,7 +28,7 @@ cycle = 1
 shouldEmail = False
 consolidator = dataChecker.DataChecker()
 consolidator.start()
-scoutRotator.assignmentStream()
+#scoutRotator.assignmentStream()
 
 def checkForMissingData():
 	with open('missing_data.txt', 'w') as missingDataFile:
@@ -39,7 +39,7 @@ def checkForMissingData():
 
 while(True):
 	print("\nCalcs Cycle " + str(cycle) + "...")
-	if (cycle - 1) % 5 == 0:
+	if cycle % 5 == 1:
 		FBC.cacheFirebase()
 	while(True):
 		try:
@@ -47,7 +47,8 @@ while(True):
 			comp.updateTIMDsFromFirebase()
 			comp.updateCurrentMatchNum()
 			break
-		except: pass
+		except:
+			pass
 	checkForMissingData()
 	try:
 		calculator.doCalculations(FBC)

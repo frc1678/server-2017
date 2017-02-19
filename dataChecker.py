@@ -56,7 +56,7 @@ class DataChecker(multiprocessing.Process):
 
 	#Gets the most common bool of a list of inputted bools (several times)
 	def joinBools(self, bools):
-		return bool(False) if bools.count(False) > len(bools) / 2 else True
+		return False if bools.count(False) > len(bools) / 2 else True
 
 	#Returns the most common value in a list, or the average if no value is common enough
 	def joinList(self, values):
@@ -135,7 +135,10 @@ class DataChecker(multiprocessing.Process):
 				returnDict.update({k: self.avgDict(map(lambda c: (c.get(k) or {}), self.consolidationGroups[key]))})
 			else:
 				#Gets a common value across any kind of list of values
-				returnDict.update({k: self.commonValue(map(lambda tm: tm.get(k) or 0, self.consolidationGroups[key]))})
+				if type(self.consolidationGroups[key][0]) == bool:
+					returnDict.update({k: self.commonValue(map(lambda tm: tm.get(k) or False, self.consolidationGroups[key]))})
+				else:
+					returnDict.update({k: self.commonValue(map(lambda tm: tm.get(k) or 0, self.consolidationGroups[key]))})
 		return returnDict
 		#The line below is supposed to do the same thing as this function, and may or may not work, and may or may not have correct parenthesis
 		#return {k : self.findCommonValuesForKeys(map(lambda tm: (tm.get(k) or []), self.consolidationGroups[key])) if k in listKeys else self.consolidationGroups[key][0][k] if k in constants else self.avgDict(map(lambda c: (c.get(k) or {}), self.consolidationGroups[key])) if k in standardDictKeys else self.commonValue(map(lambda tm: tm.get(k) or 0, self.consolidationGroups[key])) for k in self.getAllKeys(map(lambda v: v.keys(), self.consolidationGroups[key]))}
