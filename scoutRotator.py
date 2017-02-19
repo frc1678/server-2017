@@ -46,4 +46,15 @@ def doSPRsAndAssignments(newMatchNumber):
 def assignmentStream():
 	#resetScouts()
 	#resetAvailability()
+	while True:
+		scoutsAreIn = True
+		available = [k for (k, v) in fb.child("availability").get().val().items() if v == 1]
+		scoutRotatorDict = fb.child("scouts").get().val()
+		scoutsWithNames = filter(lambda v: v.get('currentUser') != (None or ''), scoutRotatorDict.values())
+		namesOfScouts = map(lambda v: v.get('currentUser'), scoutsWithNames)
+		for name in available:
+			if name not in namesOfScouts:
+				scoutsAreIn = False
+		if scoutsAreIn:
+			break
 	fb.child("currentMatchNum").stream(doSPRsAndAssignments)
