@@ -56,7 +56,7 @@ class DataChecker(multiprocessing.Process):
 
 	#Gets the most common bool of a list of inputted bools (several times)
 	def joinBools(self, bools):
-		return bool(False) if bools.count(False) > len(bools) / 2 else True
+		return False if bools.count(False) > len(bools) / 2 else True
 
 	#Returns the most common value in a list, or the average if no value is common enough
 	def joinList(self, values):
@@ -82,7 +82,7 @@ class DataChecker(multiprocessing.Process):
 		#If someone missed a dict (for a shot) (that is, they did not include one that another scout did), this makes one with no values
 		for aScout in lis:
 			if len(aScout) < largestListLength:
-				aScout += [{'numShots': 0, 'position': 0, 'time': 0}] * (largestListLength - len(aScout))
+				aScout += [{'numShots': 0, 'position': 'other', 'time': 0}] * (largestListLength - len(aScout))
 		returnList = []
 		for num in range(largestListLength):
 			returnList += [{}]
@@ -135,9 +135,12 @@ class DataChecker(multiprocessing.Process):
 				returnDict.update({k: self.avgDict(map(lambda c: (c.get(k) or {}), self.consolidationGroups[key]))})
 			else:
 				#Gets a common value across any kind of list of values
-				returnDict.update({k: self.commonValue(map(lambda tm: tm.get(k) or 0, self.consolidationGroups[key]))})
+				if type(self.consolidationGroups[key][0]) == bool:
+					returnDict.update({k: self.commonValue(map(lambda tm: tm.get(k) or False, self.consolidationGroups[key]))})
+				else:
+					returnDict.update({k: self.commonValue(map(lambda tm: tm.get(k) or 0, self.consolidationGroups[key]))})
 		return returnDict
-		#The line below is supposed to do the same thing as this function, and may or may not work, and may or may not have correct parenthesis
+		#The line below is supposed to do the same thing as this function, and may or may not work, and may or may not have correct parentheses
 		#return {k : self.findCommonValuesForKeys(map(lambda tm: (tm.get(k) or []), self.consolidationGroups[key])) if k in listKeys else self.consolidationGroups[key][0][k] if k in constants else self.avgDict(map(lambda c: (c.get(k) or {}), self.consolidationGroups[key])) if k in standardDictKeys else self.commonValue(map(lambda tm: tm.get(k) or 0, self.consolidationGroups[key])) for k in self.getAllKeys(map(lambda v: v.keys(), self.consolidationGroups[key]))}
 
 	#flattens the list of lists of keys into a list of keys
@@ -163,5 +166,3 @@ class DataChecker(multiprocessing.Process):
 			self.consolidationGroups = self.getConsolidationGroups(tempTIMDs)
 			map(lambda key: firebase.child("TeamInMatchDatas").child(key).update(self.joinValues(key)), self.consolidationGroups.keys())
 			time.sleep(10)
-
-DataChecker().start()

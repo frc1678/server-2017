@@ -29,7 +29,13 @@ shouldEmail = False
 consolidator = dataChecker.DataChecker()
 consolidator.start()
 # scoutRotator.assignmentStream()
-"here"
+
+#Use this if tablets are assigned to scouts by the server, and then given to the correct scouts
+#scoutRotator.tabletHandoutStream()
+
+#Use this if scouts sign in on tablets and the rotation starts when they each have one
+#scoutRotator.tabletLoginStream()
+
 def checkForMissingData():
 	with open('missing_data.txt', 'w') as missingDataFile:
 		missingDatas = calculator.getMissingDataString()
@@ -39,7 +45,7 @@ def checkForMissingData():
 
 while(True):
 	print("\nCalcs Cycle " + str(cycle) + "...")
-	if (cycle - 1) % 5 == 0:
+	if cycle % 5 == 1:
 		FBC.cacheFirebase()
 	while(True):
 		try:
@@ -47,7 +53,8 @@ while(True):
 			comp.updateTIMDsFromFirebase()
 			comp.updateCurrentMatchNum()
 			break
-		except: pass
+		except:
+			pass
 	checkForMissingData()
 	try:
 		calculator.doCalculations(FBC)

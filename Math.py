@@ -46,7 +46,6 @@ class Calculator(object):
         for t in self.comp.teams:
             self.cachedTeamDatas[t.number] = cache.CachedTeamData(**{'teamNumber': t.number})
 
-
     def getMissingDataString(self):
         print "CURRENT MATCH NUM = " + str(self.comp.currentMatchNum)
         playedTIMDs = [timd for timd in self.comp.TIMDs if timd.matchNumber < self.comp.currentMatchNum]
@@ -56,7 +55,6 @@ class Calculator(object):
         incompletePlayedScoutTIMDStrings = ['Super: ' + str(timd.teamNumber) + 'Q' + str(timd.matchNumber) for timd in incompletePlayedScoutTIMDs if timd.teamNumber != None]
         incompletePlayedSuperTIMDStrings.extend(incompletePlayedScoutTIMDStrings)
         return incompletePlayedSuperTIMDStrings
-
 
     #Calculated Team Data
 
