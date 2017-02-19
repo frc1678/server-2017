@@ -77,7 +77,7 @@ def makeTIMDFromDict(d):
 	return timd
 
 def makeTeamsFromDicts(dicts):
-	return map(lambda v: makeTeamFromDict(v), dicts.values())
+	return map(makeTeamFromDict, dicts.values())
 
 def makeMatchesFromDicts(dicts):
 	return [makeMatchFromDict(m) for m in dicts if m != None]

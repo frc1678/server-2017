@@ -117,12 +117,14 @@ class Calculator(object):
     #SHOTS DATA
 
     def fieldsForShots(self, timd):
-        return sum([sum(map(lambda v: (v.get('numShots') or 0.0), timd.highShotTimesForBoilerTele)) / 3.0, sum(map(lambda v: (v.get('numShots') or 0), timd.highShotTimesForBoilerAuto)), sum(map(lambda v: (v.get('numShots') or 0), timd.lowShotTimesForBoilerTele)) / 9.0, sum(map(lambda v: (v.get('numShots') or 0), timd.lowShotTimesForBoilerAuto)) / 3.0])
+        return sum([sum(map(lambda v: (v.get('numShots') or 0), timd.highShotTimesForBoilerTele)) / 3.0, sum(map(lambda v: (v.get('numShots') or 0), timd.highShotTimesForBoilerAuto)), sum(map(lambda v: (v.get('numShots') or 0), timd.lowShotTimesForBoilerTele)) / 9.0, sum(map(lambda v: (v.get('numShots') or 0), timd.lowShotTimesForBoilerAuto)) / 3.0])
 
     def weightFuelShotsForDataPoint(self, timd, match, boilerPoint):
         timds = self.su.getCompletedTIMDsForMatchForAllianceIsRed(match, timd.teamNumber in match.redAllianceTeamNumbers)
         fuelPts = self.getShotPointsForMatchForAlliance(timds, timd.teamNumber in match.redAllianceTeamNumbers, match)
         scoutedFuelPoints = sum(map(self.fieldsForShots, timds))
+        print scoutedFuelPoints
+        print fuelPts
         weightage = float(fuelPts) / scoutedFuelPoints if None not in [scoutedFuelPoints, fuelPts] and scoutedFuelPoints != 0 else None
         return sum(map(lambda v: (v.get('numShots') or 0), boilerPoint)) * weightage if weightage != None else 0
 
@@ -130,8 +132,8 @@ class Calculator(object):
         gearPts = self.getGearPtsForAllianceTIMDs(timds)
         baselinePts = 5 * sum(map(lambda t: t.didReachBaselineAuto, timds))
         liftoffPts = 50 * sum(map(lambda t: t.didLiftoff, timds))
-        fields = self.su.getFieldsForAllianceForMatch(match)
-        return fields[0] - fields[3] - gearPts - baselinePts - liftoffPts if None not in fields else None
+        fields = self.su.getFieldsForAllianceForMatch(allianceIsRed, match)
+        return fields[0] - fields[3] - gearPts - baselinePts - liftoffPts if None not in [fields[0], fields[3]] else None
 
     def getTotalAverageShotPointsForTeam(self, team):
         return sum([(team.calculatedData.avgHighShotsTele or 0) / 3.0, (team.calculatedData.avgLowShotsTele or 0) / 9.0, team.calculatedData.avgHighShotsAuto, (team.calculatedData.avgLowShotsAuto or 0) / 3.0])
@@ -259,6 +261,10 @@ class Calculator(object):
         if self.predictedScoreForAlliance([ourTeam, team, self.averageTeam]) == None or math.isnan(self.predictedScoreForAlliance([ourTeam, team, self.averageTeam])):
             return
         return self.predictedPlayoffScoreForAlliance([ourTeam, team])
+
+    def firstPickAllRotorsChance(self, team):
+        ourTeam = self.su.getTeamForNumber(self.ourTeamNum)
+        return self.getAllRotorsTurningChanceForTwoRobotAlliance([ourTeam, team])
 
     def overallSecondPickAbility(self, team):
         defense = (team.calculatedData.RScoreDefense or 0) * 1.0

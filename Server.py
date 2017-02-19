@@ -22,13 +22,12 @@ comp.updateTeamsAndMatchesFromFirebase()
 comp.updateCurrentMatchNum()
 FBC = firebaseCommunicator.FirebaseCommunicator(comp)
 # scheduleUpdater.updateSchedule()
-CSVExporter.TSVExportAll(comp)
+CSVExporter.CSVExportAll(comp)
 calculator = Math.Calculator(comp)
 cycle = 1
 shouldEmail = False
 consolidator = dataChecker.DataChecker()
 consolidator.start()
-# scoutRotator.assignmentStream()
 
 #Use this if tablets are assigned to scouts by the server, and then given to the correct scouts
 #scoutRotator.tabletHandoutStream()
@@ -53,7 +52,8 @@ while(True):
 			comp.updateTIMDsFromFirebase()
 			comp.updateCurrentMatchNum()
 			break
-		except:
+		except Exception as e:
+			print e
 			pass
 	checkForMissingData()
 	try:

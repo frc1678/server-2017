@@ -5,7 +5,7 @@ import pdb
 import csv
 from DataModel import Team
 
-def TSVExportAll(comp):
+def CSVExportAll(comp):
 	s = ""
 	firstTeam = True
 	excluded = ['calculatedData', 'name', 'imageKeys']

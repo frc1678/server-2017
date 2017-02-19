@@ -55,52 +55,32 @@ class FirebaseCommunicator(object):
 		print "Writing team " + str(team.number) + " to Firebase..."
 		calculatedTeamDataDict = utils.makeDictFromCalculatedData(team.calculatedData)
 		FBLocation = "/Teams/" + str(team.number)
-<<<<<<< HEAD
 		while True:
 			try: 
 				firebase.put(FBLocation, 'calculatedData', calculatedTeamDataDict)
 				break
 			except: pass 
-=======
-		try:
-			firebase.put(FBLocation, 'calculatedData', calculatedTeamDataDict)
-		except:
-			print calculatedTeamDataDict.items()
->>>>>>> 79dab9b5b076ba71cd51083a5d5078655a3b3e7d
+
 
 	def addCalculatedTIMDataToFirebase(self, timd):
 		print "Writing team " + str(timd.teamNumber) + " in match " + str(timd.matchNumber) + " to Firebase..."
 		calculatedTIMDataDict = utils.makeDictFromCalculatedData(timd.calculatedData)
 		FBLocation = "/TeamInMatchDatas/" + str(timd.teamNumber) + "Q" + str(timd.matchNumber)
-<<<<<<< HEAD
 		while True:	
 			try: 
 				firebase.put(FBLocation, 'calculatedData', calculatedTIMDataDict)
 				break
 			except: pass
-=======
-		try:
-			firebase.put(FBLocation, 'calculatedData', calculatedTIMDataDict)
-		except requests.exceptions.RequestException as e:
-			print e
->>>>>>> 79dab9b5b076ba71cd51083a5d5078655a3b3e7d
 
 	def addCalculatedMatchDataToFirebase(self, match):
 		print "Writing match " + str(match.number) + " to Firebase..."
 		calculatedMatchDataDict = utils.makeDictFromCalculatedData(match.calculatedData)
 		FBLocation = "/Matches/" + str(match.number)
-<<<<<<< HEAD
 		while True:
 			try: 
 				firebase.put(FBLocation, 'calculatedData', calculatedMatchDataDict)
 				break
 			except: pass
-=======
-		try:
-			firebase.put(FBLocation, 'calculatedData', calculatedMatchDataDict)
-		except requests.exceptions.RequestException as e:
-			print e
->>>>>>> 79dab9b5b076ba71cd51083a5d5078655a3b3e7d
 
 	def addTeamsToFirebase(self):
 		print "\nDoing Teams..."
@@ -127,6 +107,7 @@ class FirebaseCommunicator(object):
 				print "Cached Firebase"
 				break
 			except Exception as e:
+				print e
 				continue
 
 	def addCompInfoToFirebase(self): #Doing these keys manually so less clicking in firebase is better and because just easier
