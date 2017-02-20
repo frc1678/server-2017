@@ -389,11 +389,11 @@ class Calculator(object):
 
     def predictedNumberOfRPs(self, team):
         predictedRPsFunction = lambda m: self.predictedRPsForAllianceForMatch(self.su.getTeamAllianceIsRedInMatch(team, m), m)
-        predictedRPs = sum([predictedRPsFunction(m) for m in self.su.getMatchesForTeam(team) if not self.su.matchIsCompleted(m) and predictedRPsFunction(m) != None])
-        return predictedRPs + self.actualNumberOfRPs(team)
+        predictedRPs = np.mean([predictedRPsFunction(m) for m in self.su.getMatchesForTeam(team) if not self.su.matchIsCompleted(m) and predictedRPsFunction(m) != None])
+        return np.mean([predictedRPs, self.actualNumberOfRPs(team)])
 
     def actualNumberOfRPs(self, team):
-        return self.getSumForDataFunctionForTeam(team, lambda tm: tm.calculatedData.numRPs)
+        return self.getAverageForDataFunctionForTeam(team, lambda tm: tm.calculatedData.numRPs)
 
     def scoreRPsGainedFromMatchWithScores(self, score, opposingScore):
         if score > opposingScore:
