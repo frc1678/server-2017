@@ -11,7 +11,7 @@ config = {
 
 f = pyrebase.initialize_app(config)
 fb = f.database()
-testScouts = "scout1 scout10 scout2 scout3 scout4 scout5 scout6 scout7 scout8 scout9".split()
+testScouts = "scout1 scout2 scout3 scout4 scout5 scout6 scout7 scout8 scout9 scout10 scout11 scout12".split()
 scouts = "janet justin alex wesley kyle mx aiden westley katie jesse jack sage jon ayush sam evan mingyo zoe gemma carter".split()
 SPR = SPR.ScoutPrecision()
 
