@@ -123,8 +123,6 @@ class Calculator(object):
         timds = self.su.getCompletedTIMDsForMatchForAllianceIsRed(match, timd.teamNumber in match.redAllianceTeamNumbers)
         fuelPts = self.getShotPointsForMatchForAlliance(timds, timd.teamNumber in match.redAllianceTeamNumbers, match)
         scoutedFuelPoints = sum(map(self.fieldsForShots, timds))
-        print scoutedFuelPoints
-        print fuelPts
         weightage = float(fuelPts) / scoutedFuelPoints if None not in [scoutedFuelPoints, fuelPts] and scoutedFuelPoints != 0 else None
         return sum(map(lambda v: (v.get('numShots') or 0), boilerPoint)) * weightage if weightage != None else 0
 
@@ -134,7 +132,7 @@ class Calculator(object):
         liftoffPts = 50 * sum(map(lambda t: t.didLiftoff, timds))
         fields = self.su.getFieldsForAllianceForMatch(allianceIsRed, match)
         return fields[0] - fields[3] - gearPts - baselinePts - liftoffPts if None not in [fields[0], fields[3]] else None
-        
+
     def getTotalAverageShotPointsForTeam(self, team):
         return sum([(team.calculatedData.avgHighShotsTele or 0) / 3.0, (team.calculatedData.avgLowShotsTele or 0) / 9.0, team.calculatedData.avgHighShotsAuto, (team.calculatedData.avgLowShotsAuto or 0) / 3.0])
 
@@ -254,7 +252,7 @@ class Calculator(object):
         return baselinePts + fuelPts + liftoffPoints + gearPts
 
     def predictedPlayoffScoreForAlliance(self, alliance):
-        return 20 * self.get40KilopascalChanceForAlliance(alliance) + self.predictedScoreForAlliance(alliance) + 100 * team.calculatedData.firstPickRotorBonusChance
+        return 20 * self.get40KilopascalChanceForAlliance(alliance) + self.predictedScoreForAlliance(alliance) + 100 * self.getAllRotorsTurningChanceForAlliance(alliance)
 
     def firstPickAbility(self, team):
         ourTeam = self.su.getTeamForNumber(self.ourTeamNum)
@@ -338,6 +336,10 @@ class Calculator(object):
         alliance = map(self.su.replaceWithAverageIfNecessary, alliance)
         three = (len(alliance) == 3)
         return sum(map(lambda w: sum(map(lambda z: (self.totalZProbTeam(alliance[2], z) if three else 1) * sum(map(lambda y: self.totalZProbTeam(alliance[0], w-y-z) * self.totalZProbTeam(alliance[1], y), range(13))), range(13 if three else 1))), range(12,len(alliance) * 12 + 1)))
+
+    def getAllRotorsTurningChanceForTwoRobotAlliance(self, alliance):
+        alliance = map(self.su.replaceWithAverageIfNecessary, alliance)
+        return sum(map(lambda w: sum(map(lambda y: self.totalZProbTeam(alliance[0], w-y) * self.totalZProbTeam(alliance[1], y), range(13))), range(12, 25)))
 
     def probabilityForGearsPlacedForNumberForTeam(self, team, number, gearFunc):
         gearTimds = map(gearFunc, self.su.getCompletedTIMDsForTeam(team))
