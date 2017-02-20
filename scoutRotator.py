@@ -11,7 +11,7 @@ config = {
 
 f = pyrebase.initialize_app(config)
 fb = f.database()
-testScouts = "scout1 scout2 scout3 scout4 scout5 scout6 scout7 scout8 scout9 scout10 scout11 scout12".split()
+testScouts = "a b c d e f g h i".split()
 scouts = "janet justin alex wesley kyle mx aiden westley katie jesse jack sage jon ayush sam evan mingyo zoe gemma carter".split()
 SPR = SPR.ScoutPrecision()
 
@@ -23,11 +23,12 @@ def resetAvailability():
 
 #creates firebase objects for 18 scouts
 def resetScouts():
-	scouts = {'scout' + str(num) : {'currentUser': '', 'scoutStatus': ''} for num in range(1,13)}
-																					#change 13 to 19 for actual use
+	scouts = {'scout' + str(num) : {'currentUser': '', 'scoutStatus': ''} for num in range(1,10)}
+																					#change 10 to 19 for actual use
 	fb.child('scouts').set(scouts)
 
 def doSPRsAndAssignments(newMatchNumber):
+	if newMatchNumber.get('data') == None: return
 	print 'Setting scouts for match ' + str(fb.child('currentMatchNum').get().val())
 	newMatchNumber = str(fb.child('currentMatchNum').get().val())
 	scoutDict = fb.child("scouts").get().val()

@@ -20,16 +20,16 @@ comp = DataModel.Competition()
 comp.updateTeamsAndMatchesFromFirebase()
 comp.updateCurrentMatchNum()
 FBC = firebaseCommunicator.FirebaseCommunicator(comp)
-# scheduleUpdater.updateSchedule()
+scheduleUpdater.updateSchedule()
 CSVExporter.CSVExportAll(comp)
 calculator = Math.Calculator(comp)
 cycle = 1
-shouldEmail = False
+shouldEmail = True
 consolidator = dataChecker.DataChecker()
 consolidator.start()
 
 #Use this if tablets are assigned to scouts by the server, and then given to the correct scouts
-#scoutRotator.tabletHandoutStream()
+scoutRotator.tabletHandoutStream()
 
 #Use this if scouts sign in on tablets and the rotation starts when they each have one
 #scoutRotator.tabletLoginStream()
@@ -63,6 +63,6 @@ while(True):
 			reportServerCrash(traceback.format_exc())
 		else:
 			print traceback.format_exc()
-		sys.exit(0)
+		continue
 	time.sleep(1)
 	cycle += 1
