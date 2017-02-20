@@ -2,7 +2,7 @@ from apns import APNs, Frame, Payload
 import pyrebase as pyb
 import pdb
 
-apns = APNs(use_sandbox=True, cert_file='./apn-cert.pem')
+apns = APNs(use_sandbox=True, cert_file='./newfile.pem', key_file='./nopassword.pem')
 config = {
 		"apiKey": "mykey",
 		"authDomain": "scouting-2017-5f51c.firebaseapp.com",
