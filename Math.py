@@ -124,7 +124,7 @@ class Calculator(object):
         fuelPts = self.getShotPointsForMatchForAlliance(timds, timd.teamNumber in match.redAllianceTeamNumbers, match)
         scoutedFuelPoints = sum(map(self.fieldsForShots, timds))
         weightage = float(fuelPts) / scoutedFuelPoints if None not in [scoutedFuelPoints, fuelPts] and scoutedFuelPoints != 0 else None
-        return sum(map(lambda v: (v.get('numShots') or 0), boilerPoint)) * weightage if weightage != None else 0
+        return sum(map(lambda v: (v.get('numShots') or 0), boilerPoint)) * weightage if weightage != None and weightage < 0 else 0
 
     def getShotPointsForMatchForAlliance(self, timds, allianceIsRed, match):
         gearPts = self.getGearPtsForAllianceTIMDs(timds)
@@ -186,7 +186,7 @@ class Calculator(object):
 
     def getGearScoringPositionsAuto(self, team):
         timds = self.su.getCompletedTIMDsForTeam(team)
-        return list(set([k for tm in timds for k in tm.gearsPlacedByLiftAuto.keys() if not tm.gearsPlacedByLiftAuto.get(k)]))
+        return list(set([lift for lift in self.lifts if team.calculatedData.avgGearsPlacedByLiftAuto.get(lift) != 0]))
 
     def gearPlacementAbilityExcludeLift(self, team, eLift):
         return sum([(team.calculatedData.avgGearsPlacedByLiftAuto.get(lift) or 0) for lift in self.lifts if lift != eLift])
