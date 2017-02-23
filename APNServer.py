@@ -34,4 +34,5 @@ def sendNotiForUser(usr, currentMatchNum):
         observedMs = filter(lambda n: abs(currentMatchNum - n) <= 2, starred)
         [sendNoti(n, currentMatchNum, token) for n in observedMs]
 
-fb.child("currentMatchNum").stream(sendNotiForUsers)
+def startNotiStream():
+        fb.child("currentMatchNum").stream(sendNotiForUsers)

@@ -14,6 +14,7 @@ from CrashReporter import reportServerCrash
 import dataChecker
 import scoutRotator
 import scheduleUpdater
+import APNServer
 
 print "Starting"
 comp = DataModel.Competition()
@@ -27,7 +28,7 @@ cycle = 1
 shouldEmail = True
 consolidator = dataChecker.DataChecker()
 consolidator.start()
-
+APNServer.startNotiStream()
 #Use this if tablets are assigned to scouts by the server, and then given to the correct scouts
 scoutRotator.tabletHandoutStream()
 

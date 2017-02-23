@@ -11,7 +11,7 @@ config = {
 
 f = pyrebase.initialize_app(config)
 fb = f.database()
-testScouts = "a b c d e f g h i".split()
+testScouts = "a b c d e f g h i j k l".split()
 scouts = "janet justin alex wesley kyle mx aiden westley katie jesse jack sage jon ayush sam evan mingyo zoe gemma carter".split()
 SPR = SPR.ScoutPrecision()
 
@@ -23,7 +23,7 @@ def resetAvailability():
 
 #creates firebase objects for 18 scouts
 def resetScouts():
-	scouts = {'scout' + str(num) : {'currentUser': '', 'scoutStatus': ''} for num in range(1,10)}
+	scouts = {'scout' + str(num) : {'currentUser': '', 'scoutStatus': ''} for num in range(1,13)}
 																					#change 10 to 19 for actual use
 	fb.child('scouts').set(scouts)
 

@@ -66,6 +66,7 @@ class CalculatedTeamData(object):
 		self.avgBallControl = None
 		self.avgGearControl = None
 		self.avgDefense = None
+		self.avgDrivingAbility = None
 		self.liftoffAbility = None
 		self.sdLiftoffAbility = None
 		self.liftoffPercentage = None

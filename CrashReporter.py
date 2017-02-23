@@ -10,5 +10,5 @@ def reportServerCrash(message):
 		"chat.postMessage",
 		channel="@" + u,
 		text=message
-	), ["bimbunky", "tesseract", "rytonbay", "sam"])
+	), ["bimbunky", "tesseract", "rytonbay", "sam", "peterc"])
 
