@@ -49,12 +49,13 @@ class Calculator(object):
     def getMissingDataString(self):
         print "CURRENT MATCH NUM = " + str(self.comp.currentMatchNum)
         playedTIMDs = [timd for timd in self.comp.TIMDs if timd.matchNumber < self.comp.currentMatchNum]
-        incompletePlayedSuperTIMDs = [timd for timd in playedTIMDs if timd.rankAgility == None]
+        incompletePlayedSuperTIMDs = filter(lambda timd: timd.rankSpeed == None, playedTIMDs)
         incompletePlayedScoutTIMDs = filter(lambda timd: timd.didLiftoff == None, playedTIMDs)
-        incompletePlayedSuperTIMDStrings = ['Scout: ' + str(timd.teamNumber) + 'Q' + str(timd.matchNumber) for timd in incompletePlayedSuperTIMDs if timd.teamNumber != None]
-        incompletePlayedScoutTIMDStrings = ['Super: ' + str(timd.teamNumber) + 'Q' + str(timd.matchNumber) for timd in incompletePlayedScoutTIMDs if timd.teamNumber != None]
-        incompletePlayedSuperTIMDStrings.extend(incompletePlayedScoutTIMDStrings)
-        return incompletePlayedSuperTIMDStrings
+        incompletePlayedSuperTIMDStrings = ['Super: ' + str(timd.teamNumber) + 'Q' + str(timd.matchNumber) for timd in incompletePlayedSuperTIMDs if timd.teamNumber != None]
+        print incompletePlayedSuperTIMDStrings
+        incompletePlayedScoutTIMDStrings = ['Scout: ' + str(timd.teamNumber) + 'Q' + str(timd.matchNumber) for timd in incompletePlayedScoutTIMDs if timd.teamNumber != None]
+        print incompletePlayedScoutTIMDStrings
+        return incompletePlayedScoutTIMDStrings.extend(incompletePlayedSuperTIMDStrings)
 
     #Calculated Team Data
 
