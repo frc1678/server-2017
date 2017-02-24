@@ -124,13 +124,14 @@ class Calculator(object):
         fuelPts = self.getShotPointsForMatchForAlliance(timds, timd.teamNumber in match.redAllianceTeamNumbers, match)
         scoutedFuelPoints = sum(map(self.fieldsForShots, timds))
         weightage = float(fuelPts) / scoutedFuelPoints if None not in [scoutedFuelPoints, fuelPts] and scoutedFuelPoints != 0 else None
-        return sum(map(lambda v: (v.get('numShots') or 0), boilerPoint)) * weightage if weightage != None and weightage < 0 else 0
+        return sum(map(lambda v: (v.get('numShots') or 0), boilerPoint)) * weightage if weightage != None and weightage > 0 else 0
 
     def getShotPointsForMatchForAlliance(self, timds, allianceIsRed, match):
         gearPts = self.getGearPtsForAllianceTIMDs(timds)
         baselinePts = 5 * sum(map(lambda t: t.didReachBaselineAuto, timds))
         liftoffPts = 50 * sum(map(lambda t: t.didLiftoff, timds))
         fields = self.su.getFieldsForAllianceForMatch(allianceIsRed, match)
+        print str(fields[0]) + " " + str(fields[3]) + " " + str(gearPts) + " " + str(baselinePts) + " " + str(liftoffPts)
         return fields[0] - fields[3] - gearPts - baselinePts - liftoffPts if None not in [fields[0], fields[3]] else None
 
     def getTotalAverageShotPointsForTeam(self, team):

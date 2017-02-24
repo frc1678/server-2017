@@ -3,6 +3,8 @@ import CacheModel as cache
 import Math
 import random
 import numpy as np
+import scipy.stats as stats
+import CSVExporter
 
 # Scout Performance Analysis
 class ScoutPrecision(object):
@@ -272,3 +274,7 @@ class ScoutPrecision(object):
 				newSpace = self.findFirstEmptySpotForScout(scoutRotatorDict, available)[0]
 				scoutRotatorDict[newSpace].update({'team': teams[availableScout], 'currentUser': availableScout, 'scoutStatus': 'requested'})
 		return scoutRotatorDict
+
+	def sprZScores(self):
+		zscores = {k : (0.0, self.sprs[k]) for k in self.sprs.keys()} if len(set(self.sprs.values())) == 1 else {k : (zscore, self.sprs[k]) for (k, zscore) in zip(self.sprs.keys(), stats.zscore(self.sprs.values()))}
+		CSVExporter.CSVExportScoutZScores(zscores)

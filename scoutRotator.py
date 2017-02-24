@@ -24,7 +24,6 @@ def resetAvailability():
 #creates firebase objects for 18 scouts
 def resetScouts():
 	scouts = {'scout' + str(num) : {'currentUser': '', 'scoutStatus': ''} for num in range(1,13)}
-																					#change 10 to 19 for actual use
 	fb.child('scouts').set(scouts)
 
 def doSPRsAndAssignments(newMatchNumber):
@@ -39,7 +38,7 @@ def doSPRsAndAssignments(newMatchNumber):
 	available = [k for (k, v) in fb.child("availability").get().val().items() if v == 1]
 	#Each scout is assigned to a robot in the next 2 lines
 	SPR.calculateScoutPrecisionScores(fb.child("TempTeamInMatchDatas").get().val(), available)
-	print SPR.sprs
+	SPR.sprZScores()
 	newAssignments = SPR.assignScoutsToRobots(available, redTeams + blueTeams, fb.child("scouts").get().val())
 	#and it is put on firebase
 	fb.child("scouts").update(newAssignments)

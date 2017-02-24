@@ -21,6 +21,13 @@ def CSVExportAll(comp):
 			keys = sorted(defaultKeys,key=lambda k: (k != "number", k.lower()))
 			writer.writerow({k : tDict[k] for k in keys})
 
+def CSVExportScoutZScores(zscores):
+	with open('./SPRExport.csv', 'w') as f:
+		writer = csv.DictWriter(f, fieldnames=['name', 'SPR', 'Z-Score'])
+		writer.writeheader()
+		for k,v in zscores.items():
+			writer.writerow({'name' : k, 'SPR' : zscores[k][1], 'Z-Score' : zscores[k][0]})
+
 def TSVExportCVR(comp):
 	s = ""
 	CVRKeys = []

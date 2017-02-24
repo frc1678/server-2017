@@ -28,7 +28,7 @@ cycle = 1
 shouldEmail = True
 consolidator = dataChecker.DataChecker()
 consolidator.start()
-APNServer.startNotiStream()
+# APNServer.startNotiStream()
 #Use this if tablets are assigned to scouts by the server, and then given to the correct scouts
 scoutRotator.tabletHandoutStream()
 
