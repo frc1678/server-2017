@@ -34,7 +34,10 @@ consolidator.start()
 #scoutRotator.tabletHandoutStream()
 
 #Use this for running the server again (e.g. after a crash) to avoid reassigning scouts
-scoutRotator.alreadyAssignedStream()
+#scoutRotator.alreadyAssignedStream()
+
+#Use this if you are restarting the server and need to reassign scouts but scouts already have tablets
+scoutRotator.simpleStream()
 
 def checkForMissingData():
 	with open('missing_data.txt', 'w') as missingDataFile:

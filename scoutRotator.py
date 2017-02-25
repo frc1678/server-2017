@@ -59,3 +59,6 @@ def alreadyAssignedStream():
 		if currentMatchNum == newMatchNum:
 			break
 	fb.child("currentMatchNum").stream(doSPRsAndAssignments)
+
+def simpleStream():
+	fb.child("currentMatchNum").stream(doSPRsAndAssignments)
