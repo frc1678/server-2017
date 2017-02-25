@@ -29,12 +29,12 @@ shouldEmail = True
 consolidator = dataChecker.DataChecker()
 consolidator.start()
 # APNServer.startNotiStream()
-#Use this if tablets are assigned to scouts by the server, and then given to the correct scouts
-#This one is for the actual competition
-scoutRotator.tabletHandoutStream()
 
-#Use this if scouts sign in on tablets and the rotation starts when they each have one
-#scoutRotator.tabletLoginStream()
+#Use this if tablets are assigned to scouts by the server, and then given to the correct scouts
+#scoutRotator.tabletHandoutStream()
+
+#Use this for running the server again (e.g. after a crash) to avoid reassigning scouts
+scoutRotator.alreadyAssignedStream()
 
 def checkForMissingData():
 	with open('missing_data.txt', 'w') as missingDataFile:
