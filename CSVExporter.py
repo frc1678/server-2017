@@ -46,7 +46,6 @@ def TSVExportCVR(comp):
 				s += str(cd[key]) + "	"
 			s += "\n"
 		file.write(s)
-		file.close()
 
 def TSVExportMini(comp):
 	s = ""
@@ -69,7 +68,6 @@ def TSVExportMini(comp):
 					s += str(cd[key]) + "	"
 			s += "\n"
 		file.write(s)
-		file.close()
 
 def TSVExport(comp, keys, name):
 	s = ""
@@ -96,11 +94,11 @@ def TSVExport(comp, keys, name):
 						print "*** TSV EXPORT ERROR ***\nKEY: " + key + " NOT FOUND ON A CALCULATED TEAM DATA, NOR ON A TEAM DATA"
 			s += "\n"
 		file.write(s)
-		file.close()
+
 def TSVExportSAC(comp):
 	keys = []
 	TSVExport(comp, keys, "SAC")
 
-def TSVExportCMP(comp): 
+def TSVExportCMP(comp):
 	keys = []
 	TSVExport(comp, keys, "CHAMPS")
