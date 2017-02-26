@@ -37,6 +37,8 @@ class ScoutPrecision(object):
 			'lowShotTimesForBoilerTele'
 		]
 
+	#SPR
+
 	#outputs list of TIMDs that an inputted scout was involved in
 	def getTotalTIMDsForScoutName(self, scoutName, tempTIMDs):
 		return len(filter(lambda v: v.get('scoutName') == scoutName, tempTIMDs.values()))
@@ -55,9 +57,9 @@ class ScoutPrecision(object):
 
 	def findOddScoutForDataPoint(self, tempTIMDs, key):
 		#finds scout names in tempTIMDs
-		scouts = filter(lambda v: v != None, map(lambda k: k.get('scoutName'), tempTIMDs))
+		scouts = filter(lambda v: v, map(lambda k: k.get('scoutName'), tempTIMDs))
 		#finds values (at an inputted key) in tempTIMDs
-		values = filter(lambda v: v != None, map(lambda t: t[key] if t.get('scoutName') != None else None, tempTIMDs))
+		values = filter(lambda v: v, map(lambda t: t[key] if t.get('scoutName') else None, tempTIMDs))
 		#These 2 lines find the most common value in the list of values, or a random one if they occur in equal frequency
 		valueFrequencies = map(values.count, values)
 		if values:
@@ -72,8 +74,8 @@ class ScoutPrecision(object):
 
 	#Similar to findOddScoutForDataPoint, but for each data point inside of a dict
 	def findOddScoutForDict(self, tempTIMDs, key):
-		scouts = filter(lambda v: v != None, map(lambda k: k.get('scoutName'), tempTIMDs))
-		dicts = filter(lambda k: k != None, map(lambda t: t[key] if t.get('scoutName') != None else None, tempTIMDs))
+		scouts = filter(lambda v: v, map(lambda k: k.get('scoutName'), tempTIMDs))
+		dicts = filter(lambda k: k, map(lambda t: t[key] if t.get('scoutName') else None, tempTIMDs))
 		# This section groups keys of the dicts found earlier
 		if dicts:
 			consolidationDict = {}
@@ -93,8 +95,8 @@ class ScoutPrecision(object):
 
 	#Similar to findOddScoutForDict, but for lists of several dicts instead of individual dicts
 	def findOddScoutForListOfDicts(self, tempTIMDs, key):
-		scouts = filter(lambda v: v != None, map(lambda k: k.get('scoutName'), tempTIMDs))
-		lists = filter(lambda k: k!= None, map(lambda t: t.get(key) if t.get('scoutName') != None else None, tempTIMDs))
+		scouts = filter(lambda v: v, map(lambda k: k.get('scoutName'), tempTIMDs))
+		lists = filter(lambda k: k, map(lambda t: t.get(key) if t.get('scoutName') else None, tempTIMDs))
 		#Finds the most largest of dicts within each list in the larger list (within each scout's observations)
 		#(i.e. if there is disagreement over how many shots a robot took)
 		if lists:
@@ -147,6 +149,8 @@ class ScoutPrecision(object):
 		else:
 			for a in available:
 				self.sprs[a] = 1
+
+	#Scout Assignment
 
 	#sorts scouts by sprs score
 	def rankScouts(self, available):
@@ -248,7 +252,7 @@ class ScoutPrecision(object):
 		#Moves the current user to the previous user spot, assigns a new user if necessary, and assigns a robot to each scout
 		for scout in scoutRotatorDict.keys():
 			#The current user is now the previous user, as the match has changed
-			if scoutRotatorDict[scout].get('currentUser') != None:
+			if scoutRotatorDict[scout].get('currentUser'):
 				oldName = scoutRotatorDict[scout]['currentUser']
 				scoutRotatorDict[scout].update({'mostRecentUser': oldName})
 				if oldName not in available:

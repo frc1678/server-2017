@@ -51,9 +51,9 @@ class Calculator(object):
         playedTIMDs = [timd for timd in self.comp.TIMDs if timd.matchNumber < self.comp.currentMatchNum]
         incompletePlayedSuperTIMDs = filter(lambda timd: timd.rankSpeed == None, playedTIMDs)
         incompletePlayedScoutTIMDs = filter(lambda timd: timd.didLiftoff == None, playedTIMDs)
-        incompletePlayedSuperTIMDStrings = ['Super: ' + str(timd.teamNumber) + 'Q' + str(timd.matchNumber) for timd in incompletePlayedSuperTIMDs if timd.teamNumber != None]
+        incompletePlayedSuperTIMDStrings = ['Super: ' + str(timd.teamNumber) + 'Q' + str(timd.matchNumber) for timd in incompletePlayedSuperTIMDs if timd.teamNumber]
         print incompletePlayedSuperTIMDStrings
-        incompletePlayedScoutTIMDStrings = ['Scout: ' + str(timd.teamNumber) + 'Q' + str(timd.matchNumber) for timd in incompletePlayedScoutTIMDs if timd.teamNumber != None]
+        incompletePlayedScoutTIMDStrings = ['Scout: ' + str(timd.teamNumber) + 'Q' + str(timd.matchNumber) for timd in incompletePlayedScoutTIMDs if timd.teamNumber]
         print incompletePlayedScoutTIMDStrings
         return incompletePlayedScoutTIMDStrings.extend(incompletePlayedSuperTIMDStrings)
 
@@ -62,18 +62,18 @@ class Calculator(object):
     #Hardcore Math
 
     def getAverageForDataFunctionForTeam(self, team, dataFunction):
-        validTIMDs = filter(lambda timd: dataFunction(timd) != None, self.su.getCompletedTIMDsForTeam(team))
+        validTIMDs = filter(lambda timd: dataFunction(timd), self.su.getCompletedTIMDsForTeam(team))
         return np.mean(map(dataFunction, validTIMDs)) if validTIMDs else None #return None if validTIMDs has no elements
 
     def getSumForDataFunctionForTeam(self, team, dataFunction):
-        return sum([dataFunction(tm) for tm in self.su.getCompletedTIMDsForTeam(team) if dataFunction(tm) != None])
+        return sum([dataFunction(tm) for tm in self.su.getCompletedTIMDsForTeam(team) if dataFunction(tm)])
 
     def getStandardDeviationForDataFunctionForTeam(self, team, dataFunction):
-        validTIMDs = filter(lambda timd: dataFunction(timd) != None, self.su.getCompletedTIMDsForTeam(team))
+        validTIMDs = filter(lambda timd: dataFunction(timd), self.su.getCompletedTIMDsForTeam(team))
         return np.std(map(dataFunction, validTIMDs)) if validTIMDs else None
 
     def getAverageOfDataFunctionAcrossCompetition(self, dataFunction):
-        validData = filter(lambda x: x != None, map(dataFunction, self.su.teamsWithCalculatedData()))
+        validData = filter(lambda x: x, map(dataFunction, self.su.teamsWithCalculatedData()))
         return np.mean(validData) if validData else 0
 
     def getStandardDeviationOfDataFunctionAcrossCompetition(self, dataFunction):
@@ -161,7 +161,7 @@ class Calculator(object):
     # GEARS DATA
 
     def getTotalValueForValueDict(self, valueDict):
-        return sum(filter(lambda v: v != None, valueDict.values()))
+        return sum(filter(lambda v: v, valueDict.values()))
 
     def getAvgFuncForKeys(self, team, dic, retrievalFunction, keys):
         timds = self.su.getCompletedTIMDsForTeam(team)
