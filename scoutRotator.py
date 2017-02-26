@@ -28,7 +28,7 @@ def resetScouts():
 
 def doSPRsAndAssignments(newMatchNumber):
 	if newMatchNumber.get('data') == None: return
-	print 'Setting scouts for match ' + str(fb.child('currentMatchNum').get().val())
+	print('Setting scouts for match ' + str(fb.child('currentMatchNum').get().val()))
 	newMatchNumber = str(fb.child('currentMatchNum').get().val())
 	scoutDict = fb.child("scouts").get().val()
 	#gets the teams we need to scout for

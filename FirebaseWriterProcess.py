@@ -4,11 +4,12 @@ import DataModel
 
 class FirebaseWriteObjectProcess(multiprocessing.Process):
 	"""docstring for FirebaseWriteProcesser"""
-	def __init__(self, o, FBC):
+	def __init__(self, o, PBC):
 		super(FirebaseWriteObjectProcess, self).__init__()
 		self.object = o
-		self.FBC = FBC
+		self.PBC = PBC
 	def run(self):
-		if isinstance(self.object, DataModel.Team): self.FBC.addCalculatedTeamDataToFirebase(self.object)
-		elif isinstance(self.object, DataModel.Match): self.FBC.addCalculatedMatchDataToFirebase(self.object)
-		elif isinstance(self.object, DataModel.TeamInMatchData): self.FBC.addCalculatedTIMDataToFirebase(self.object)
+		if isinstance(self.object, DataModel.Team): self.PBC.addCalculatedTeamDataToFirebase(self.object)
+		elif isinstance(self.object, DataModel.Match): self.PBC.addCalculatedMatchDataToFirebase(self.object)
+		elif isinstance(self.object, DataModel.TeamInMatchData): self.PBC.addCalculatedTIMDataToFirebase(self.object)
+

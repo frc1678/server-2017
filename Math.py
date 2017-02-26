@@ -47,15 +47,13 @@ class Calculator(object):
             self.cachedTeamDatas[t.number] = cache.CachedTeamData(**{'teamNumber': t.number})
 
     def getMissingDataString(self):
-        print "CURRENT MATCH NUM = " + str(self.comp.currentMatchNum)
-        playedTIMDs = [timd for timd in self.comp.TIMDs if timd.matchNumber < self.comp.currentMatchNum]
-        incompletePlayedSuperTIMDs = filter(lambda timd: timd.rankSpeed == None, playedTIMDs)
-        incompletePlayedScoutTIMDs = filter(lambda timd: timd.didLiftoff == None, playedTIMDs)
-        incompletePlayedSuperTIMDStrings = ['Super: ' + str(timd.teamNumber) + 'Q' + str(timd.matchNumber) for timd in incompletePlayedSuperTIMDs if timd.teamNumber != None]
-        print incompletePlayedSuperTIMDStrings
-        incompletePlayedScoutTIMDStrings = ['Scout: ' + str(timd.teamNumber) + 'Q' + str(timd.matchNumber) for timd in incompletePlayedScoutTIMDs if timd.teamNumber != None]
-        print incompletePlayedScoutTIMDStrings
-        return incompletePlayedScoutTIMDStrings.extend(incompletePlayedSuperTIMDStrings)
+        superKeys = ["rankSpeed", "rankAgility", "rankDefense", "rankBallControl", "rankGearControl"]
+        playedTIMDs = self.su.getCompletedTIMDsInCompetition()
+        incompleteScoutData = filter(lambda t: not all([v != None for k,v in t.__dict__.items() if k != "calculatedData" and k not in superKeys]), playedTIMDs)
+        incompleteSuperData = filter(lambda t: not all([v != None for k,v in t.__dict__.items() if k in superKeys]))
+        incompleteScoutTIMDs = dict(zip(["Scout"] * len(incompleteScoutData), incompleteScoutData))
+        incompleteSuperTIMDs = dict(zip(["Super"] * len(incompleteSuperData), incompleteSuperData))
+        return incompleteSuperTIMDs.update(incompleteScoutTIMDs)
 
     #Calculated Team Data
 
@@ -95,7 +93,7 @@ class Calculator(object):
 
     def welchsTest(self, mean1, mean2, std1, std2, sampleSize1, sampleSize2):
         if std1 == 0.0 or std2 == 0.0 or sampleSize1 <= 0 or sampleSize2 <= 0:
-            return float(mean1 > mean2)
+            return mean1 > mean2
         numerator = mean1 - mean2
         denominator = ((std1 ** 2) / sampleSize1 + (std2 ** 2) / sampleSize2) ** 0.5
         return numerator / denominator
@@ -124,7 +122,7 @@ class Calculator(object):
         timds = self.su.getCompletedTIMDsForMatchForAllianceIsRed(match, timd.teamNumber in match.redAllianceTeamNumbers)
         fuelPts = self.getShotPointsForMatchForAlliance(timds, timd.teamNumber in match.redAllianceTeamNumbers, match)
         scoutedFuelPoints = sum(map(self.fieldsForShots, timds))
-        weightage = float(fuelPts) / scoutedFuelPoints if None not in [scoutedFuelPoints, fuelPts] and scoutedFuelPoints != 0 else None
+        weightage = fuelPts / float(scoutedFuelPoints) if None not in [scoutedFuelPoints, fuelPts] and scoutedFuelPoints != 0 else None
         return sum(map(lambda v: (v.get('numShots') or 0), boilerPoint)) * weightage if weightage != None and weightage > 0 else 0
 
     def getShotPointsForMatchForAlliance(self, timds, allianceIsRed, match):
@@ -132,7 +130,6 @@ class Calculator(object):
         baselinePts = 5 * sum(map(lambda t: t.didReachBaselineAuto, timds))
         liftoffPts = 50 * sum(map(lambda t: t.didLiftoff, timds))
         fields = self.su.getFieldsForAllianceForMatch(allianceIsRed, match)
-        print str(fields[0]) + " " + str(fields[3]) + " " + str(gearPts) + " " + str(baselinePts) + " " + str(liftoffPts)
         return fields[0] - fields[3] - gearPts - baselinePts - liftoffPts if None not in [fields[0], fields[3]] else None
 
     def getTotalAverageShotPointsForTeam(self, team):
@@ -268,11 +265,12 @@ class Calculator(object):
 
     def overallSecondPickAbility(self, team):
         defense = (team.calculatedData.RScoreDefense or 0) * 1.0
-        gearControl = (team.calculatedData.RScoreGearControl or 0) * 1.0
+        speed = (team.calculatedData.RScoreSpeed or 0) * 2.4
+        agility = (team.calculatedData.RScoreAgility or 0) * 1.2
         functionalPercentage = (1 - team.calculatedData.disfunctionalPercentage)
         freqLiftOurTeam = self.getMostFrequentLift(self.su.getTeamForNumber(self.ourTeamNum))
         gA = self.gearPlacementAbilityExcludeLift(team, freqLiftOurTeam) #convert to some number of points
-        return functionalPercentage * (gA + defense + gearControl + team.calculatedData.liftoffAbility)
+        return functionalPercentage * (gA + defense + team.calculatedData.liftoffAbility + agility + speed)
 
     def predictedScoreForMatchForAlliance(self, match, allianceIsRed):
         return match.calculatedData.predictedRedScore if allianceIsRed else match.calculatedData.predictedBlueScore
@@ -316,7 +314,7 @@ class Calculator(object):
                                        sdOpposingPredictedScore,
                                        sampleSize,
                                        opposingSampleSize)
-        df = self.getDF(sdPredictedScore, opposingPredictedScore, sampleSize, opposingSampleSize)
+        df = self.getDF(sdPredictedScore, sdOpposingPredictedScore, sampleSize, opposingSampleSize)
         winChance = stats.t.cdf(tscoreRPs, df)
         return winChance if not math.isnan(winChance) else 0.0
 
@@ -445,7 +443,7 @@ class Calculator(object):
                      (lambda t: t.calculatedData.avgDrivingAbility, self.cachedComp.drivingAbilityZScores)]
 
     def cacheSecondTeamData(self):
-        map(lambda (func, dictionary): self.rValuesForAverageFunctionForDict(func, dictionary), self.rScoreParams())
+        [self.rValuesForAverageFunctionForDict(func, dictionary) for (func, dictionary) in self.rScoreParams()]
         map(self.doSecondCachingForTeam, self.comp.teams)
         try:
             self.cachedComp.actualSeedings = self.TBAC.makeEventRankingsRequest()
@@ -476,16 +474,16 @@ class Calculator(object):
                 team.calculatedData = DataModel.CalculatedTeamData()
             t = team.calculatedData
             firstCalculationDict(team, self)
-            print "Completed first calcs for " + str(team.number)
+            print("Completed first calcs for " + str(team.number))
 
     def doSecondCalculationsForTeam(self, team):
-        if not 0 in [len(self.su.getCompletedTIMDsForTeam(team)), len(self.su.getCompletedMatchesForTeam(team))]:
+        if all([len(self.su.getCompletedTIMDsForTeam(team)), len(self.su.getCompletedMatchesForTeam(team))]):
             secondCalculationDict(team, self)
-            print "Completed second calculations for team " + str(team.number)
+            print("Completed second calculations for team " + str(team.number))
 
     def doFirstCalculationsForMatch(self, match): #This entire thing being looped is what takes a while
         matchDict(match, self)
-        print "Completed calculations for match " + str(match.number)
+        print("Completed calculations for match " + str(match.number))
 
     def doFirstTeamCalculations(self):
         map(self.doFirstCalculationsForTeam, self.comp.teams)
@@ -507,10 +505,9 @@ class Calculator(object):
             file.write('Time: ' + str(time) + '    TIMDs: ' + str(len(self.su.getCompletedTIMDsInCompetition())) + '\n')
             file.close()
 
-    def doCalculations(self, FBC):
+    def doCalculations(self, PBC):
         isData = len(self.su.getCompletedTIMDsInCompetition()) > 0
         if isData:
-            print "THERE IS DATA"
             startTime = time.time()
             threads = []
             manager = multiprocessing.Manager()
@@ -527,9 +524,9 @@ class Calculator(object):
             self.cacheSecondTeamData()
             self.doMatchesCalculations()
             self.doSecondTeamCalculations()
-            map(lambda o: FirebaseWriteObjectProcess(o, FBC).start(), self.cachedComp.teamsWithMatchesCompleted + self.su.getCompletedTIMDsInCompetition() + self.comp.matches)
-            FBC.addCompInfoToFirebase()
+            map(lambda o: FirebaseWriteObjectProcess(o, PBC).start(), self.cachedComp.teamsWithMatchesCompleted + self.su.getCompletedTIMDsInCompetition() + self.comp.matches)
+            PBC.addCompInfoToFirebase()
             endTime = time.time()
             self.writeCalculationDiagnostic(endTime - startTime)
         else:
-            print "No Data"
+            print("No Data")

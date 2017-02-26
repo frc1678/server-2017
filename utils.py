@@ -4,7 +4,6 @@ import time
 import math
 import numpy as np
 import pdb
-from StringIO import StringIO
 
 ########## Defining Util/Convenience Functions ############
 ''' If there were too many more of these, or if this
@@ -133,7 +132,7 @@ def setDataForTeam(team):
 	return t
 
 def printWarningForSeconds(numSeconds):
-	print str(numSeconds) + ' SECONDS UNTIL FIREBASE WIPES'
+	print (str(numSeconds) + ' SECONDS UNTIL FIREBASE WIPES')
 	time.sleep(1)
 
 #Turns a list of lists into one big list

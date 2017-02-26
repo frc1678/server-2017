@@ -3,23 +3,21 @@ import utils
 
 class Competition(object):
 	"""docstring for Competition"""
-	def __init__(self):
+	def __init__(self, PBC):
 		super(Competition, self).__init__()
 		self.code = ""
 		self.teams = []
 		self.matches = []
 		self.TIMDs = []
+		self.PBC = PBC
 		self.currentMatchNum = 0
 
 	def updateTeamsAndMatchesFromFirebase(self):
-		self.teams = utils.makeTeamsFromDicts(firebaseCommunicator.getPythonObjectForFirebaseDataAtLocation("/Teams"))
-		self.matches = utils.makeMatchesFromDicts(firebaseCommunicator.getPythonObjectForFirebaseDataAtLocation("/Matches"))
+		self.teams = utils.makeTeamsFromDicts(self.PBC.getPythonObjectForFirebaseDataAtLocation("Teams"))
+		self.matches = utils.makeMatchesFromDicts(self.PBC.getPythonObjectForFirebaseDataAtLocation("Matches"))
 
 	def updateTIMDsFromFirebase(self):
-		self.TIMDs = utils.makeTIMDsFromDicts(firebaseCommunicator.getPythonObjectForFirebaseDataAtLocation("/TeamInMatchDatas"))
-
-	def updateCurrentMatchNum(self):
-		self.currentMatchNum = firebaseCommunicator.getPythonObjectForFirebaseDataAtLocation("/currentMatchNum")
+		self.TIMDs = utils.makeTIMDsFromDicts(self.PBC.getPythonObjectForFirebaseDataAtLocation("TeamInMatchDatas"))
 
 class CalculatedTeamData(object):
 	"""c"""

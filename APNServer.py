@@ -18,14 +18,14 @@ def sendNoti(number, c, token):
         red = fb.child('Matches').child(number).child('redAllianceTeamNumber').get().val()
         blue = fb.child('Matches').child(number).child('blueAllianceNumber').get().val()
         message = msg1 + msg2 + " Red: " + str(red) + " Blue: " + str(blue)
-        print message
+        print(message)
         payload = Payload(alert=message, sound="default", badge=1)
         apns.gateway_server.send_notification(token, payload)
 
 def sendNotiForUsers(data):
         if data.get("data") == None: return
         currentMatchNum = int(data.get("data"))
-        users = fb.child("AppTokens").get().val()
+        users = fb.child("AppTokens").get().val() or {}
         [sendNotiForUser(u, currentMatchNum) for u in users.values()]
 
 def sendNotiForUser(usr, currentMatchNum):
@@ -36,3 +36,4 @@ def sendNotiForUser(usr, currentMatchNum):
 
 def startNotiStream():
         fb.child("currentMatchNum").stream(sendNotiForUsers)
+startNotiStream()
