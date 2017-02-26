@@ -11,7 +11,7 @@ config = {
 
 f = pyrebase.initialize_app(config)
 fb = f.database()
-testScouts = "a b c d e f g h i j k l".split()
+testScouts = "nathan ben berin kenny ryan peter".split()
 scouts = "janet justin alex wesley kyle mx aiden westley katie jesse jack sage jon ayush sam evan mingyo zoe gemma carter".split()
 SPR = SPR.ScoutPrecision()
 
@@ -49,19 +49,16 @@ def tabletHandoutStream():
 	resetAvailability()
 	fb.child("currentMatchNum").stream(doSPRsAndAssignments)
 
-#Use this if scouts sign in on tablets and the rotation starts when they each have one
-def tabletLoginStream():
-	resetScouts()
-	resetAvailability()
+#Use this for running the server again (e.g. after a crash) to avoid reassigning scouts
+def alreadyAssignedStream():
+	startMatchNum = fb.child("currentMatchNum").get().val()
+	newMatchNum = startMatchNum + 1
 	while True:
-		scoutsAreIn = True
-		available = [k for (k, v) in fb.child("availability").get().val().items() if v == 1]
-		scoutRotatorDict = fb.child("scouts").get().val()
-		scoutsWithNames = filter(lambda v: v.get('currentUser') != (None or ''), scoutRotatorDict.values())
-		namesOfScouts = map(lambda v: v.get('currentUser'), scoutsWithNames)
-		for name in available:
-			if name not in namesOfScouts:
-				scoutsAreIn = False
-		if scoutsAreIn:
+		currentMatchNum = fb.child("currentMatchNum").get().val()
+		if currentMatchNum == newMatchNum:
 			break
+	fb.child("currentMatchNum").stream(doSPRsAndAssignments)
+
+#Use this if you are restarting the server and need to reassign scouts but scouts already have tablets
+def simpleStream():
 	fb.child("currentMatchNum").stream(doSPRsAndAssignments)

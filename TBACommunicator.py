@@ -30,14 +30,14 @@ class TBACommunicator(object):
 
 	def makeEventMatchesRequest(self):
 		return self.makeRequest(self.makeEventKeyRequestURL('matches'))
-	
+
 	def makeTeamMediaRequest(self, key, year):
 		return utils.readJSONFromString(self.makeRequest(self.basicURL + "team/" + key + "/" + str(year) + "/media" + '?' + self.headerKey + '=' + self.headerValue))
-	
+
 	def makeSingleMatchRequest(self, matchNum):
 		url = self.basicURL + "match/" + str(self.key) + "_qm" + str(matchNum)
 		return utils.makeASCIIFromJSON(self.makeRequest(url))
 
 	def TBAIsBehind(self, matches):
-		TBACompletedMatches = len(filter(lambda m: m["comp_level"] == 'qm' and m['score_breakdown'] != None, self.makeEventMatchesRequest()))
+		TBACompletedMatches = len(filter(lambda m: m["comp_level"] == 'qm' and m['score_breakdown'], self.makeEventMatchesRequest()))
 		return abs(len(matches) - TBACompletedMatches) >= 3

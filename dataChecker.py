@@ -64,7 +64,7 @@ class DataChecker(multiprocessing.Process):
 
 	#Returns the most common value in a list, or the average if no value is more than half the list
 	def joinList(self, values):
-		if len(values) > 0:
+		if values:
 			a = map(values.count, values)
 			mCV = values[a.index(max(a))]
 			try:
@@ -79,7 +79,7 @@ class DataChecker(multiprocessing.Process):
 	def findCommonValuesForKeys(self, lis):
 		#Finds the most largest of dicts within each list in the larger list (within each scout's observations)
 		#(i.e. if there is disagreement over how many shots a robot took in a particular match)
-		if len(lis) > 0:
+		if lis:
 			largestListLength = max(map(lambda x: len(x), lis))
 		else:
 			largestListLength = 0

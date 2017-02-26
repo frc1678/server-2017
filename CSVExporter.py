@@ -5,41 +5,12 @@ import pdb
 import csv
 from DataModel import Team
 
-def CSVExportAll(comp):
-	excluded = ['calculatedData', 'name', 'imageKeys']
-	with open('./dataExportAll.csv', 'w') as f:
-		defaultKeys = [k for k in Team().__dict__.keys() if k not in excluded]
-		defaultKeys += Team().calculatedData.__dict__.keys()
-		defaultKeys = sorted(defaultKeys, key=lambda k: (k != "number", k.lower()))
-		writer = csv.DictWriter(f, fieldnames=defaultKeys)
-		writer.writeheader()
-		for team in comp.teams:
-			tDict = team.__dict__
-			tDict.update(team.calculatedData.__dict__)
-			keys = sorted(defaultKeys,key=lambda k: (k != "number", k.lower()))
-			writer.writerow({k : tDict[k] for k in keys})
-
 def CSVExportScoutZScores(zscores):
 	with open('./SPRExport.csv', 'w') as f:
 		writer = csv.DictWriter(f, fieldnames=['name', 'SPR', 'Z-Score'])
 		writer.writeheader()
 		for k,v in zscores.items():
 			writer.writerow({'name' : k, 'SPR' : zscores[k][1], 'Z-Score' : zscores[k][0]})
-
-def TSVExportMini(comp):
-	miniKeys = []
-	excluded = ['calculatedData', 'name', 'imageKeys']
-	with open('./dataExportMini.csv', 'w') as f:
-		defaultKeys = [k for k in Team().__dict__.keys() if k not in excluded and k in miniKeys]
-		defaultKeys += Team().calculatedData.__dict__.keys()
-		defaultKeys = sorted(defaultKeys, key=lambda k: (k != "number", k.lower()))
-		writer = csv.DictWriter(f, fieldnames=defaultKeys)
-		writer.writeheader()
-		for team in comp.teams:
-			tDict = team.__dict__
-			tDict.update(team.calculatedData.__dict__)
-			keys = sorted(defaultKeys,key=lambda k: (k != "number", k.lower()))
-			writer.writerow({k : tDict[k] for k in keys})
 
 def CSVExport(comp, name, keys=[]):
 	excluded = ['calculatedData', 'name', 'imageKeys']
@@ -62,14 +33,15 @@ def CSVExportMini(comp, name):
 def CSVExportAll(comp):
 	CSVExport(comp, 'ALL')
 
-def TSVExportSAC(comp):
+def CSVExportSAC(comp):
 	keys = []
 	CSVExport(comp, "SAC", keys=keys)
 
-def TSVExportCVR(comp):
+def CSVExportCVR(comp):
 	keys = []
 	CSVExport(comp, 'CVR', keys=keys)
 
-def TSVExportCMP(comp): 
+def CSVExportCMP(comp):
 	keys = []
 	CSVExport(comp, "CHAMPS", keys=keys)
+
