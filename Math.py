@@ -125,7 +125,7 @@ class Calculator(object):
         fuelPts = self.getShotPointsForMatchForAlliance(timds, timd.teamNumber in match.redAllianceTeamNumbers, match)
         scoutedFuelPoints = sum(map(self.fieldsForShots, timds))
         weightage = float(fuelPts) / scoutedFuelPoints if None not in [scoutedFuelPoints, fuelPts] and scoutedFuelPoints != 0 else None
-        return sum(map(lambda v: (v.get('numShots') or 0), boilerPoint)) * weightage if weightage != None and weightage > 0 else 0
+        return sum(map(lambda v: (v.get('numShots') or 0), boilerPoint)) * weightage if weightage > 0 else 0
 
     def getShotPointsForMatchForAlliance(self, timds, allianceIsRed, match):
         gearPts = self.getGearPtsForAllianceTIMDs(timds)
@@ -146,7 +146,7 @@ class Calculator(object):
         return filter(lambda v: v.get('position') == 'Key', shots)
 
     def getAvgKeyShotTimeForTIMD(self, timd):
-        return np.mean(map(lambda t: (t.get('time') or 0), self.getAllBoilerFieldsAtKey(timd))) / 1000.0 if len(self.getAllBoilerFieldsAtKey(timd)) > 0 else None
+        return np.mean(map(lambda t: (t.get('time') or 0), self.getAllBoilerFieldsAtKey(timd))) / 1000.0 if self.getAllBoilerFieldsAtKey(timd) else None
 
     def getTotalAverageShotPointsForAlliance(self, alliance):
         return sum(map(self.getTotalAverageShotPointsForTeam, alliance))
@@ -199,7 +199,7 @@ class Calculator(object):
     def getAllGearProbabilitiesForTeams(self, gearFunc):
         dic = {team.number : self.getAllGearProbabilitiesForTeam(team, gearFunc) for team in self.cachedComp.teamsWithMatchesCompleted}
         func = lambda k: map(lambda v: (v.get(k) or 0.0), dic.values())
-        dic[self.averageTeam.number] = {k : np.mean(func(k)) if len(func(k)) > 0 else 0 for k in range(13)}
+        dic[self.averageTeam.number] = {k : np.mean(func(k)) if func(k) else 0 for k in range(13)}
         return dic
 
     def totalGearsPlacedForTIMD(self, timd):
@@ -298,7 +298,7 @@ class Calculator(object):
 
     def getRotorForGearsForIncrement(self, gears, inc):
         incrementsReached = filter(lambda g: gears >= g, inc)
-        return inc.index(max(incrementsReached)) + 1 if len(incrementsReached) > 0 else 0
+        return inc.index(max(incrementsReached)) + 1 if incrementsReached else 0
 
     #PROBABILITIES
 
@@ -356,7 +356,7 @@ class Calculator(object):
         fuelPts = sum(map(lambda t: t.calculatedData.numHighShotsAuto + t.calculatedData.numLowShotsAuto / 3.0, timds))
         baselinePts = sum(map(lambda t: t.didReachBaselineAuto * 5, timds))
         incsReached = filter(lambda p: sum(map(lambda t: t.calculatedData.numGearsPlacedAuto, timds)) >= p, self.autoGearIncrements)
-        gearPts = 60 * (self.autoGearIncrements.index(max(incsReached)) + 1) if len(incsReached) > 0 else 0
+        gearPts = 60 * (self.autoGearIncrements.index(max(incsReached)) + 1) if incsReached else 0
         return fuelPts + baselinePts + gearPts
 
     def predictedAutoPointsForAlliance(self, alliance):
@@ -364,7 +364,7 @@ class Calculator(object):
         fuelPts = sum(map(lambda t: t.calculatedData.avgHighShotsAuto + t.calculatedData.avgLowShotsAuto / 3.0, alliance))
         baselinePts = sum(map(lambda t: t.calculatedData.baselineReachedPercentage * 5, alliance))
         incsReached = filter(lambda p: sum(map(lambda t: t.calculatedData.avgGearsPlacedAuto, alliance)) >= p, self.autoGearIncrements)
-        gearPts = 60 * (self.autoGearIncrements.index(max(incsReached)) + 1) if len(incsReached) > 0 else 0
+        gearPts = 60 * (self.autoGearIncrements.index(max(incsReached)) + 1) if incsReached else 0
         return fuelPts + baselinePts + gearPts
 
     def cumulativeAutoPointsForTeam(self, team):
@@ -471,7 +471,7 @@ class Calculator(object):
         averageTeamDict(self)
 
     def doFirstCalculationsForTeam(self, team):
-        if len(self.su.getCompletedTIMDsForTeam(team)) > 0:
+        if self.su.getCompletedTIMDsForTeam(team):
             if not self.su.teamCalculatedDataHasValues(team.calculatedData):
                 team.calculatedData = DataModel.CalculatedTeamData()
             t = team.calculatedData

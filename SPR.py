@@ -60,7 +60,7 @@ class ScoutPrecision(object):
 		values = filter(lambda v: v != None, map(lambda t: t[key] if t.get('scoutName') != None else None, tempTIMDs))
 		#These 2 lines find the most common value in the list of values, or a random one if they occur in equal frequency
 		valueFrequencies = map(values.count, values)
-		if len(values) != 0:
+		if values:
 			commonValue = values[valueFrequencies.index(max(valueFrequencies))]
 			#If less than half of the values agree, the best estimate is the average
 			if values.count(commonValue) <= len(values) / 2 and type(commonValue) != str:
@@ -75,7 +75,7 @@ class ScoutPrecision(object):
 		scouts = filter(lambda v: v != None, map(lambda k: k.get('scoutName'), tempTIMDs))
 		dicts = filter(lambda k: k != None, map(lambda t: t[key] if t.get('scoutName') != None else None, tempTIMDs))
 		# This section groups keys of the dicts found earlier
-		if len(dicts) != 0:
+		if dicts:
 			consolidationDict = {}
 			for key in dicts[0].keys():
 				consolidationDict[key] = []
@@ -97,36 +97,34 @@ class ScoutPrecision(object):
 		lists = filter(lambda k: k!= None, map(lambda t: t.get(key) if t.get('scoutName') != None else None, tempTIMDs))
 		#Finds the most largest of dicts within each list in the larger list (within each scout's observations)
 		#(i.e. if there is disagreement over how many shots a robot took)
-		if len(lists) > 0:
+		if lists:
 			largestListLength = max(map(lambda x: len(x), lists))
-		else:
-			largestListLength = 0
-		#If someone missed a dict (for a shot) (that is, they did not include one that another scout did), this makes one with no values
-		for aScout in lists:
-			if len(aScout) < largestListLength:
-				aScout += [{'numShots': 0, 'position': 'Other  ', 'time': 0}] * (largestListLength - len(aScout))
-		for num in range(largestListLength):
-			#comparing dicts that should be the same (e.g. each shot time dict for the same shot) within the tempTIMDs
-			#This means comparisons such as the first shot in teleop by a given robot, as recorded by multiple scouts
-			#The actual comparison is the same as the other findOddScout functions
-			dicts = [lis[num] for lis in lists]
-			consolidationDict = {}
-			for key in dicts[0].keys():
-				consolidationDict[key] = []
-				for aDict in dicts:
-					consolidationDict[key] += [aDict[key]]
-			for key in consolidationDict.keys():
-				if key != 'position':
-					values = consolidationDict[key]
-					valueFrequencies = map(values.count, values)
-					commonValue = values[valueFrequencies.index(max(valueFrequencies))]
-					if values.count(commonValue) <= len(values) / 2:
-						commonValue = np.mean(values)
-					differenceFromCommonValue = map(lambda v: abs(v - commonValue), values)
-					self.sprs.update({scouts[c] : (self.sprs.get(scouts[c]) or 0) + differenceFromCommonValue[c] for c in range(len(differenceFromCommonValue))})
+			#If someone missed a dict (for a shot) (that is, they did not include one that another scout did), this makes one with no values
+			for aScout in lists:
+				if len(aScout) < largestListLength:
+					aScout += [{'numShots': 0, 'position': 'Other  ', 'time': 0}] * (largestListLength - len(aScout))
+			for num in range(largestListLength):
+				#comparing dicts that should be the same (e.g. each shot time dict for the same shot) within the tempTIMDs
+				#This means comparisons such as the first shot in teleop by a given robot, as recorded by multiple scouts
+				#The actual comparison is the same as the other findOddScout functions
+				dicts = [lis[num] for lis in lists]
+				consolidationDict = {}
+				for key in dicts[0].keys():
+					consolidationDict[key] = []
+					for aDict in dicts:
+						consolidationDict[key] += [aDict[key]]
+				for key in consolidationDict.keys():
+					if key != 'position':
+						values = consolidationDict[key]
+						valueFrequencies = map(values.count, values)
+						commonValue = values[valueFrequencies.index(max(valueFrequencies))]
+						if values.count(commonValue) <= len(values) / 2:
+							commonValue = np.mean(values)
+						differenceFromCommonValue = map(lambda v: abs(v - commonValue), values)
+						self.sprs.update({scouts[c] : (self.sprs.get(scouts[c]) or 0) + differenceFromCommonValue[c] for c in range(len(differenceFromCommonValue))})
 
 	def calculateScoutPrecisionScores(self, temp, available):
-		if temp != None:
+		if temp:
 			#Put together all tempTIMDs for the same match
 			g = self.consolidateTIMDs(temp)
 			#Removes any data from previous calculations from sprs
@@ -143,7 +141,7 @@ class ScoutPrecision(object):
 			#any team without and sprs score is set to the average score
 			for a in available:
 				if a not in self.sprs.keys():
-					avgScore = np.mean(self.sprs.values()) if len(self.sprs) else 1
+					avgScore = np.mean(self.sprs.values()) if self.sprs else 1
 					self.sprs[a] = avgScore
 		#If there are no tempTIMDs, everyone is set to 1
 		else:
@@ -167,12 +165,13 @@ class ScoutPrecision(object):
 	def organizeScouts(self, available, currentTeams, scoutSpots):
 		#picks a random member of the inputted group
 		groupFunc = lambda l: l[random.randint(0, len(l) - 1)]
-		#creates list of groupings that the scouts could be in, with as many scouts as are available and have spaces
+		#creates list of groupings that the scouts could be in, with as many scouts as are available and have spaces, for 6 robots with a max group size of 3
 		grpCombos = utils.sum_to_n(min(len(available), scoutSpots), 6, 3)
 		grpCombosList = [combo for combo in grpCombos]
 		#picks a random grouping of scouts that, if possible, doesn't have 2 scouts to a robot
-		if len(filter(lambda l: 2 not in l, grpCombosList)) > 0:
-			scoutsPGrp = groupFunc(filter(lambda l: 2 not in l, grpCombosList))
+		singleTripleCombos = filter(lambda l: 2 not in l, grpCombosList)
+		if singleTripleCombos > 0:
+			scoutsPGrp = groupFunc(singleTripleCombos)
 		else:
 			scoutsPGrp = groupFunc(grpCombosList)
 		scoutsPGrp.reverse()
@@ -268,7 +267,7 @@ class ScoutPrecision(object):
 			scoutRotatorDict[scoutNum].update({'team': teams[availableScout], 'currentUser': availableScout, 'scoutStatus': 'requested'})
 		else:
 			#If they aren't, it needs to find an empty scout spot in firebase and put the available scout there
-			if len(self.findFirstEmptySpotForScout(scoutRotatorDict, available)) <= 0:
+			if self.findFirstEmptySpotForScout(scoutRotatorDict, available):
 				pass
 			else:
 				newSpace = self.findFirstEmptySpotForScout(scoutRotatorDict, available)[0]

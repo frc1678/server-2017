@@ -11,7 +11,7 @@ config = {
 
 f = pyrebase.initialize_app(config)
 fb = f.database()
-testScouts = "nathan ben berin yao kenny ryan peter".split()
+testScouts = "nathan ben berin kenny ryan peter".split()
 scouts = "janet justin alex wesley kyle mx aiden westley katie jesse jack sage jon ayush sam evan mingyo zoe gemma carter".split()
 SPR = SPR.ScoutPrecision()
 
@@ -29,7 +29,6 @@ def resetScouts():
 def doSPRsAndAssignments(newMatchNumber):
 	if newMatchNumber.get('data') == None: return
 	print 'Setting scouts for match ' + str(fb.child('currentMatchNum').get().val())
-	if fb.child('currentMatchNum').get().val() == 4: return
 	newMatchNumber = str(fb.child('currentMatchNum').get().val())
 	scoutDict = fb.child("scouts").get().val()
 	#gets the teams we need to scout for
@@ -60,5 +59,6 @@ def alreadyAssignedStream():
 			break
 	fb.child("currentMatchNum").stream(doSPRsAndAssignments)
 
+#Use this if you are restarting the server and need to reassign scouts but scouts already have tablets
 def simpleStream():
 	fb.child("currentMatchNum").stream(doSPRsAndAssignments)
