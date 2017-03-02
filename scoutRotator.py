@@ -24,33 +24,40 @@ def resetAvailability():
 #creates firebase objects for 18 scouts
 def resetScouts():
 	scouts = {'scout' + str(num) : {'currentUser': '', 'scoutStatus': ''} for num in range(1,13)}
+																				#Note: change 13 to 19 for actual use
 	fb.child('scouts').set(scouts)
 
 def doSPRsAndAssignments(newMatchNumber):
 	if newMatchNumber.get('data') == None: return
 	print('Setting scouts for match ' + str(fb.child('currentMatchNum').get().val()))
+	#updates information from firebase
 	newMatchNumber = str(fb.child('currentMatchNum').get().val())
 	scoutDict = fb.child("scouts").get().val()
 	#gets the teams we need to scout for
 	blueTeams = fb.child("Matches").child(newMatchNumber).get().val()['blueAllianceTeamNumbers']
 	redTeams = fb.child("Matches").child(newMatchNumber).get().val()['redAllianceTeamNumbers']
-	#These next lines find and assign available scouts
+	#FInds which scouts are available
 	available = [k for (k, v) in fb.child("availability").get().val().items() if v == 1]
-	#Each scout is assigned to a robot in the next 2 lines
+	#Works out accuracy of scouts
 	SPR.calculateScoutPrecisionScores(fb.child("TempTeamInMatchDatas").get().val(), available)
+	#Exports scout accuracy data for checking and review
 	SPR.sprZScores()
+	#Assigns scouts to robots
 	newAssignments = SPR.assignScoutsToRobots(available, redTeams + blueTeams, fb.child("scouts").get().val())
-	#and it is put on firebase
+	#and the assignments are put on firebase
 	fb.child("scouts").update(newAssignments)
 
 #Use this if tablets are assigned to scouts by the server, and then given to the correct scouts
 def tabletHandoutStream():
+	#makes new directories of scouts and availability in firebase, then starts assigning scouts
 	resetScouts()
 	resetAvailability()
 	fb.child("currentMatchNum").stream(doSPRsAndAssignments)
 
 #Use this for running the server again (e.g. after a crash) to avoid reassigning scouts
 def alreadyAssignedStream():
+	#Starts asssigning scouts after the current match is over
+	#This way, people don't get reassigned in the middle of a match or when assignments are otherwise fine
 	startMatchNum = fb.child("currentMatchNum").get().val()
 	newMatchNum = startMatchNum + 1
 	while True:
@@ -61,4 +68,5 @@ def alreadyAssignedStream():
 
 #Use this if you are restarting the server and need to reassign scouts but scouts already have tablets
 def simpleStream():
+	#starts assigning scouts, but leaves availability and tablet assignments intact
 	fb.child("currentMatchNum").stream(doSPRsAndAssignments)

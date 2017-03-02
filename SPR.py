@@ -14,6 +14,7 @@ class ScoutPrecision(object):
 		self.sprs = {}
 		self.robotNumToScouts = []
 		#These keys are the names of sections of the tempTIMDs on which scouts will be graded
+		#each key has a number for each tempTIMD
 		self.gradingKeys = [
 			'numGearGroundIntakesTele',
 			'numGearLoaderIntakesTele',
@@ -26,10 +27,12 @@ class ScoutPrecision(object):
 			'numHoppersOpenedAuto',
 			'numHoppersOpenedTele'
 		]
+		#each dict has the same keys for each timd, and each key has a number
 		self.gradingDicts = [
 			'gearsPlacedByLiftTele',
 			'gearsPlacedByLiftAuto'
 		]
+		#each list contains several (preferably the same number) of dicts, each of which has the same keys
 		self.gradingListsOfDicts = [
 			'highShotTimesForBoilerTele',
 			'highShotTimesForBoilerAuto',
@@ -55,6 +58,9 @@ class ScoutPrecision(object):
 				consolidationGroups[key] = [v]
 		return consolidationGroups
 
+	#Note: the next 3 functions compare data in tempTIMDs to find scout accuracy
+	#The actual comparison for the data to determine correct values is done in dataChecker
+
 	def findOddScoutForDataPoint(self, tempTIMDs, key):
 		#finds scout names in tempTIMDs
 		scouts = filter(lambda v: v, map(lambda k: k.get('scoutName'), tempTIMDs))
@@ -69,7 +75,7 @@ class ScoutPrecision(object):
 				commonValue = np.mean(values)
 			#makes a list of the differences from the common value
 			differenceFromCommonValue = map(lambda v: abs(v - commonValue), values)
-			#adds the difference from this tempTIMDs to each scout's previous differences
+			#adds the difference from this tempTIMD for this value to each scout's previous differences (spr score)
 			self.sprs.update({scouts[c] : (self.sprs.get(scouts[c]) or 0) + differenceFromCommonValue[c] for c in range(len(differenceFromCommonValue))})
 
 	#Similar to findOddScoutForDataPoint, but for each data point inside of a dict
@@ -108,7 +114,7 @@ class ScoutPrecision(object):
 			for num in range(largestListLength):
 				#comparing dicts that should be the same (e.g. each shot time dict for the same shot) within the tempTIMDs
 				#This means comparisons such as the first shot in teleop by a given robot, as recorded by multiple scouts
-				#The actual comparison is the same as the other findOddScout functions
+				#The comparison is the same as the other findOddScout functions
 				dicts = [lis[num] for lis in lists]
 				consolidationDict = {}
 				for key in dicts[0].keys():
@@ -116,6 +122,8 @@ class ScoutPrecision(object):
 					for aDict in dicts:
 						consolidationDict[key] += [aDict[key]]
 				for key in consolidationDict.keys():
+					#position is a string, so should not be compared, due to the averaging later
+					#without the averaging, one person would be declared correct for no reason
 					if key != 'position':
 						values = consolidationDict[key]
 						valueFrequencies = map(values.count, values)
@@ -139,6 +147,7 @@ class ScoutPrecision(object):
 			[self.findOddScoutForDict(v, k) for v in g.values() for k in self.gradingDicts]
 			[self.findOddScoutForListOfDicts(v, k) for v in g.values() for k in self.gradingListsOfDicts]
 			#divides values for scouts by number of TIMDs the scout has participated in
+			#if a scout is in more matches, they will likely have more disagreements, but the same number per match
 			self.sprs = {k:((v/float(self.getTotalTIMDsForScoutName(k, temp))) or 0) for (k,v) in self.sprs.items()}
 			#any team without and sprs score is set to the average score
 			for a in available:
@@ -152,7 +161,7 @@ class ScoutPrecision(object):
 
 	#Scout Assignment
 
-	#sorts scouts by sprs score
+	#sorts scouts by spr score
 	def rankScouts(self, available):
 		return sorted(self.sprs.keys(), key=lambda k: self.sprs[k])
 

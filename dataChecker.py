@@ -45,7 +45,7 @@ class DataChecker(multiprocessing.Process):
 		elif type(vals[0]) == bool:
 			return self.joinBools(vals)
 		#Text does not need to be joined
-		elif type(vals[0]) == unicode or type(vals[0]) == str:
+		elif type(vals[0]) == str:
 			return vals
 		#otherwise, if it is something like ints or floats, it goes to a general purpose function
 		else:
@@ -58,7 +58,7 @@ class DataChecker(multiprocessing.Process):
 		else:
 			return
 
-	#Gets the most common bool of a list of inputted bools (several times)
+	#Gets the most common bool of a list of inputted bools
 	def joinBools(self, bools):
 		return False if bools.count(False) > len(bools) / 2 else True
 
@@ -77,8 +77,8 @@ class DataChecker(multiprocessing.Process):
 	#This is the common value function for lists of dicts
 	#It consolidates the data on shots from scouts, by comparing each shot to other scouts' info on the same shot
 	def findCommonValuesForKeys(self, lis):
-		#Finds the most largest of dicts within each list in the larger list (within each scout's observations)
-		#(i.e. if there is disagreement over how many shots a robot took in a particular match)
+		#Finds the largest number of dicts within each list (within each scout's observations)
+		#(e.g. if there is disagreement over how many shots a robot took in a particular match)
 		if lis:
 			largestListLength = max(map(lambda x: len(x), lis))
 		else:
@@ -106,13 +106,13 @@ class DataChecker(multiprocessing.Process):
 			#If there is only one scout, their statement about position is accepted as right
 			if len(consolidationDict['position']) == 1:
 				returnList[num].update({'position': consolidationDict['position'][0]})
-			#If there are 2 scouts, pick one that isn't the key unless they are both in agreement
+			#If there are 2 scouts, pick position that isn't the key unless they are both in agreement
 			elif len(consolidationDict['position']) % 2 == 0:
 				if consolidationDict['position'][0].lower() != 'key':
 					returnList[num].update({'position': consolidationDict['position'][0]})
 				else:
 					returnList[num].update({'position': consolidationDict['position'][1]})
-			#If there are 3 scouts, the position value is the most common position value
+			#If there are 3 scouts (or more, but that shouldn't happen), the position value is the most common position value
 			else:
 				positionFrequencies = map(consolidationDict['position'].count, consolidationDict['position'])
 				commonPosition = consolidationDict['position'][positionFrequencies.index(max(positionFrequencies))]
@@ -124,16 +124,17 @@ class DataChecker(multiprocessing.Process):
 		#flattens the list of lists of keys into a list of keys
 		for k in self.getAllKeys(map(lambda v: v.keys(), self.consolidationGroups[key])):
 			if k in listKeys:
-				#Gets a common value for lists of dicts (for thing such as boiler/ball values) and puts it into the dict
+				#Gets a common value for lists of dicts (for boiler/ball values) and puts it into the combined TIMD
 				returnDict.update({k: self.findCommonValuesForKeys(map(lambda tm: (tm.get(k) or []), self.consolidationGroups[key]))})
 			elif k in constants:
 				#Constants should be the same across all tempTIMDs, so the common value is just the value in one of them
+				#Puts the value into the combined TIMD
 				returnDict.update({k: self.consolidationGroups[key][0][k]})
 			elif k in standardDictKeys:
-				#Gets a common value for dicts (which in this are placed gears)
+				#Gets a common value for dicts (placed gears) and puts it into the combined TIMD
 				returnDict.update({k: self.avgDict(map(lambda c: (c.get(k) or {}), self.consolidationGroups[key]))})
 			else:
-				#Gets a common value across any kind of list of values
+				#Gets a common value across any kind of list of values and puts it into the combined TIMD
 				if type(self.consolidationGroups[key][0]) == bool:
 					returnDict.update({k: self.commonValue(map(lambda tm: tm.get(k) or False, self.consolidationGroups[key]))})
 				else:
@@ -156,6 +157,7 @@ class DataChecker(multiprocessing.Process):
 		actualKeys = list(set([key.split('-')[0] for key in tempTIMDs.keys()]))
 		return {key : [v for k, v in tempTIMDs.items() if k.split('-')[0] == key] for key in actualKeys}
 
+	#Combines tempTIMDs from firebase and combines their data, putting the result back onto firebase as TIMDs
 	def run(self):
 		while True:
 			tempTIMDs = firebase.child("TempTeamInMatchDatas").get().val()
