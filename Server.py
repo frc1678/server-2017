@@ -28,12 +28,8 @@ cycle = 1
 shouldSlack = False
 consolidator = dataChecker.DataChecker()
 consolidator.start()
-<<<<<<< HEAD
 APNServer.startNotiStream()
-=======
-# APNServer.startNotiStream()
 
->>>>>>> 9228b81e3538f9bf83480cda5080343806281016
 #Use this if tablets are assigned to scouts by the server, and then given to the correct scouts
 #This means at the beginning of a competition day
 scoutRotator.tabletHandoutStream()
