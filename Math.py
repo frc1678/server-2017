@@ -122,13 +122,8 @@ class Calculator(object):
         timds = self.su.getCompletedTIMDsForMatchForAllianceIsRed(match, timd.teamNumber in match.redAllianceTeamNumbers)
         fuelPts = self.getShotPointsForMatchForAlliance(timds, timd.teamNumber in match.redAllianceTeamNumbers, match)
         scoutedFuelPoints = sum(map(self.fieldsForShots, timds))
-<<<<<<< HEAD
-        weightage = fuelPts / float(scoutedFuelPoints) if None not in [scoutedFuelPoints, fuelPts] and scoutedFuelPoints != 0 else None
-        return sum(map(lambda v: (v.get('numShots') or 0), boilerPoint)) * weightage if weightage != None and weightage > 0 else 0
-=======
         weightage = float(fuelPts) / scoutedFuelPoints if None not in [scoutedFuelPoints, fuelPts] and scoutedFuelPoints != 0 else None
         return sum(map(lambda v: (v.get('numShots') or 0), boilerPoint)) * weightage if weightage > 0 else 0
->>>>>>> 9228b81e3538f9bf83480cda5080343806281016
 
     def getShotPointsForMatchForAlliance(self, timds, allianceIsRed, match):
         gearPts = self.getGearPtsForAllianceTIMDs(timds)
@@ -515,14 +510,18 @@ class Calculator(object):
         if isData:
             startTime = time.time()
             threads = []
+            #creates an empty list for timds accessible in multiple processes (manager.list)
             manager = multiprocessing.Manager()
             calculatedTIMDs = manager.list()
-            numTIMDsCalculating = 0
             for timd in self.comp.TIMDs:
+                #does TIMD calculations to each TIMD in the competition, and puts the process into a list
+                #the calculation results get put into
                 thread = FirstTIMDProcess(timd, calculatedTIMDs, self)
                 threads.append(thread)
                 thread.start()
+            #the main function does not continue until all of the TIMD processes are done (join)
             map(lambda t: t.join(), threads)
+            #converts the shared list into a normal list
             self.comp.TIMDs = [timd for timd in calculatedTIMDs]
             self.cacheFirstTeamData()
             self.doFirstTeamCalculations()
