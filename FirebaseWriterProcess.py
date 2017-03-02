@@ -12,4 +12,3 @@ class FirebaseWriteObjectProcess(multiprocessing.Process):
 		if isinstance(self.object, DataModel.Team): self.PBC.addCalculatedTeamDataToFirebase(self.object)
 		elif isinstance(self.object, DataModel.Match): self.PBC.addCalculatedMatchDataToFirebase(self.object)
 		elif isinstance(self.object, DataModel.TeamInMatchData): self.PBC.addCalculatedTIMDataToFirebase(self.object)
-

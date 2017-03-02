@@ -36,4 +36,5 @@ def sendNotiForUser(usr, currentMatchNum):
 
 def startNotiStream():
         fb.child("currentMatchNum").stream(sendNotiForUsers)
+		
 startNotiStream()

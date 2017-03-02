@@ -142,9 +142,3 @@ while True:
 			firebase.put('/TempTeamInMatchDatas/', k + '-' + str(i), TeamInMatchData(teamNumber=t, matchNumber=cm, scoutName=testScouts[i]).__dict__)
 	cm += 1
 	time.sleep(4)
-
-
-
-
-
-

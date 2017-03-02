@@ -76,6 +76,7 @@ class DataChecker(multiprocessing.Process):
 
 	#This is the common value function for lists of dicts
 	#It consolidates the data on shots from scouts, by comparing each shot to other scouts' info on the same shot
+	#The nth dict on each list should be the same 
 	def findCommonValuesForKeys(self, lis):
 		#Finds the largest number of dicts within each list (within each scout's observations)
 		#(e.g. if there is disagreement over how many shots a robot took in a particular match)
