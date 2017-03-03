@@ -45,4 +45,3 @@ def CSVExportCVR(comp):
 def CSVExportCMP(comp):
 	keys = []
 	CSVExport(comp, "CHAMPS", keys=keys)
-

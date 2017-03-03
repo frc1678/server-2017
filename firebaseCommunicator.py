@@ -65,11 +65,11 @@ class PyrebaseCommunicator(object):
 		FBLocation = "/Matches/" + str(match.number)
 		while True:
 			try:
-				self.firebase.child("Matches").child(match.number).child("calculatedData").set(calculatedMatchDataDict)				
+				self.firebase.child("Matches").child(match.number).child("calculatedData").set(calculatedMatchDataDict)
 				break
 			except:
 				pass
-	
+
 	def addTeamsToFirebase(self):
 		print("\nDoing Teams...")
 		map(lambda t: self.updateFirebaseWithTeam(utils.setDataForTeam(t)), self.JSONteams)
@@ -107,6 +107,3 @@ class PyrebaseCommunicator(object):
 
 	def getPythonObjectForFirebaseDataAtLocation(self, location):
 		return self.firebase.child(location).get().val()
-
-
-

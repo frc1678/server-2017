@@ -11,4 +11,3 @@ def reportServerCrash(message):
 		channel="@" + u,
 		text=message
 	), ["bimbunky", "tesseract", "rytonbay", "sam", "peterc"])
-

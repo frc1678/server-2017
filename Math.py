@@ -124,6 +124,7 @@ class Calculator(object):
         weightage = fuelPts / float(scoutedFuelPoints) if None not in [scoutedFuelPoints, fuelPts] and scoutedFuelPoints != 0 else None
         return sum(map(lambda v: (v.get('numShots') or 0), boilerPoint)) * weightage if weightage != None and weightage > 0 else 0
 
+
     def getShotPointsForMatchForAlliance(self, timds, allianceIsRed, match):
         gearPts = self.getGearPtsForAllianceTIMDs(timds)
         baselinePts = 5 * sum(map(lambda t: t.didReachBaselineAuto, timds))
@@ -510,14 +511,18 @@ class Calculator(object):
         if isData: #Only do if there is any data
             startTime = time.time() #Get time to later calculate time for a server cycle...
             threads = []
-            manager = multiprocessing.Manager() #Managing TIMDs to share data between them
+            #creates an empty list for timds accessible in multiple processes (manager.list)
+            manager = multiprocessing.Manager()
             calculatedTIMDs = manager.list()
-            numTIMDsCalculating = 0
             for timd in self.comp.TIMDs:
+                #does TIMD calculations to each TIMD in the competition, and puts the process into a list
+                #the calculation results get put into
                 thread = FirstTIMDProcess(timd, calculatedTIMDs, self)
                 threads.append(thread)
                 thread.start()
+            #the main function does not continue until all of the TIMD processes are done (join)
             map(lambda t: t.join(), threads)
+            #converts the shared list into a normal list
             self.comp.TIMDs = [timd for timd in calculatedTIMDs]
             self.cacheFirstTeamData()
             self.doFirstTeamCalculations()

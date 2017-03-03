@@ -15,8 +15,8 @@ fb = f.database()
 def sendNoti(number, c, token):
         msg1 = "Match " + str(number) + " is "
         msg2 = str(abs(number - c)) + " matches away!" if number != c else " up next!"
-        red = fb.child('Matches').child(number).child('redAllianceTeamNumberS').get().val()
-        blue = fb.child('Matches').child(number).child('blueAllianceNumberS').get().val()
+        red = fb.child('Matches').child(number).child('redAllianceTeamNumbers').get().val()
+        blue = fb.child('Matches').child(number).child('blueAllianceNumbers').get().val()
         message = msg1 + msg2 + " Red: " + str(red) + " | Blue: " + str(blue)
         print(message)
         payload = Payload(alert=message, sound="default", badge=1)
@@ -36,3 +36,4 @@ def sendNotiForUser(usr, currentMatchNum):
 
 def startNotiStream():
         fb.child("currentMatchNum").stream(sendNotiForUsers)
+
