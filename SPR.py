@@ -132,7 +132,7 @@ class ScoutPrecision(object):
 						commonValue = values[valueFrequencies.index(max(valueFrequencies))]
 						if values.count(commonValue) <= len(values) / 2:
 							commonValue = np.mean(values)
-						differenceFromCommonValue = map(lambda v: abs(v - commonValue) * weight, values) 
+						differenceFromCommonValue = map(lambda v: abs(v - commonValue) * weight, values)
 						self.sprs.update({scouts[c] : (self.sprs.get(scouts[c]) or 0) + differenceFromCommonValue[c] for c in range(len(differenceFromCommonValue))})
 
 	def calculateScoutPrecisionScores(self, temp, available):
@@ -197,7 +197,10 @@ class ScoutPrecision(object):
 		#Chooses the correct number of nonrepeating scouts for each group of scouts (of size 1, 2, or 3)
 		for c in scoutsPGrp:
 			newGroup = self.group(freqs, c)
-			scouts += [newGroup[0]]
+			if len(newGroup[0]) == 1:
+				scouts += [[newGroup[0]]]
+			else:
+				scouts += [newGroup[0]]
 			freqs = newGroup[1]
 		#returns the scouts grouped and paired to robots
 		return self.scoutsToRobotNums(scouts, currentTeams)
@@ -243,7 +246,7 @@ class ScoutPrecision(object):
 		scoutSpots = len(scoutRotatorDict.keys())
 		#assigns available scouts to robots, and shows exactly which availabe scouts will be scouting
 		teams = self.organizeScouts(available, currentTeams, scoutSpots)
-		available = utils.extendListWithStrings(teams)
+		available = teams.keys()
 		#Moves the current user to the previous user spot, assigns a new user if necessary, and assigns a robot to each scout
 		for scout in scoutRotatorDict.keys():
 			#The current user is now the previous user, as the match has changed
