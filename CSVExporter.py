@@ -14,9 +14,10 @@ def CSVExportScoutZScores(zscores):
 
 def CSVExport(comp, name, keys=[]):
 	excluded = ['calculatedData', 'name', 'imageKeys']
+	print keys
 	with open('./CSVExport-' + name + '.csv', 'w') as f:
 		defaultKeys = [k for k in Team().__dict__.keys() if k not in excluded and k in keys]
-		defaultKeys += Team().calculatedData.__dict__.keys()
+		defaultKeys += [k for k in Team().calculatedData.__dict__.keys() if k in keys]
 		defaultKeys = sorted(defaultKeys, key=lambda k: (k != "number", k.lower()))
 		writer = csv.DictWriter(f, fieldnames=defaultKeys)
 		writer.writeheader()
@@ -31,7 +32,7 @@ def CSVExportMini(comp, name):
 	CSVExport(comp, 'MINI', keys=miniKeys)
 
 def CSVExportAll(comp):
-	CSVExport(comp, 'ALL')
+	CSVExport(comp, 'ALL', keys=Team().__dict__.keys() + Team().calculatedData.__dict__.keys())
 
 def CSVExportSAC(comp):
 	keys = []

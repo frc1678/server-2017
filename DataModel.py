@@ -39,6 +39,8 @@ class CalculatedTeamData(object):
 		self.avgGearsPlacedTele = None
 		self.avgGearsEjectedTele = None
 		self.avgGearsFumbledTele = None
+		self.avgGearLoaderIntakesTele = None
+		self.avgGearGroundIntakesTele = None
 		self.avgGearsPlacedByLiftAuto =  {
 			'lift1' : None,
 			'lift2' : None,
@@ -214,4 +216,5 @@ class CalculatedTeamInMatchData(object):
 		self.numGearsPlacedAuto = None
 		self.wasDisfunctional = None
 		self.avgKeyShotTime = None
+		self.drivingAbility = None
 		self.__dict__.update(args)

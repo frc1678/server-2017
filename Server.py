@@ -26,14 +26,14 @@ cycle = 1
 shouldSlack = False
 consolidator = dataChecker.DataChecker()
 consolidator.start()
-APNServer.startNotiStream()
+# APNServer.startNotiStream()
 
 #Use this if tablets are assigned to scouts by the server, and then given to the correct scouts
 #This means at the beginning of a competition day
-scoutRotator.tabletHandoutStream()
+# scoutRotator.tabletHandoutStream()
 
 #Use this for running the server again (e.g. after a crash) to avoid reassigning scouts
-#scoutRotator.alreadyAssignedStream()
+# scoutRotator.alreadyAssignedStream()
 
 #Use this if you are restarting the server and need to reassign scouts but scouts already have tablets
 #scoutRotator.simpleStream()
@@ -60,6 +60,8 @@ while(True):
 	checkForMissingData()
 	try:
 		calculator.doCalculations(PBC)
+	except OSError:
+		continue
 	except:
 		if shouldSlack:
 			reportServerCrash(traceback.format_exc())

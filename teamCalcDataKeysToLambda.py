@@ -3,47 +3,43 @@ import pdb
 import DataModel
 
 def firstCalculationDict(team, calc):
-    cd = team.calculatedData
-    cd.avgHighShotsTele =  calc.getAverageForDataFunctionForTeam(team, lambda tm: tm.calculatedData.numHighShotsTele)
-    cd.avgHighShotsAuto = calc.getAverageForDataFunctionForTeam(team, lambda tm: tm.calculatedData.numHighShotsAuto)
-    cd.avgLowShotsAuto = calc.getAverageForDataFunctionForTeam(team, lambda tm: tm.calculatedData.numLowShotsAuto)
-    cd.avgLowShotsTele = calc.getAverageForDataFunctionForTeam(team, lambda tm: tm.calculatedData.numLowShotsTele)
-    cd.disabledPercentage = calc.getAverageForDataFunctionForTeam(team, lambda tm: tm.didStartDisabled)
-    cd.incapacitatedPercentage = calc.getAverageForDataFunctionForTeam(team, lambda tm: tm.didBecomeIncapacitated)
-    cd.liftoffPercentage = calc.getAverageForDataFunctionForTeam(team, lambda tm: tm.didLiftoff)
-    cd.baselineReachedPercentage = calc.getAverageForDataFunctionForTeam(team, lambda tm: tm.didReachBaselineAuto)
-    cd.avgGearsPlacedTele = calc.getAverageForDataFunctionForTeam(team, lambda tm: tm.calculatedData.numGearsPlacedTele)
-    cd.avgGearsPlacedAuto = calc.getAverageForDataFunctionForTeam(team, lambda tm: tm.calculatedData.numGearsPlacedAuto)
-    cd.avgAgility = calc.getAverageForDataFunctionForTeam(team, lambda tm: tm.rankAgility)
-    cd.avgSpeed = calc.getAverageForDataFunctionForTeam(team, lambda tm: tm.rankSpeed)
-    cd.avgBallControl = calc.getAverageForDataFunctionForTeam(team, lambda tm: tm.rankBallControl)
-    cd.avgGearControl = calc.getAverageForDataFunctionForTeam(team, lambda tm: tm.rankGearControl)
-    cd.avgDefense = calc.getAverageForDataFunctionForTeam(team, lambda tm: tm.rankDefense)
-    cd.avgKeyShotTime = calc.getAverageForDataFunctionForTeam(team, lambda tm: tm.calculatedData.avgKeyShotTime)
-    cd.liftoffAbility = calc.getAverageForDataFunctionForTeam(team, lambda tm: tm.calculatedData.liftoffAbility)
-    cd.sdLiftoffAbility = calc.getStandardDeviationForDataFunctionForTeam(team, lambda tm: tm.calculatedData.liftoffAbility)
-    cd.sdGearsPlacedTele = calc.getStandardDeviationForDataFunctionForTeam(team, lambda tm: tm.calculatedData.numGearsPlacedTele)
-    cd.sdGearsPlacedAuto = calc.getStandardDeviationForDataFunctionForTeam(team, lambda tm: tm.calculatedData.numGearsPlacedAuto)
-    cd.sdHighShotsAuto = calc.getStandardDeviationForDataFunctionForTeam(team, lambda tm: tm.calculatedData.numHighShotsAuto)
-    cd.sdHighShotsTele = calc.getStandardDeviationForDataFunctionForTeam(team, lambda tm: tm.calculatedData.numHighShotsTele)
-    cd.sdLowShotsAuto = calc.getStandardDeviationForDataFunctionForTeam(team, lambda tm: tm.calculatedData.numLowShotsAuto)
-    cd.sdLowShotsTele = calc.getStandardDeviationForDataFunctionForTeam(team, lambda tm: tm.calculatedData.numLowShotsTele)
-    cd.sdGearsPlacedAuto = calc.getStandardDeviationForDataFunctionForTeam(team, lambda tm: tm.calculatedData.numGearsPlacedAuto)
-    cd.sdGearsPlacedTele = calc.getStandardDeviationForDataFunctionForTeam(team, lambda tm: tm.calculatedData.numGearsPlacedTele)
-    cd.sdBaselineReachedPercentage = calc.getStandardDeviationForDataFunctionForTeam(team, lambda tm: utils.convertFirebaseBoolean(tm.didReachBaselineAuto))
-    cd.disfunctionalPercentage = calc.getAverageForDataFunctionForTeam(team, lambda tm: tm.calculatedData.wasDisfunctional)
-    cd.avgGearsPlacedAuto = calc.getAverageForDataFunctionForTeam(team, lambda tm: tm.calculatedData.numGearsPlacedAuto)
-    cd.avgGearsPlacedTele = calc.getAverageForDataFunctionForTeam(team, lambda tm: tm.calculatedData.numGearsPlacedTele)
-    cd.avgHoppersOpenedAuto = calc.getAverageForDataFunctionForTeam(team, lambda tm: tm.numHoppersOpenedAuto)
-    cd.avgHoppersOpenedTele = calc.getAverageForDataFunctionForTeam(team, lambda tm: tm.numHoppersOpenedTele)
-    cd.avgGearsEjectedTele = calc.getAverageForDataFunctionForTeam(team, lambda tm: tm.numGearsEjectedTele)
-    cd.avgGearsFumbledTele = calc.getAverageForDataFunctionForTeam(team, lambda tm: tm.numGearsFumbledTele)
-    cd.avgDrivingAbility = calc.drivingAbility(team)
+    mapFuncForCalcAvgsForTeam(team, lambda f: calc.getAverageForDataFunctionForTeam(team, f), 
+        avgHighShotsTele = lambda tm: tm.calculatedData.numHighShotsTele, 
+        avgHighShotsAuto = lambda tm: tm.calculatedData.numHighShotsAuto,
+        avgLowShotsAuto = lambda tm: tm.calculatedData.numLowShotsAuto, 
+        avgLowShotsTele = lambda tm: tm.calculatedData.numLowShotsTele, 
+        incapacitatedPercentage = lambda tm: tm.didBecomeIncapacitated,
+        liftoffPercentage = lambda tm: tm.didLiftoff, 
+        baselineReachedPercentage = lambda tm: tm.didReachBaselineAuto,
+        avgAgility = lambda tm: tm.rankAgility, 
+        avgSpeed = lambda tm: tm.rankSpeed,
+        avgGearGroundIntakesTele = lambda tm: tm.numGearGroundIntakesTele, 
+        avgGearLoaderIntakesTele = lambda tm: tm.numGearLoaderIntakesTele,
+        avgBallControl = lambda tm: tm.rankBallControl, 
+        avgGearControl = lambda tm: tm.rankGearControl,
+        avgDefense = lambda tm: tm.rankDefense, 
+        avgKeyShotTime = lambda tm: tm.calculatedData.avgKeyShotTime,
+        liftoffAbility = lambda tm: tm.calculatedData.liftoffAbility, 
+        disfunctionalPercentage = lambda tm: tm.calculatedData.wasDisfunctional,
+        avgGearsPlacedAuto = lambda tm: tm.calculatedData.numGearsPlacedAuto, 
+        avgGearsPlacedTele = lambda tm: tm.calculatedData.numGearsPlacedTele,
+        avgHoppersOpenedAuto = lambda tm: tm.numHoppersOpenedAuto, 
+        avgHoppersOpenedTele = lambda tm: tm.numHoppersOpenedTele, avgGearsEjectedTele = lambda tm: tm.numGearsEjectedTele, 
+        avgGearsFumbledTele = lambda tm: tm.numGearsFumbledTele,
+        avgDrivingAbility = lambda tm: tm.calculatedData.drivingAbility)
+    mapFuncForCalcAvgsForTeam(team, lambda f: calc.getStandardDeviationForDataFunctionForTeam(team, f), 
+        sdLiftoffAbility = lambda tm: tm.calculatedData.liftoffAbility,
+        sdHighShotsAuto = lambda tm: tm.calculatedData.numHighShotsAuto,
+        sdHighShotsTele = lambda tm: tm.calculatedData.numHighShotsTele,
+        sdLowShotsAuto = lambda tm: tm.calculatedData.numLowShotsAuto,
+        sdLowShotsTele = lambda tm: tm.calculatedData.numLowShotsTele,
+        sdGearsPlacedAuto = lambda tm: tm.calculatedData.numGearsPlacedAuto,
+        sdGearsPlacedTele = lambda tm: tm.calculatedData.numGearsPlacedTele,
+        sdBaselineReachedPercentage = lambda tm: tm.didReachBaselineAuto)
     cd.autoShootingPositions = calc.getAutoShootingPositions(team)
-    calc.getAvgFuncForKeys(team, cd.avgGearsPlacedByLiftAuto, lambda tm: tm.gearsPlacedByLiftAuto, calc.lifts)
-    calc.getAvgFuncForKeys(team, cd.avgGearsPlacedByLiftTele, lambda tm: tm.gearsPlacedByLiftTele, calc.lifts)
+    calc.getAvgFuncForKeys(team, cd.avgGearsPlacedByLiftAuto, lambda tm: tm.gearsPlacedByLiftAuto)
+    calc.getAvgFuncForKeys(team, cd.avgGearsPlacedByLiftTele, lambda tm: tm.gearsPlacedByLiftTele)
     cd.gearScoringPositionsAuto = calc.getGearScoringPositionsAuto(team)
-
 
 def secondCalculationDict(team, calc):
     cd = team.calculatedData
@@ -84,33 +80,34 @@ def TIMDCalcDict(timd, calc):
     c.numRPs = calc.RPsGainedFromMatchForAlliance(team.number in match.redAllianceTeamNumbers, match)
 
 def averageTeamDict(calc):
-    a = calc.averageTeam.calculatedData
-    a.avgHighShotsTele = calc.getAverageOfDataFunctionAcrossCompetition(lambda t: t.calculatedData.avgHighShotsTele)
-    a.avgHighShotsAuto = calc.getAverageOfDataFunctionAcrossCompetition(lambda t: t.calculatedData.avgHighShotsAuto)
-    a.avgLowShotsAuto = calc.getAverageOfDataFunctionAcrossCompetition(lambda t: t.calculatedData.avgLowShotsAuto)
-    a.avgLowShotsTele = calc.getAverageOfDataFunctionAcrossCompetition(lambda t: t.calculatedData.avgLowShotsTele)
-    a.baselineReachedPercentage = calc.getAverageOfDataFunctionAcrossCompetition(lambda t: t.calculatedData.baselineReachedPercentage)
-    a.disabledPercentage = calc.getAverageOfDataFunctionAcrossCompetition(lambda t: t.calculatedData.disabledPercentage)
-    a.incapacitatedPercentage = calc.getAverageOfDataFunctionAcrossCompetition(lambda t: t.calculatedData.incapacitatedPercentage)
-    a.liftoffPercentage = calc.getAverageOfDataFunctionAcrossCompetition(lambda t: t.calculatedData.liftoffPercentage)
-    a.sdBaselineReachedPercentage = calc.getStandardDeviationOfDataFunctionAcrossCompetition(lambda t: t.calculatedData.baselineReachedPercentage)
-    a.avgGearsPlacedTele = calc.getAverageOfDataFunctionAcrossCompetition(lambda t: t.calculatedData.avgGearsPlacedTele)
-    a.avgGearsPlacedAuto = calc.getAverageOfDataFunctionAcrossCompetition(lambda t: t.calculatedData.avgGearsPlacedAuto)
-    a.avgAgility = calc.getAverageOfDataFunctionAcrossCompetition(lambda t: t.calculatedData.avgAgility)
-    a.avgSpeed = calc.getAverageOfDataFunctionAcrossCompetition(lambda t: t.calculatedData.avgSpeed)
-    a.avgBallControl = calc.getAverageOfDataFunctionAcrossCompetition(lambda t: t.calculatedData.avgBallControl)
-    a.avgGearControl = calc.getAverageOfDataFunctionAcrossCompetition(lambda t: t.calculatedData.avgGearControl)
-    a.avgDefense = calc.getAverageOfDataFunctionAcrossCompetition(lambda t: t.calculatedData.avgDefense)
-    a.avgKeyShotTime = calc.getAverageOfDataFunctionAcrossCompetition(lambda t: t.calculatedData.avgKeyShotTime)
-    a.liftoffAbility = calc.getAverageOfDataFunctionAcrossCompetition(lambda t: t.calculatedData.liftoffAbility)
-    a.sdLiftoffAbility = calc.getStandardDeviationOfDataFunctionAcrossCompetition(lambda t: t.calculatedData.sdLiftoffAbility)
-    a.sdGearsPlacedTele = calc.getStandardDeviationOfDataFunctionAcrossCompetition(lambda t: t.calculatedData.sdGearsPlacedTele)
-    a.sdGearsPlacedAuto = calc.getStandardDeviationOfDataFunctionAcrossCompetition(lambda t: t.calculatedData.sdGearsPlacedAuto)
-    a.sdHighShotsAuto = calc.getStandardDeviationOfDataFunctionAcrossCompetition(lambda t: t.calculatedData.sdHighShotsAuto)
-    a.sdHighShotsTele = calc.getStandardDeviationOfDataFunctionAcrossCompetition(lambda t: t.calculatedData.sdHighShotsTele)
-    a.sdLowShotsAuto = calc.getStandardDeviationOfDataFunctionAcrossCompetition(lambda t: t.calculatedData.sdLowShotsAuto)
-    a.sdLowShotsTele = calc.getStandardDeviationOfDataFunctionAcrossCompetition(lambda t: t.calculatedData.sdLowShotsTele)
-    print("Completed first calcs for team " + str(calc.averageTeam.number))
+    a = calc.averageTeam
+    mapFuncForCalcAvgsForTeam(calc.averageTeam, lambda f: calc.getAverageOfDataFunctionAcrossCompettion(a, f),
+        avgHighShotsTele = lambda t: t.calculatedData.avgHighShotsTele,
+        avgHighShotsAuto = lambda t: t.calculatedData.avgHighShotsAuto,
+        avgLowShotsAuto = lambda t: t.calculatedData.avgLowShotsAuto,
+        avgLowShotsTele = lambda t: t.calculatedData.avgLowShotsTele,
+        baselineReachedPercentage = lambda t: t.calculatedData.baselineReachedPercentage,
+        disabledPercentage = lambda t: t.calculatedData.disabledPercentage,
+        incapacitatedPercentage = lambda t: t.calculatedData.incapacitatedPercentage,
+        liftoffPercentage = lambda t: t.calculatedData.liftoffPercentage,
+        avgGearsPlacedTele = lambda t: t.calculatedData.avgGearsPlacedTele,
+        avgGearsPlacedAuto = lambda t: t.calculatedData.avgGearsPlacedAuto,
+        avgAgility = lambda t: t.calculatedData.avgAgility,
+        avgSpeed = lambda t: t.calculatedData.avgSpeed,
+        avgBallControl = lambda t: t.calculatedData.avgBallControl,
+        avgGearControl = lambda t: t.calculatedData.avgGearControl,
+        avgDefense = lambda t: t.calculatedData.avgDefense,
+        avgKeyShotTime = lambda t: t.calculatedData.avgKeyShotTime,
+        liftoffAbility = lambda t: t.calculatedData.liftoffAbility)
+    mapFuncForCalcAvgsForTeam(calc.averageTeam, lambda f: calc.getStandardDeviationOfDataFunctionAcrossCompettion(a, f),
+        sdBaselineReachedPercentage = lambda t: t.calculatedData.baselineReachedPercentage,
+        sdLiftoffAbility = lambda t: t.calculatedData.sdLiftoffAbility,
+        sdGearsPlacedTele = lambda t: t.calculatedData.sdGearsPlacedTele,
+        sdGearsPlacedAuto = lambda t: t.calculatedData.sdGearsPlacedAuto,
+        sdHighShotsAuto = lambda t: t.calculatedData.sdHighShotsAuto,
+        sdHighShotsTele = lambda t: t.calculatedData.sdHighShotsTele,
+        sdLowShotsAuto = lambda t: t.calculatedData.sdLowShotsAuto,
+        sdLowShotsTele = lambda t: t.calculatedData.sdLowShotsTele)
 
 def matchDict(match, calc):
     if calc.su.matchIsCompleted(match):
@@ -128,3 +125,6 @@ def matchDict(match, calc):
     match.calculatedData.redWinChance = calc.winChanceForMatchForAllianceIsRed(match, True)
     match.calculatedData.predictedBlueRPs = calc.predictedRPsForAllianceForMatch(False, match)
     match.calculatedData.predictedRedRPs = calc.predictedRPsForAllianceForMatch(True, match)
+
+def mapFuncForCalcAvgsForTeam(team, func, **calcDatas):
+    [team.calculatedData.__dict__.update({k : func(dataFunc)}) for k, dataFunc in calcDatas.items()]

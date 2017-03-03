@@ -39,7 +39,6 @@ class Calculator(object):
         self.teleGearIncrements = [0, 2, 6, 12]
         self.autoGearIncrements = [1, 3, 7, 13]
         self.lifts = ['lift1', 'lift2', 'lift3']
-        self.hops = ['hop1', 'hop2', 'hop3', 'hop4', 'hop5']
         self.cachedTeamDatas = {}
         self.cachedComp = cache.CachedCompetitionData()
         self.cachedTeamDatas[self.averageTeam.number] = cache.CachedTeamData(**{'teamNumber': self.averageTeam.number})
@@ -50,7 +49,7 @@ class Calculator(object):
         superKeys = ["rankSpeed", "rankAgility", "rankDefense", "rankBallControl", "rankGearControl"]
         playedTIMDs = self.su.getCompletedTIMDsInCompetition()
         incompleteScoutData = filter(lambda t: not all([v != None for k,v in t.__dict__.items() if k != "calculatedData" and k not in superKeys]), playedTIMDs)
-        incompleteSuperData = filter(lambda t: not all([v != None for k,v in t.__dict__.items() if k in superKeys]))
+        incompleteSuperData = filter(lambda t: not all([v != None for k,v in t.__dict__.items() if k in superKeys]), playedTIMDs)
         incompleteScoutTIMDs = dict(zip(["Scout"] * len(incompleteScoutData), incompleteScoutData))
         incompleteSuperTIMDs = dict(zip(["Super"] * len(incompleteSuperData), incompleteSuperData))
         return incompleteSuperTIMDs.update(incompleteScoutTIMDs)
@@ -60,19 +59,19 @@ class Calculator(object):
     #Hardcore Math
 
     def getAverageForDataFunctionForTeam(self, team, dataFunction):
-        validTIMDs = filter(lambda timd: dataFunction(timd), self.su.getCompletedTIMDsForTeam(team))
+        validTIMDs = filter(lambda timd: dataFunction(timd) != None, self.su.getCompletedTIMDsForTeam(team))
         return np.mean(map(dataFunction, validTIMDs)) if validTIMDs else None #return None if validTIMDs has no elements
 
     def getSumForDataFunctionForTeam(self, team, dataFunction):
-        return sum([dataFunction(tm) for tm in self.su.getCompletedTIMDsForTeam(team) if dataFunction(tm)])
+        return sum([dataFunction(tm) for tm in self.su.getCompletedTIMDsForTeam(team) if dataFunction(tm) != None])
 
     def getStandardDeviationForDataFunctionForTeam(self, team, dataFunction):
-        validTIMDs = filter(lambda timd: dataFunction(timd), self.su.getCompletedTIMDsForTeam(team))
+        validTIMDs = filter(lambda timd: dataFunction(timd) != None, self.su.getCompletedTIMDsForTeam(team))
         return np.std(map(dataFunction, validTIMDs)) if validTIMDs else None
 
     def getAverageOfDataFunctionAcrossCompetition(self, dataFunction):
-        validData = filter(lambda x: x, map(dataFunction, self.su.teamsWithCalculatedData()))
-        return np.mean(validData) if validData else 0
+        validData = filter(lambda x: x != None, map(dataFunction, self.su.teamsWithCalculatedData()))
+        return np.mean(validData) if validData else None
 
     def getStandardDeviationOfDataFunctionAcrossCompetition(self, dataFunction):
         return utils.rms(map(dataFunction, self.su.teamsWithCalculatedData()))
@@ -85,11 +84,11 @@ class Calculator(object):
             return 0.0
         return np.std([valueFunction(np.random.normal(mean, stDev)) for i in range(self.monteCarloIterations)])
 
-    def probabilityDensity(self, x, mu, sigma):
+    def normalCDF(self, x, mu, sigma): #Calculates probability of reaching a threshold (x) based on the mean(mu) and the standard deviation(sigma)
         if sigma == 0.0:
-            return int(x <= mu)
+            return int(x <= mu) 
         if None not in [x,mu,sigma]:
-            return 1.0 - stats.norm.cdf(x, mu, sigma)
+            return 1.0 - stats.norm.cdf(x, mu, sigma) #Integrate bell curve from -infinity to x and gets complement
 
     def welchsTest(self, mean1, mean2, std1, std2, sampleSize1, sampleSize2):
         if std1 == 0.0 or std2 == 0.0 or sampleSize1 <= 0 or sampleSize2 <= 0:
@@ -122,8 +121,9 @@ class Calculator(object):
         timds = self.su.getCompletedTIMDsForMatchForAllianceIsRed(match, timd.teamNumber in match.redAllianceTeamNumbers)
         fuelPts = self.getShotPointsForMatchForAlliance(timds, timd.teamNumber in match.redAllianceTeamNumbers, match)
         scoutedFuelPoints = sum(map(self.fieldsForShots, timds))
-        weightage = float(fuelPts) / scoutedFuelPoints if None not in [scoutedFuelPoints, fuelPts] and scoutedFuelPoints != 0 else None
-        return sum(map(lambda v: (v.get('numShots') or 0), boilerPoint)) * weightage if weightage > 0 else 0
+        weightage = fuelPts / float(scoutedFuelPoints) if None not in [scoutedFuelPoints, fuelPts] and scoutedFuelPoints != 0 else None
+        return sum(map(lambda v: (v.get('numShots') or 0), boilerPoint)) * weightage if weightage != None and weightage > 0 else 0
+
 
     def getShotPointsForMatchForAlliance(self, timds, allianceIsRed, match):
         gearPts = self.getGearPtsForAllianceTIMDs(timds)
@@ -160,10 +160,10 @@ class Calculator(object):
     def getTotalValueForValueDict(self, valueDict):
         return sum(filter(lambda v: v, valueDict.values()))
 
-    def getAvgFuncForKeys(self, team, dic, retrievalFunction, keys):
+    def getAvgFuncForKeys(self, team, dic, retrievalFunction):
         timds = self.su.getCompletedTIMDsForTeam(team)
         getAvgForKey = lambda t: np.mean(map(lambda tm: (retrievalFunction(tm).get(t) or 0), timds))
-        [utils.setDictionaryValue(dic, l, getAvgForKey(l)) for l in keys]
+        [utils.setDictionaryValue(dic, l, getAvgForKey(l)) for l in calc.lifts]
 
     def getGearPtsForAllianceTIMDs(self, timds):
         return self.getRotorsTurningForDatasForGearFunc(timds, lambda t: (t.calculatedData.numGearsPlacedTele or 0), lambda t: (t.calculatedData.numGearsPlacedAuto or 0))
@@ -226,6 +226,7 @@ class Calculator(object):
         spWeight = 0.4
         agWeight = 0.4
         dfWeight = 0.0
+        if None in [team.calculatedData.avgSpeed, team.calculatedData.avgGearControl, team.calculatedData.avgBallControl, team.calculatedData.avgDefense, team.calculatedData.avgAgility]: return
         return team.calculatedData.avgSpeed * spWeight + team.calculatedData.avgGearControl * gCWeight + team.calculatedData.avgBallControl * bCWeight + team.calculatedData.avgAgility * agWeight + team.calculatedData.avgDefense * dfWeight
 
     def predictedScoreForAllianceWithNumbers(self, allianceNumbers):
@@ -308,7 +309,7 @@ class Calculator(object):
         sdOpposingPredictedScore = self.sdPredictedScoreForMatchForAlliance(match, not allianceIsRed)
         sampleSize = self.sampleSizeForMatchForAlliance(alliance)
         opposingSampleSize = self.sampleSizeForMatchForAlliance(alliance)
-        tscoreRPs = self.welchsTest(predictedScore,
+        tscoreRPs = self.welchsTest(predictedScore, 
                                        opposingPredictedScore,
                                        sdPredictedScore,
                                        sdOpposingPredictedScore,
@@ -324,7 +325,7 @@ class Calculator(object):
 
     def get40KilopascalChanceForAlliance(self, alliance):
         alliance = map(self.su.replaceWithAverageIfNecessary, alliance)
-        return self.probabilityDensity(40, self.getTotalAverageShotPointsForAlliance(alliance), self.getStandardDevShotPointsForAlliance(alliance))
+        return self.normalCDF(40, self.getTotalAverageShotPointsForAlliance(alliance), self.getStandardDevShotPointsForAlliance(alliance))
 
     def get40KilopascalChanceForAllianceWithNumbers(self, allianceNumbers):
         self.get40KilopascalChanceForAlliance(self.su.teamsForTeamNumbersOnAlliance(allianceNumbers))
@@ -381,13 +382,13 @@ class Calculator(object):
         matches = filter(lambda m: not self.su.matchIsCompleted(m), self.su.getMatchesForTeam(team))
         return sum([self.predictedScoreForAlliance(self.su.getAllianceForTeamInMatch(team, match)) for match in matches]) + self.cumulativeMatchPointsForTeam(team)
 
-    def getSeedingFunctions(self):
+    def getSeedingFunctions(self): #Functions to rank teams by for actual seedings, taken as a parameter in the 'teamsSortedByRetrievalFunctions' function
         return [lambda t: t.calculatedData.actualNumRPs, lambda t: self.cumulativeMatchPointsForTeam(t), lambda t: self.cumulativeAutoPointsForTeam(t)]
 
-    def getPredictedSeedingFunctions(self):
+    def getPredictedSeedingFunctions(self):  #Functions to rank teams by for predicted seedings, taken as a parameter in the 'teamsSortedByRetrievalFunctions' function
         return [lambda t: self.predictedNumberOfRPs(t), lambda t: self.cumulativePredictedMatchPointsForTeam(t), lambda t: self.cumulativePredictedAutoPointsForTeam(t)]
 
-    def predictedNumberOfRPs(self, team):
+    def predictedNumberOfRPs(self, team): #Get average predicted RPs based on predicted score RPs and other parameters
         predictedRPsFunction = lambda m: self.predictedRPsForAllianceForMatch(self.su.getTeamAllianceIsRedInMatch(team, m), m)
         predictedRPs = np.mean([predictedRPsFunction(m) for m in self.su.getMatchesForTeam(team) if not self.su.matchIsCompleted(m) and predictedRPsFunction(m) != None])
         return np.mean([predictedRPs, self.actualNumberOfRPs(team)])
@@ -410,7 +411,7 @@ class Calculator(object):
         return numRPs + utils.convertFirebaseBoolean(ourFields[1]) + utils.convertFirebaseBoolean(ourFields[2])
 
     def predictedRPsForAllianceForMatch(self, allianceIsRed, match):
-        alliance = map(self.su.replaceWithAverageIfNecessary, self.su.getAllianceForMatch(match, allianceIsRed))
+        alliance = map(self.su.replaceWithAverageIfNecessary, self.su.getAllianceForMatch(match, allianceIsRed)) #Get the correct alliance, either red or blue based on the boolean
         scoreRPs = 2 * (self.getWinChanceForMatchForAllianceIsRed(match, allianceIsRed) or 0)
         boilerRPs = self.get40KilopascalChanceForAlliance(alliance)
         rotorRPs = self.getAllRotorsTurningChanceForAlliance(alliance)
@@ -505,10 +506,10 @@ class Calculator(object):
             file.write('Time: ' + str(time) + '    TIMDs: ' + str(len(self.su.getCompletedTIMDsInCompetition())) + '\n')
             file.close()
 
-    def doCalculations(self, PBC):
+    def doCalculations(self, PBC): #Does calculations...What the hell do you think it does lmao
         isData = len(self.su.getCompletedTIMDsInCompetition()) > 0
-        if isData:
-            startTime = time.time()
+        if isData: #Only do if there is any data
+            startTime = time.time() #Get time to later calculate time for a server cycle...
             threads = []
             #creates an empty list for timds accessible in multiple processes (manager.list)
             manager = multiprocessing.Manager()

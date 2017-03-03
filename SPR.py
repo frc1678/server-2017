@@ -14,31 +14,28 @@ class ScoutPrecision(object):
 		self.sprs = {}
 		self.robotNumToScouts = []
 		#These keys are the names of sections of the tempTIMDs on which scouts will be graded
-		#each key has a number for each tempTIMD
-		self.gradingKeys = [
-			'numGearGroundIntakesTele',
-			'numGearLoaderIntakesTele',
-			'numGearsEjectedTele',
-			'numGearsFumbledTele',
-			'didLiftoff',
-			'didBecomeIncapacitated',
-			'didStartDisabled',
-			'didReachBaselineAuto',
-			'numHoppersOpenedAuto',
-			'numHoppersOpenedTele'
-		]
-		#each dict has the same keys for each timd, and each key has a number
-		self.gradingDicts = [
-			'gearsPlacedByLiftTele',
-			'gearsPlacedByLiftAuto'
-		]
-		#each list contains several (preferably the same number) of dicts, each of which has the same keys
-		self.gradingListsOfDicts = [
-			'highShotTimesForBoilerTele',
-			'highShotTimesForBoilerAuto',
-			'lowShotTimesForBoilerAuto',
-			'lowShotTimesForBoilerTele'
-		]
+		self.gradingKeys = {
+			'numGearGroundIntakesTele': 1.0,
+			'numGearLoaderIntakesTele': 1.0,
+			'numGearsEjectedTele': 1.0,
+			'numGearsFumbledTele': 1.0,
+			'didLiftoff': 3.0,
+			'didBecomeIncapacitated': 2.0,
+			'didStartDisabled': 2.0,
+			'didReachBaselineAuto': 1.5,
+			'numHoppersOpenedAuto': 1.5,
+			'numHoppersOpenedTele': 1.5
+		}
+		self.gradingDicts = {
+			'gearsPlacedByLiftTele': 1.2,
+			'gearsPlacedByLiftAuto': 1.3
+		}
+		self.gradingListsOfDicts = {
+			'highShotTimesForBoilerTele': 0.2,
+			'highShotTimesForBoilerAuto': 0.2,
+			'lowShotTimesForBoilerAuto': 0.1,
+			'lowShotTimesForBoilerTele': 0.1
+		}
 
 	#SPR
 	#Scout precision ranking: checks accuracy of scouts by comparing their previous TIMDs to the consensus
@@ -63,6 +60,7 @@ class ScoutPrecision(object):
 	#The actual comparison to determine correct values is done in dataChecker
 
 	def findOddScoutForDataPoint(self, tempTIMDs, key):
+		weight = self.gradingKeys[key]
 		#finds scout names in tempTIMDs
 		scouts = filter(lambda v: v, map(lambda k: k.get('scoutName'), tempTIMDs))
 		#finds values (at an inputted key) in tempTIMDs
@@ -75,12 +73,13 @@ class ScoutPrecision(object):
 			if values.count(commonValue) <= len(values) / 2 and type(commonValue) != str:
 				commonValue = np.mean(values)
 			#makes a list of the differences from the common value
-			differenceFromCommonValue = map(lambda v: abs(v - commonValue), values)
+			differenceFromCommonValue = map(lambda v: abs(v - commonValue) * weight, values)
 			#adds the difference from this tempTIMD for this value to each scout's previous differences (spr score)
 			self.sprs.update({scouts[c] : (self.sprs.get(scouts[c]) or 0) + differenceFromCommonValue[c] for c in range(len(differenceFromCommonValue))})
 
 	#Similar to findOddScoutForDataPoint, but for each data point inside of a dict
 	def findOddScoutForDict(self, tempTIMDs, key):
+		weight = self.gradingDicts[key]
 		scouts = filter(lambda v: v, map(lambda k: k.get('scoutName'), tempTIMDs))
 		dicts = filter(lambda k: k, map(lambda t: t[key] if t.get('scoutName') else None, tempTIMDs))
 		#This section groups keys of the dicts found earlier
@@ -97,12 +96,13 @@ class ScoutPrecision(object):
 				commonValue = values[valueFrequencies.index(max(valueFrequencies))]
 				if values.count(commonValue) <= len(values) / 2 and type(commonValue) != str:
 					commonValue = np.mean(values)
-				differenceFromCommonValue = map(lambda v: abs(v - commonValue), values)
+				differenceFromCommonValue = map(lambda v: abs(v - commonValue) * weight, values)
 				self.sprs.update({scouts[c] : (self.sprs.get(scouts[c]) or 0) + differenceFromCommonValue[c] for c in range(len(differenceFromCommonValue))})
 
 	#Similar to findOddScoutForDict, but for lists of several dicts instead of individual dicts
 	#The nth dict on each list should be the same
 	def findOddScoutForListOfDicts(self, tempTIMDs, key):
+		weight = self.gradingListsOfDicts[key]
 		scouts = filter(lambda v: v, map(lambda k: k.get('scoutName'), tempTIMDs))
 		lists = filter(lambda k: k, map(lambda t: t.get(key) if t.get('scoutName') else None, tempTIMDs))
 		#Finds the most largest of dicts within each list in the larger list (within each scout's observations)
@@ -112,7 +112,7 @@ class ScoutPrecision(object):
 			#If someone missed a dict (for a shot) (that is, they did not include one that another scout did), this makes one with no values
 			for aScout in lists:
 				if len(aScout) < largestListLength:
-					aScout += [{'numShots': 0, 'position': 'Other  ', 'time': 0}] * (largestListLength - len(aScout))
+					aScout += [{'numShots': 0, 'position': 'Other', 'time': 0}] * (largestListLength - len(aScout))
 			for num in range(largestListLength):
 				#comparing dicts that should be the same (e.g. each shot time dict for the same shot) within the tempTIMDs
 				#This means the nth shot by a given robot, as recorded by multiple scouts
@@ -132,7 +132,7 @@ class ScoutPrecision(object):
 						commonValue = values[valueFrequencies.index(max(valueFrequencies))]
 						if values.count(commonValue) <= len(values) / 2:
 							commonValue = np.mean(values)
-						differenceFromCommonValue = map(lambda v: abs(v - commonValue), values)
+						differenceFromCommonValue = map(lambda v: abs(v - commonValue) * weight, values) 
 						self.sprs.update({scouts[c] : (self.sprs.get(scouts[c]) or 0) + differenceFromCommonValue[c] for c in range(len(differenceFromCommonValue))})
 
 	def calculateScoutPrecisionScores(self, temp, available):
@@ -145,9 +145,9 @@ class ScoutPrecision(object):
 			#Each scout gets more "points" if they are further off from the consensus on the actual values
 			#The grades are stored by scout name in sprs
 			#see the findOddScout functions for details on how
-			[self.findOddScoutForDataPoint(v, k) for v in g.values() for k in self.gradingKeys]
-			[self.findOddScoutForDict(v, k) for v in g.values() for k in self.gradingDicts]
-			[self.findOddScoutForListOfDicts(v, k) for v in g.values() for k in self.gradingListsOfDicts]
+			[self.findOddScoutForDataPoint(v, k) for v in g.values() for k in self.gradingKeys.keys()]
+			[self.findOddScoutForDict(v, k) for v in g.values() for k in self.gradingDicts.keys()]
+			[self.findOddScoutForListOfDicts(v, k) for v in g.values() for k in self.gradingListsOfDicts.keys()]
 			#divides values for scouts by number of TIMDs the scout has participated in
 			#if a scout is in more matches, they will likely have more disagreements, but the same number per match if they are equally accurate
 			self.sprs = {k:((v/float(self.getTotalTIMDsForScoutName(k, temp))) or 0) for (k,v) in self.sprs.items()}
@@ -185,7 +185,7 @@ class ScoutPrecision(object):
 		grpCombosList = [combo for combo in grpCombos]
 		#picks a random grouping of scouts that, if possible, doesn't have 2 scouts to a robot
 		singleTripleCombos = filter(lambda l: 2 not in l, grpCombosList)
-		if singleTripleCombos > 0:
+		if len(singleTripleCombos) > 0:
 			scoutsPGrp = groupFunc(singleTripleCombos)
 		else:
 			scoutsPGrp = groupFunc(grpCombosList)
