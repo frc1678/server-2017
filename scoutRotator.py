@@ -1,16 +1,12 @@
 import pyrebase
 import DataModel
 import SPR
+import firebaseCommunicator
 
-config = {
-	"apiKey": "mykey",
-	"authDomain": "scouting-2017-5f51c.firebaseapp.com",
-	"databaseURL": "https://scouting-2017-5f51c.firebaseio.com/",
-	"storageBucket": "scouting-2017-5f51c.appspot.com"
-}
+PBC = firebaseCommunicator.PyrebaseCommunicator()
+PBC.initializeFirebase()
+fb = PBC.firebase
 
-f = pyrebase.initialize_app(config)
-fb = f.database()
 #Note: The names of test scouts are based on testing, and change frequently
 testScouts = "nathan ben berin kenny ryan peter".split()
 scouts = "janet justin alex wesley kyle mx aiden westley katie jesse jack sage jon ayush sam evan mingyo zoe gemma carter".split()

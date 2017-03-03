@@ -4,31 +4,20 @@ import utils
 import time
 import multiprocessing
 import pdb
-
-config = {
-	"apiKey": "mykey",
-	"authDomain": "scouting-2017-5f51c.firebaseapp.com",
- 	"databaseURL": "https://scouting-2017-5f51c.firebaseio.com/",
- 	"storageBucket": "scouting-2017-5f51c.appspot.com"
-}
-
-#config = {
-#	"apiKey": "mykey",
-#	"authDomain": "1678-scouting-2016.firebaseapp.com",
-#	"databaseURL": "https://1678-scouting-2016.firebaseio.com/",
-#	"storageBucket": "1678-scouting-2016.appspot.com"
-#}
+import firebaseCommunicator
 
 #These are the keys that have lists of dicts
 listKeys = ["highShotTimesForBoilerTele", "highShotTimesForBoilerAuto", "lowShotTimesForBoilerAuto", "lowShotTimesForBoilerTele"]
-#These ought to be the same across all tempTIMDs
+#These ought to be the same across all tempTIMDs for the same TIMD
 constants = ['matchNumber', 'teamNumber']
 #These are the keys within each dict from the listKeys
 boilerKeys = ['time', 'numShots', 'position']
-#These are the keys that have dicts
+#These are the keys that have dicts with consistent keys
 standardDictKeys = ['gearsPlacedByLiftAuto', 'gearsPlacedByLiftTele']
-fb = pyrebase.initialize_app(config)
-firebase = fb.database()
+
+PBC = firebaseCommunicator.PyrebaseCommunicator()
+PBC.initializeFirebase()
+firebase = PBC.firebase
 
 class DataChecker(multiprocessing.Process):
 	"""Checks data..."""
@@ -76,7 +65,7 @@ class DataChecker(multiprocessing.Process):
 
 	#This is the common value function for lists of dicts
 	#It consolidates the data on shots from scouts, by comparing each shot to other scouts' info on the same shot
-	#The nth dict on each list should be the same 
+	#The nth dict on each list should be the same
 	def findCommonValuesForKeys(self, lis):
 		#Finds the largest number of dicts within each list (within each scout's observations)
 		#(e.g. if there is disagreement over how many shots a robot took in a particular match)

@@ -199,18 +199,16 @@ class ScoutPrecision(object):
 			newGroup = self.group(freqs, c)
 			scouts += [newGroup[0]]
 			freqs = newGroup[1]
-		#A list of what scouts are used is useful later
-		scoutsList = utils.extendList(scouts)
-		#returns the scouts paired to robots, and a list of which scouts are used
-		return (self.scoutsToRobotNums(scouts, currentTeams), scoutsList)
+		#returns the scouts grouped and paired to robots
+		return self.scoutsToRobotNums(scouts, currentTeams)
 
 	#assigns a list of scouts to a list of robots in order, and returns as a single dict
 	def scoutsToRobotNums(self, scouts, currentTeams):
 		f = lambda s: {scouts[s] : currentTeams[s]} if type(scouts[s]) != list else self.mapKeysToValue(scouts[s], currentTeams[s])
-		scoutAndNums  = map(f, range(len(scouts)))
+		scoutAndNums = map(f, range(len(scouts)))
 		return {k : v for l in scoutAndNums for k, v in l.items()}
 
-	#Makes a dict with an inputted key attached to a value
+	#Makes a dict with the same value attached to each inputted key
 	def mapKeysToValue(self, keys, value):
 		return {k : value for k in keys}
 
@@ -244,9 +242,8 @@ class ScoutPrecision(object):
 		namesOfScouts = map(lambda v: v.get('currentUser'), scoutsWithNames)
 		scoutSpots = len(scoutRotatorDict.keys())
 		#assigns available scouts to robots, and shows exactly which availabe scouts will be scouting
-		calcTeams = self.organizeScouts(available, currentTeams, scoutSpots)
-		teams = calcTeams[0]
-		available = calcTeams[1]
+		teams = self.organizeScouts(available, currentTeams, scoutSpots)
+		available = utils.extendList(teams)
 		#Moves the current user to the previous user spot, assigns a new user if necessary, and assigns a robot to each scout
 		for scout in scoutRotatorDict.keys():
 			#The current user is now the previous user, as the match has changed
@@ -267,13 +264,10 @@ class ScoutPrecision(object):
 		if availableScout in names:
 			scoutNum = self.getScoutNumFromName(availableScout, scoutRotatorDict)
 			scoutRotatorDict[scoutNum].update({'team': teams[availableScout], 'currentUser': availableScout, 'scoutStatus': 'requested'})
-		else:
-			#If they aren't, it needs to find an empty scout spot in firebase and put the available scout there
-			if self.findFirstEmptySpotForScout(scoutRotatorDict, available):
-				pass
-			else:
-				newSpace = self.findFirstEmptySpotForScout(scoutRotatorDict, available)[0]
-				scoutRotatorDict[newSpace].update({'team': teams[availableScout], 'currentUser': availableScout, 'scoutStatus': 'requested'})
+		#If they don't, it needs to find an empty scout spot in firebase and put the available scout there (if there is an empty spot, which there always should be)
+		elif self.findFirstEmptySpotForScout(scoutRotatorDict, available):
+			newSpace = self.findFirstEmptySpotForScout(scoutRotatorDict, available)[0]
+			scoutRotatorDict[newSpace].update({'team': teams[availableScout], 'currentUser': availableScout, 'scoutStatus': 'requested'})
 		return scoutRotatorDict
 
 	def sprZScores(self):
