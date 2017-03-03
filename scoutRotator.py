@@ -11,20 +11,19 @@ config = {
 
 f = pyrebase.initialize_app(config)
 fb = f.database()
+#Note: The names of test scouts are based on testing, and change frequently
 testScouts = "nathan ben berin kenny ryan peter".split()
 scouts = "janet justin alex wesley kyle mx aiden westley katie jesse jack sage jon ayush sam evan mingyo zoe gemma carter".split()
 SPR = SPR.ScoutPrecision()
 
 #creates list of availability values in firebase for each scout
 def resetAvailability():
-	availability = {name: 1 for name in testScouts}
-						#Note: change testScouts to scouts for actual use
+	availability = {name: 1 for name in scouts}
 	fb.child('availability').set(availability)
 
 #creates firebase objects for 18 scouts
 def resetScouts():
-	scouts = {'scout' + str(num) : {'currentUser': '', 'scoutStatus': ''} for num in range(1,13)}
-																				#Note: change 13 to 19 for actual use
+	scouts = {'scout' + str(num) : {'currentUser': '', 'scoutStatus': ''} for num in range(1,19)}
 	fb.child('scouts').set(scouts)
 
 def doSPRsAndAssignments(newMatchNumber):
@@ -36,15 +35,15 @@ def doSPRsAndAssignments(newMatchNumber):
 	#gets the teams we need to scout for
 	blueTeams = fb.child("Matches").child(newMatchNumber).get().val()['blueAllianceTeamNumbers']
 	redTeams = fb.child("Matches").child(newMatchNumber).get().val()['redAllianceTeamNumbers']
-	#FInds which scouts are available
+	#Finds which scouts are available
 	available = [k for (k, v) in fb.child("availability").get().val().items() if v == 1]
-	#Works out accuracy of scouts
+	#Checks accuracy of scouts based on previous scouting
 	SPR.calculateScoutPrecisionScores(fb.child("TempTeamInMatchDatas").get().val(), available)
-	#Exports scout accuracy data for checking and review
+	#Exports scout accuracy data for review
 	SPR.sprZScores()
 	#Assigns scouts to robots
 	newAssignments = SPR.assignScoutsToRobots(available, redTeams + blueTeams, fb.child("scouts").get().val())
-	#and the assignments are put on firebase
+	#Puts assignments on firebase
 	fb.child("scouts").update(newAssignments)
 
 #Use this if tablets are assigned to scouts by the server, and then given to the correct scouts

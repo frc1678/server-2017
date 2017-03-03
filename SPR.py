@@ -41,13 +41,14 @@ class ScoutPrecision(object):
 		]
 
 	#SPR
+	#Scout precision ranking: checks accuracy of scouts by comparing their previous TIMDs to the consensus
 
 	#outputs list of TIMDs that an inputted scout was involved in
 	def getTotalTIMDsForScoutName(self, scoutName, tempTIMDs):
 		return len(filter(lambda v: v.get('scoutName') == scoutName, tempTIMDs.values()))
 
 	#finds keys that start the same way and groups their values into lists under the keys
-	#Used to combine tempTIMDs of the same match by different scouts
+	#Used to combine tempTIMDs for the same match by different scouts
 	def consolidateTIMDs(self, temp):
 		consolidationGroups = {}
 		for k, v in temp.items():
@@ -59,7 +60,7 @@ class ScoutPrecision(object):
 		return consolidationGroups
 
 	#Note: the next 3 functions compare data in tempTIMDs to find scout accuracy
-	#The actual comparison for the data to determine correct values is done in dataChecker
+	#The actual comparison to determine correct values is done in dataChecker
 
 	def findOddScoutForDataPoint(self, tempTIMDs, key):
 		#finds scout names in tempTIMDs
@@ -82,14 +83,14 @@ class ScoutPrecision(object):
 	def findOddScoutForDict(self, tempTIMDs, key):
 		scouts = filter(lambda v: v, map(lambda k: k.get('scoutName'), tempTIMDs))
 		dicts = filter(lambda k: k, map(lambda t: t[key] if t.get('scoutName') else None, tempTIMDs))
-		# This section groups keys of the dicts found earlier
+		#This section groups keys of the dicts found earlier
 		if dicts:
 			consolidationDict = {}
 			for key in dicts[0].keys():
 				consolidationDict[key] = []
 				for aDict in dicts:
 					consolidationDict[key] += [aDict[key]]
-			#see descriptions in findOddScoutForDataPoint for this section
+			#see descriptions in findOddScoutForDataPoint for this section (comparing data on each key)
 			for key in consolidationDict.keys():
 				values = consolidationDict[key]
 				valueFrequencies = map(values.count, values)
@@ -114,8 +115,8 @@ class ScoutPrecision(object):
 					aScout += [{'numShots': 0, 'position': 'Other  ', 'time': 0}] * (largestListLength - len(aScout))
 			for num in range(largestListLength):
 				#comparing dicts that should be the same (e.g. each shot time dict for the same shot) within the tempTIMDs
-				#This means comparisons such as the first shot in teleop by a given robot, as recorded by multiple scouts
-				#The comparison is the same as the other findOddScout functions
+				#This means the nth shot by a given robot, as recorded by multiple scouts
+				#The comparison itself is the same as the other findOddScout functions
 				dicts = [lis[num] for lis in lists]
 				consolidationDict = {}
 				for key in dicts[0].keys():
@@ -124,7 +125,7 @@ class ScoutPrecision(object):
 						consolidationDict[key] += [aDict[key]]
 				for key in consolidationDict.keys():
 					#position is a string, so should not be compared, due to the averaging later
-					#without the averaging, one person would be declared correct for no reason
+					#without averaging, one person could be declared correct for no reason
 					if key != 'position':
 						values = consolidationDict[key]
 						valueFrequencies = map(values.count, values)
@@ -136,19 +137,19 @@ class ScoutPrecision(object):
 
 	def calculateScoutPrecisionScores(self, temp, available):
 		if temp:
-			#Put together all tempTIMDs for the same match
+			#Combines all tempTIMDs for the same match
 			g = self.consolidateTIMDs(temp)
 			#Removes any data from previous calculations from sprs
 			self.sprs = {}
 			#These three grade each scout for each of the values in the grading keys, dicts, and lists of dicts
 			#Each scout gets more "points" if they are further off from the consensus on the actual values
-			#The grades are stored in sprs
+			#The grades are stored by scout name in sprs
 			#see the findOddScout functions for details on how
 			[self.findOddScoutForDataPoint(v, k) for v in g.values() for k in self.gradingKeys]
 			[self.findOddScoutForDict(v, k) for v in g.values() for k in self.gradingDicts]
 			[self.findOddScoutForListOfDicts(v, k) for v in g.values() for k in self.gradingListsOfDicts]
 			#divides values for scouts by number of TIMDs the scout has participated in
-			#if a scout is in more matches, they will likely have more disagreements, but the same number per match
+			#if a scout is in more matches, they will likely have more disagreements, but the same number per match if they are equally accurate
 			self.sprs = {k:((v/float(self.getTotalTIMDsForScoutName(k, temp))) or 0) for (k,v) in self.sprs.items()}
 			#any team without and sprs score is set to the average score
 			for a in available:
@@ -188,21 +189,18 @@ class ScoutPrecision(object):
 			scoutsPGrp = groupFunc(singleTripleCombos)
 		else:
 			scoutsPGrp = groupFunc(grpCombosList)
+		#Since scout groups are reversed, smaller groups come first, so are picked first, so tend to have better scouts
 		scoutsPGrp.reverse()
 		#used to make better scouts more likely to be picked
 		freqs = self.getScoutFrequencies(available)
-		#Gets the scouts who are alone on a robot
-		#Note: This setup makes better scouts more likely to scout alone, since lonely scouts are picked from the list first
-		indScouts = self.getIndividualScouts(freqs, scoutsPGrp.count(1))
-		unusedScouts = filter(lambda s: s not in indScouts, available)
-		nonIndScouts = []
-		#gets and groups the scouts who are paired or in threes for a robot
-		for c in scoutsPGrp[len(indScouts):]:
-			newGroup = self.group(unusedScouts, c)
-			nonIndScouts += [newGroup[0]]
-			unusedScouts = newGroup[1]
-		scouts = indScouts + nonIndScouts
-		scoutsList = indScouts + utils.extendList(nonIndScouts)
+		scouts = []
+		#Chooses the correct number of nonrepeating scouts for each group of scouts (of size 1, 2, or 3)
+		for c in scoutsPGrp:
+			newGroup = self.group(freqs, c)
+			scouts += [newGroup[0]]
+			freqs = newGroup[1]
+		#A list of what scouts are used is useful later
+		scoutsList = utils.extendList(scouts)
 		#returns the scouts paired to robots, and a list of which scouts are used
 		return (self.scoutsToRobotNums(scouts, currentTeams), scoutsList)
 
@@ -225,22 +223,12 @@ class ScoutPrecision(object):
 			toReturn += [newMember]
 		return (toReturn, availableForGroup)
 
-	#gets a scout from the dict inputted, and a list of scouts not yet picked
+	#picks a random member of a group, and also returns a list of mambers not picked
 	def getRandomIndividuals(self, freqs):
 		index = random.randint(0, len(freqs) - 1)
 		scout = freqs[index]
 		freqs = filter(lambda name: name != scout, freqs)
 		return (scout, freqs)
-
-	#Gets the right number of random scouts without repetition
-	def getIndividualScouts(self, ind, count):
-		scouts = []
-		unused = ind
-		for num in range(count):
-			random = self.getRandomIndividuals(unused)
-			unused = random[1]
-			scouts += [random[0]]
-		return scouts
 
 	def getScoutNumFromName(self, name, scoutsInRotation):
 		return filter(lambda k: scoutsInRotation[k].get('mostRecentUser') == name, scoutsInRotation.keys())[0]
