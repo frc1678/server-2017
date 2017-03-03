@@ -243,7 +243,7 @@ class ScoutPrecision(object):
 		scoutSpots = len(scoutRotatorDict.keys())
 		#assigns available scouts to robots, and shows exactly which availabe scouts will be scouting
 		teams = self.organizeScouts(available, currentTeams, scoutSpots)
-		available = utils.extendList(teams)
+		available = utils.extendListWithStrings(teams)
 		#Moves the current user to the previous user spot, assigns a new user if necessary, and assigns a robot to each scout
 		for scout in scoutRotatorDict.keys():
 			#The current user is now the previous user, as the match has changed
