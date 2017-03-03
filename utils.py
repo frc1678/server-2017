@@ -142,9 +142,11 @@ def extendList(lis):
 def extendListWithStrings(lis):
 	returnList = []
 	for l in lis:
-		if type(l) != str:
+		if type(l) == list:
 			for v in l:
 				returnList += v
+		else:
+			returnList += l
 	return returnList
 
 #Finds possible groupings of individuals (n of them) into a specified number of groups (size) with each group's maximum size of limit
