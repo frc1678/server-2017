@@ -1,17 +1,13 @@
 from apns import APNs, Frame, Payload
 import pyrebase as pyb
 import pdb
+import firebaseCommunicator
 
 apns = APNs(use_sandbox=True, cert_file='./apn-cert.pem')
-config = {
-		"apiKey": "mykey",
-		"authDomain": "scouting-2017-5f51c.firebaseapp.com",
-		"databaseURL": "https://scouting-2017-5f51c.firebaseio.com/",
-		"storageBucket": "scouting-2017-5f51c.appspot.com"
-}
+PBC = firebaseCommunicator.PyrebaseCommunicator()
+PBC.initializeFirebase()
+fb = PBC.firebase
 
-f = pyb.initialize_app(config)
-fb = f.database()
 def sendNoti(number, c, token):
         msg1 = "Match " + str(number) + " is "
         msg2 = str(abs(number - c)) + " matches away!" if number != c else " up next!"
@@ -36,5 +32,5 @@ def sendNotiForUser(usr, currentMatchNum):
 
 def startNotiStream():
         fb.child("currentMatchNum").stream(sendNotiForUsers)
-		
+
 startNotiStream()

@@ -1,16 +1,12 @@
-from firebase import firebase as fb
 import time
 import datetime
 import pyrebase
-config = {
-	"apiKey": "mykey",
-	"authDomain": "scouting-2017-5f51c.firebaseapp.com",
-	"databaseURL": "https://scouting-2017-5f51c.firebaseio.com/",
-	"storageBucket": "scouting-2017-5f51c.appspot.com"
-}
+import firebaseCommunicator
 
-f = pyrebase.initialize_app(config)
-fb = f.database()
+PBC = firebaseCommunicator.PyrebaseCommunicator()
+PBC.initializeFirebase()
+fb = PBC.firebase
+
 def update(data):
 	if data['data'] == None: return
 	matches = fb.child('Matches').get().val()
