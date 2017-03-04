@@ -7,13 +7,12 @@ PBC = firebaseCommunicator.PyrebaseCommunicator()
 PBC.initializeFirebase()
 fb = PBC.firebase
 # testScouts = "calvin ethan nathan wentao janet carter kenny ryan nate astha astha gemma livy ben".split()
-testScouts = "janet justin alex wesley kyle mx aiden westley katie jesse jack sage jon ayush sam evan mingyo zoe gemma carter".split()
+scouts = "janet justin alex wesley kyle mx aiden westley katie jesse jack sage jon ayush sam evan mingyo zoe gemma carter".split()
 SPR = SPR.ScoutPrecision()
 
 #creates list of availability values in firebase for each scout
 def resetAvailability():
-	availability = {name: 1 for name in testScouts}
-						#Note: change testScouts to scouts for actual use
+	availability = {name: 1 for name in scouts}
 	fb.child('availability').set(availability)
 
 #creates firebase objects for 18 scouts
@@ -35,7 +34,6 @@ def doSPRsAndAssignments(newMatchNumber):
 	SPR.calculateScoutPrecisionScores(fb.child("TempTeamInMatchDatas").get().val(), available)
 	SPR.sprZScores()
 	newAssignments = SPR.assignScoutsToRobots(available, redTeams + blueTeams, fb.child("scouts").get().val())
-	print newAssignments
 	#and it is put on firebase
 	fb.child("scouts").update(newAssignments)
 

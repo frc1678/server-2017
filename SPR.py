@@ -151,8 +151,15 @@ class ScoutPrecision(object):
 			[self.findOddScoutForListOfDicts(v, k) for v in g.values() for k in self.gradingListsOfDicts.keys()]
 			#divides values for scouts by number of TIMDs the scout has participated in
 			#if a scout is in more matches, they will likely have more disagreements, but the same number per match if they are equally accurate
-			self.sprs = {k:((v/float(self.getTotalTIMDsForScoutName(k, temp))) or 0) for (k,v) in self.sprs.items()}
-			#any team without and sprs score is set to the average score
+			#If someone hasn't scouted yet, their SPR score is set to -1 (to be changed later)
+			self.sprs = {k:((v/float(self.getTotalTIMDsForScoutName(k, temp))) or -1) for (k,v) in self.sprs.items()}
+			#Changes all sprs of -1 (someone who somehow has an spr key but no matches) to average or 1
+			for a in self.sprs.keys():
+				if self.sprs[a] == -1:
+					realValues = filter(lambda x: x!= -1, self.sprs.values())
+					avgScore = np.mean(realValues) if realValues else 1
+					self.sprs[a] = avgScore
+			#any scout in available without an spr score or without any matches is set to the average score or 1
 			for a in available:
 				if a not in self.sprs.keys():
 					avgScore = np.mean(self.sprs.values()) if self.sprs else 1
