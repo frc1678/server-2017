@@ -4,6 +4,21 @@ import utils
 import time
 import multiprocessing
 import pdb
+
+config = {
+	"apiKey": "mykey",
+	"authDomain": "scouting-2017-5f51c.firebaseapp.com",
+ 	"databaseURL": "https://scouting-2017-5f51c.firebaseio.com/",
+ 	"storageBucket": "scouting-2017-5f51c.appspot.com"
+}
+
+'''config = {
+	"apiKey": "mykey",
+	"authDomain": "1678-scouting-2016.firebaseapp.com",
+	"databaseURL": "https://1678-scouting-2016.firebaseio.com/",
+	"storageBucket": "1678-scouting-2016.appspot.com"
+}
+'''
 import firebaseCommunicator
 
 #These are the keys that have lists of dicts
@@ -59,9 +74,9 @@ class DataChecker(multiprocessing.Process):
 			try:
 				return mCV if values.count(mCV) > len(values) / 2 else np.mean(values)
 			except:
-				return None
+				return
 		else:
-			return None
+			return
 
 	#This is the common value function for lists of dicts
 	#It consolidates the data on shots from scouts, by comparing each shot to other scouts' info on the same shot
@@ -73,10 +88,10 @@ class DataChecker(multiprocessing.Process):
 			largestListLength = max(map(lambda x: len(x), lis))
 		else:
 			largestListLength = 0
-		#If someone missed a dict (for a shot) (that is, they did not include one that another scout did), this makes one with no values
+		#If someone missed a dict (for a shot, that is, they did not include one that another scout did, this makes one with no values)
 		for aScout in lis:
 			if len(aScout) < largestListLength:
-				aScout += [{'numShots': 0, 'position': 'Other  ', 'time': 0}] * (largestListLength - len(aScout))
+				aScout += [{'numShots': 0, 'position': 'Other ', 'time': 0}] * (largestListLength - len(aScout))
 		returnList = []
 		for num in range(largestListLength):
 			returnList += [{}]
@@ -131,10 +146,10 @@ class DataChecker(multiprocessing.Process):
 				else:
 					returnDict.update({k: self.commonValue(map(lambda tm: tm.get(k) or 0, self.consolidationGroups[key]))})
 		return returnDict
-		#The line below is supposed to do the same thing as this function, and may or may not work, and may or may not have correct parentheses
-		#return {k : self.findCommonValuesForKeys(map(lambda tm: (tm.get(k) or []), self.consolidationGroups[key])) if k in listKeys else self.consolidationGroups[key][0][k] if k in constants else self.avgDict(map(lambda c: (c.get(k) or {}), self.consolidationGroups[key])) if k in standardDictKeys else self.commonValue(map(lambda tm: tm.get(k) or 0, self.consolidationGroups[key])) for k in self.getAllKeys(map(lambda v: v.keys(), self.consolidationGroups[key]))}
+		'''The line below is supposed to do the same thing as this 'joinvalues' function, and may or may not work
+		return {k : self.findCommonValuesForKeys(map(lambda tm: (tm.get(k) or []), self.consolidationGroups[key])) if k in listKeys else self.consolidationGroups[key][0][k] if k in constants else self.avgDict(map(lambda c: (c.get(k) or {}), self.consolidationGroups[key])) if k in standardDictKeys else self.commonValue(map(lambda tm: tm.get(k) or 0, self.consolidationGroups[key])) for k in self.getAllKeys(map(lambda v: v.keys(), self.consolidationGroups[key]))}
 
-	#flattens the list of lists of keys into a list of keys
+	flattens the list of lists of keys into a list of keys'''
 	def getAllKeys(self, keyArrays):
 		return list(set([v for l in keyArrays for v in l]))
 
@@ -150,7 +165,7 @@ class DataChecker(multiprocessing.Process):
 
 	#Retrieves and consolidates tempTIMDs from firebase and combines their data, putting the result back onto firebase as TIMDs
 	def run(self):
-		while True:
+		while(True):
 			tempTIMDs = firebase.child("TempTeamInMatchDatas").get().val()
 			if tempTIMDs == None:
 				time.sleep(5)
