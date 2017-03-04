@@ -12,7 +12,7 @@ config = {
 f = pyrebase.initialize_app(config)
 fb = f.database()
 # testScouts = "calvin ethan nathan wentao janet carter kenny ryan nate astha astha gemma livy ben".split()
-testScouts = "janet justin alex wesley kyle mx aiden westley katie jesse jack sage jon ayush sam evan mingyo zoe gemma carter".split()
+testScouts = "janet justin alex wesley kyle mx aidan westley katie jesse jack sage jon ayush sam evan mingyo zoe gemma carter calvin aaron jishnu rolland rachel".split()
 SPR = SPR.ScoutPrecision()
 
 #creates list of availability values in firebase for each scout
@@ -46,8 +46,8 @@ def doSPRsAndAssignments(newMatchNumber):
 
 #Use this if tablets are assigned to scouts by the server, and then given to the correct scouts
 def tabletHandoutStream():
-	resetScouts()
-	resetAvailability()
+	# resetScouts()
+	# resetAvailability()
 	fb.child("currentMatchNum").stream(doSPRsAndAssignments)
 
 #Use this for running the server again (e.g. after a crash) to avoid reassigning scouts

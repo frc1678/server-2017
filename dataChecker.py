@@ -34,7 +34,7 @@ class DataChecker(multiprocessing.Process):
 		elif type(vals[0]) == bool:
 			return self.joinBools(vals)
 		#Text does not need to be joined
-		elif type(vals[0]) == str:
+		elif type(vals[0]) == str or type(vals[0]) == unicode:
 			return vals
 		#otherwise, if it is something like ints or floats, it goes to a general purpose function
 		else:
@@ -145,6 +145,7 @@ class DataChecker(multiprocessing.Process):
 	#Combines tempTIMDs for the same team and match
 	def getConsolidationGroups(self, tempTIMDs):
 		actualKeys = list(set([key.split('-')[0] for key in tempTIMDs.keys()]))
+		print {key : [v for k, v in tempTIMDs.items() if k.split('-')[0] == key] for key in actualKeys}
 		return {key : [v for k, v in tempTIMDs.items() if k.split('-')[0] == key] for key in actualKeys}
 
 	#Combines tempTIMDs from firebase and combines their data, putting the result back onto firebase as TIMDs
@@ -157,3 +158,5 @@ class DataChecker(multiprocessing.Process):
 			self.consolidationGroups = self.getConsolidationGroups(tempTIMDs)
 			map(lambda key: firebase.child("TeamInMatchDatas").child(key).update(self.joinValues(key)), self.consolidationGroups.keys())
 			time.sleep(10)
+
+DataChecker().start()

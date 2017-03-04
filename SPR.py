@@ -195,12 +195,11 @@ class ScoutPrecision(object):
 		freqs = self.getScoutFrequencies(available)
 		scouts = []
 		#Chooses the correct number of nonrepeating scouts for each group of scouts (of size 1, 2, or 3)
+		print scoutsPGrp
 		for c in scoutsPGrp:
 			newGroup = self.group(freqs, c)
-			if len(newGroup[0]) == 1:
-				scouts += [[newGroup[0]]]
-			else:
-				scouts += [newGroup[0]]
+			print newGroup
+			scouts += [newGroup[0]]
 			freqs = newGroup[1]
 		#returns the scouts grouped and paired to robots
 		return self.scoutsToRobotNums(scouts, currentTeams)
@@ -213,6 +212,7 @@ class ScoutPrecision(object):
 
 	#Makes a dict with the same value attached to each inputted key
 	def mapKeysToValue(self, keys, value):
+		print keys
 		return {k : value for k in keys}
 
 	#picks an inputted number of random non-repeating members for a group, and also returns the list of members not picked
