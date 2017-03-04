@@ -28,8 +28,8 @@ consolidator = dataChecker.DataChecker()
 consolidator.start()
 # APNServer.startNotiStream()
 
-#Use this if tablets are assigned to scouts by the server, and then given to the correct scouts
-#This means at the beginning of a competition day
+#Use this to reset scouts and availability before assigning tablets
+#e.g. at the beginning of the day at a competition
 # scoutRotator.tabletHandoutStream()
 
 #Use this for running the server again (e.g. after a crash) to avoid reassigning scouts

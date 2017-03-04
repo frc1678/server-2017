@@ -37,7 +37,8 @@ def doSPRsAndAssignments(newMatchNumber):
 	#and it is put on firebase
 	fb.child("scouts").update(newAssignments)
 
-#Use this if tablets are assigned to scouts by the server, and then given to the correct scouts
+#Use this to reset scouts and availability before assigning tablets
+#e.g. at the beginning of the day at a competition
 def tabletHandoutStream():
 	resetScouts()
 	resetAvailability()
@@ -58,5 +59,3 @@ def startStreamAfterAssignment(newNum, newerNum):
 #Also useful for unexpected changes in availability
 def simpleStream():
 	fb.child("currentMatchNum").stream(doSPRsAndAssignments)
-
-tabletHandoutStream()
