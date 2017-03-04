@@ -205,10 +205,7 @@ class ScoutPrecision(object):
 		#Chooses the correct number of nonrepeating scouts for each group of scouts (of size 1, 2, or 3)
 		for c in scoutsPGrp:
 			newGroup = self.group(freqs, c)
-			if len(newGroup[0]) == 1:
-				scouts += [[newGroup[0]]]
-			else:
-				scouts += [newGroup[0]]
+			scouts += [newGroup[0]]
 			freqs = newGroup[1]
 		#returns the scouts grouped and paired to robots
 		return self.scoutsToRobotNums(scouts, currentTeams)

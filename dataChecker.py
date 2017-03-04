@@ -34,7 +34,7 @@ class DataChecker(multiprocessing.Process):
 		elif type(vals[0]) == bool:
 			return self.joinBools(vals)
 		#Text does not need to be joined
-		elif type(vals[0]) == str:
+		elif type(vals[0]) == str or type(vals[0]) == unicode:
 			return vals
 		#otherwise, if it is something like ints or floats, it goes to a general purpose function
 		else:

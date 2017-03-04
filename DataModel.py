@@ -129,7 +129,10 @@ class Match(object):
 		self.calculatedData = CalculatedMatchData()
 		self.redAllianceTeamNumbers = None
 		self.blueAllianceTeamNumbers = None
-		self.redDidStartAllRotors = None
+		self.numRotorsSpinningRedAuto = None
+		self.numRotorsSpinningRedTele = None
+		self.numRotorsSpinningBlueAuto = None
+		self.numRotorsSpinningBlueTele = None
 		self.blueDidStartAllRotors = None
 		self.redDidReachFortyKilopascals = None
 		self.blueDidReachFortyKilopascals = None

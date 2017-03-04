@@ -79,7 +79,7 @@ class Calculator(object):
     def standardDeviationForRetrievalFunctionForAlliance(self, retrievalFunction, alliance):
         return utils.sumStdDevs(map(retrievalFunction, alliance))
 
-    def monteCarloForMeanForStDevForValueFunction(self, mean, stDev, valueFunction):
+    def monteCarloForMeanForStDevForValueFunction(self, mean, stDev, valueFunction): 
         if stDev == 0.0:
             return 0.0
         return np.std([valueFunction(np.random.normal(mean, stDev)) for i in range(self.monteCarloIterations)])
@@ -88,7 +88,7 @@ class Calculator(object):
         if sigma == 0.0:
             return int(x <= mu) 
         if None not in [x,mu,sigma]:
-            return 1.0 - stats.norm.cdf(x, mu, sigma) #Integrate bell curve from -infinity to x and gets complement
+            return 1.0 - stats.norm.cdf(x, mu, sigma) #Integrate bell curve from -infinity to x and get complement
 
     def welchsTest(self, mean1, mean2, std1, std2, sampleSize1, sampleSize2):
         if std1 == 0.0 or std2 == 0.0 or sampleSize1 <= 0 or sampleSize2 <= 0:
@@ -101,7 +101,7 @@ class Calculator(object):
         values = [dataFunction(timd) for timd in timds]
         return np.mean(values) if values else None
 
-    def getDF(self, s1, s2, n1, n2):
+    def getDF(self, s1, s2, n1, n2): #degrees of freedom to determine shape of Student t-distribution
         if np.nan in [s1, s2, n1, n2] or 0.0 in [n1,n2]:
             return
         try:
@@ -126,11 +126,11 @@ class Calculator(object):
 
 
     def getShotPointsForMatchForAlliance(self, timds, allianceIsRed, match):
-        gearPts = self.getGearPtsForAllianceTIMDs(timds)
         baselinePts = 5 * sum(map(lambda t: t.didReachBaselineAuto, timds))
         liftoffPts = 50 * sum(map(lambda t: t.didLiftoff, timds))
         fields = self.su.getFieldsForAllianceForMatch(allianceIsRed, match)
-        return fields[0] - fields[3] - gearPts - baselinePts - liftoffPts if None not in [fields[0], fields[3]] else None
+        gearPts = fields[2] * 60 + fields[3] * 40
+        return fields[0] - fields[4] - gearPts - baselinePts - liftoffPts if None not in [fields[0], fields[3]] else None
 
     def getTotalAverageShotPointsForTeam(self, team):
         return sum([(team.calculatedData.avgHighShotsTele or 0) / 3.0, (team.calculatedData.avgLowShotsTele or 0) / 9.0, team.calculatedData.avgHighShotsAuto, (team.calculatedData.avgLowShotsAuto or 0) / 3.0])
@@ -207,14 +207,14 @@ class Calculator(object):
     def liftoffAbilityForTIMD(self, timd):
         return 50 * timd.didLiftoff
 
-    def rValuesForAverageFunctionForDict(self, averageFunction, d):
+    def rValuesForAverageFunctionForDict(self, averageFunction, d): #gets Z-score for each super data point for all teams
         values = map(averageFunction, self.cachedComp.teamsWithMatchesCompleted)
         if len(values) == 0:
             return
         initialValue = values[0]
         impossible = not len(filter(lambda v: v != initialValue, values[1:]))
-        if impossible:
-            zscores = [0.0 for v in values]
+        if not np.std(values):
+            zscores = [0.0 for v in values] #don't calculate z-score if the standard deviation is 0
         else:
             zscores = stats.zscore(values)
         for i in range(len(self.cachedComp.teamsWithMatchesCompleted)):
@@ -268,6 +268,7 @@ class Calculator(object):
         defense = (team.calculatedData.RScoreDefense or 0) * 1.0
         speed = (team.calculatedData.RScoreSpeed or 0) * 2.4
         agility = (team.calculatedData.RScoreAgility or 0) * 1.2
+        ballControl = (team.calculatedData.RScoreGearControl or 0) * 0.14
         functionalPercentage = (1 - team.calculatedData.disfunctionalPercentage)
         freqLiftOurTeam = self.getMostFrequentLift(self.su.getTeamForNumber(self.ourTeamNum))
         gA = self.gearPlacementAbilityExcludeLift(team, freqLiftOurTeam) #convert to some number of points
@@ -408,7 +409,8 @@ class Calculator(object):
         ourFields = self.su.getFieldsForAllianceForMatch(allianceIsRed, match)
         opposingFields = self.su.getFieldsForAllianceForMatch(not allianceIsRed, match)
         numRPs = self.scoreRPsGainedFromMatchWithScores(ourFields[0], opposingFields[0])
-        return numRPs + utils.convertFirebaseBoolean(ourFields[1]) + utils.convertFirebaseBoolean(ourFields[2])
+        gears = (ourFields[2] + ourFields[3]) >= 4 #remove next year
+        return numRPs + ourFields[1] + gears
 
     def predictedRPsForAllianceForMatch(self, allianceIsRed, match):
         alliance = map(self.su.replaceWithAverageIfNecessary, self.su.getAllianceForMatch(match, allianceIsRed)) #Get the correct alliance, either red or blue based on the boolean

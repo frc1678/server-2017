@@ -17,7 +17,7 @@ def firstCalculationDict(team, calc):
         avgGearLoaderIntakesTele = lambda tm: tm.numGearLoaderIntakesTele,
         avgBallControl = lambda tm: tm.rankBallControl, 
         avgGearControl = lambda tm: tm.rankGearControl,
-        avgDefense = lambda tm: tm.rankDefense, 
+        avgDefense = lambda tm: tm.rankDefense if tm.rankDefense else None, 
         avgKeyShotTime = lambda tm: tm.calculatedData.avgKeyShotTime,
         liftoffAbility = lambda tm: tm.calculatedData.liftoffAbility, 
         disfunctionalPercentage = lambda tm: tm.calculatedData.wasDisfunctional,

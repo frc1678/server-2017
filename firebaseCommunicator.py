@@ -39,7 +39,7 @@ class PyrebaseCommunicator(object):
 	def updateFirebaseWithTIMD(self, timd):
 		timdDict = utils.makeDictFromTIMD(timd)
 		print(str(timd.teamNumber) + "Q" + str(timd.matchNumber) + "," ,)
-		firebase.child("TeamInMatchDatas").child(str(timd.teamNumber) + "Q" + str(timd.matchNumber), timdDict).set(timdDict)
+		firebase.child("TeamInMatchDatas").child(str(timd.teamNumber) + "Q" + str(timd.matchNumber)).set(timdDict)
 
 	def addCalculatedTeamDataToFirebase(self, team):
 		print("Writing team " + str(team.number) + " to Firebase...")
@@ -53,22 +53,19 @@ class PyrebaseCommunicator(object):
 		print("Writing team " + str(timd.teamNumber) + " in match " + str(timd.matchNumber) + " to Firebase...")
 		calculatedTIMDataDict = utils.makeDictFromCalculatedData(timd.calculatedData)
 		key = str(timd.teamNumber) + "Q" + str(timd.matchNumber)
-		while True:
-			try:
-				self.firebase.child("TeamInMatchDatas").child(key).child("calculatedData").set(calculatedTIMDataDict)
-			except:
-				pass
+		try:
+			self.firebase.child("TeamInMatchDatas").child(key).child("calculatedData").set(calculatedTIMDataDict)
+		except:				
+			pass
 
 	def addCalculatedMatchDataToFirebase(self, match):
 		print("Writing match " + str(match.number) + " to Firebase...")
 		calculatedMatchDataDict = utils.makeDictFromCalculatedData(match.calculatedData)
 		FBLocation = "/Matches/" + str(match.number)
-		while True:
-			try:
-				self.firebase.child("Matches").child(match.number).child("calculatedData").set(calculatedMatchDataDict)
-				break
-			except:
-				pass
+		try:
+			self.firebase.child("Matches").child(match.number).child("calculatedData").set(calculatedMatchDataDict)
+		except:
+			pass
 
 	def addTeamsToFirebase(self):
 		print("\nDoing Teams...")
@@ -86,16 +83,13 @@ class PyrebaseCommunicator(object):
 		map(addTIMD, matches)
 
 	def cacheFirebase(self):
-		while True:
-			try:
-				data = dict(self.firebase.get().val())
-				now = str(datetime.datetime.now())
-				with open("./CachedFirebases/" + now + '.json', 'w+') as f:
-					json.dump(data, f)
-				break
-			except Exception as e:
-				print e
-				continue
+		try:
+			data = dict(self.firebase.get().val())
+			now = str(datetime.datetime.now())
+			with open("./CachedFirebases/" + now + '.json', 'w+') as f:
+				json.dump(data, f)
+		except Exception as e:
+			pass
 
 	def addCompInfoToFirebase(self): #Doing these keys manually so less clicking in firebase is better and because just easier
 		self.firebase.child("code").set("cama")
