@@ -55,7 +55,6 @@ class Calculator(object):
         return incompleteSuperTIMDs.update(incompleteScoutTIMDs)
 
     #Calculated Team Data
-
     #Hardcore Math
 
     def getAverageForDataFunctionForTeam(self, team, dataFunction):
@@ -84,11 +83,13 @@ class Calculator(object):
             return 0.0
         return np.std([valueFunction(np.random.normal(mean, stDev)) for i in range(self.monteCarloIterations)])
 
-    def normalCDF(self, x, mu, sigma): #Calculates probability of reaching a threshold (x) based on the mean(mu) and the standard deviation(sigma)
+    def normalCDF(self, x, mu, sigma):
+        #Calculates probability of reaching a threshold (x) based on the mean(mu) and the standard deviation(sigma)
         if sigma == 0.0:
             return int(x <= mu) 
         if None not in [x,mu,sigma]:
-            return 1.0 - stats.norm.cdf(x, mu, sigma) #Integrate bell curve from -infinity to x and get complement
+            #Integrate bell curve from -infinity to x and get complement
+            return 1.0 - stats.norm.cdf(x, mu, sigma)
 
     def welchsTest(self, mean1, mean2, std1, std2, sampleSize1, sampleSize2):
         if std1 == 0.0 or std2 == 0.0 or sampleSize1 <= 0 or sampleSize2 <= 0:
@@ -101,7 +102,8 @@ class Calculator(object):
         values = [dataFunction(timd) for timd in timds]
         return np.mean(values) if values else None
 
-    def getDF(self, s1, s2, n1, n2): #degrees of freedom to determine shape of Student t-distribution
+    def getDF(self, s1, s2, n1, n2):
+        #degrees of freedom to determine shape of Student t-distribution
         if np.nan in [s1, s2, n1, n2] or 0.0 in [n1,n2]:
             return
         try:
@@ -113,7 +115,6 @@ class Calculator(object):
         return numerator / denominator if denominator != 0 else 0.0
 
     #SHOTS DATA
-
     def fieldsForShots(self, timd):
         return sum([sum(map(lambda v: (v.get('numShots') or 0), timd.highShotTimesForBoilerTele)) / 3.0, sum(map(lambda v: (v.get('numShots') or 0), timd.highShotTimesForBoilerAuto)), sum(map(lambda v: (v.get('numShots') or 0), timd.lowShotTimesForBoilerTele)) / 9.0, sum(map(lambda v: (v.get('numShots') or 0), timd.lowShotTimesForBoilerAuto)) / 3.0])
 
@@ -155,8 +156,7 @@ class Calculator(object):
         timds = self.su.getCompletedTIMDsForTeam(team)
         return list(set([d.get('position') for timd in timds for d in timd.highShotTimesForBoilerAuto + timd.lowShotTimesForBoilerAuto]))
 
-    # GEARS DATA
-
+    #GEARS DATA
     def getTotalValueForValueDict(self, valueDict):
         return sum(filter(lambda v: v, valueDict.values()))
 
@@ -202,8 +202,7 @@ class Calculator(object):
     def totalGearsPlacedForTIMD(self, timd):
         return timd.calculatedData.numGearsPlacedAuto + timd.calculatedData.numGearsPlacedTele
 
-    # OVERALL DATA
-
+    #OVERALL DATA
     def liftoffAbilityForTIMD(self, timd):
         return 50 * timd.didLiftoff
 
@@ -301,7 +300,6 @@ class Calculator(object):
         return inc.index(max(incrementsReached)) + 1 if incrementsReached else 0
 
     #PROBABILITIES
-
     def winChanceForMatchForAllianceIsRed(self, match, allianceIsRed):
         alliance = self.su.getAllianceForMatch(match, allianceIsRed)
         predictedScore  = self.predictedScoreForMatchForAlliance(match, allianceIsRed)
@@ -350,7 +348,7 @@ class Calculator(object):
     def getAllRotorsTurningChanceForAllianceWithNumbers(self, allianceNumbers):
         return self.getAllRotorsTurningChanceForAlliance(self.su.teamsForTeamNumbersOnAlliance(allianceNumbers))
 
-    # Seeding
+    #Seeding
     def autoPointsForAlliance(self, team, match):
         timds = self.su.getTIMDsForMatchForAllianceIsRed(match, team.number in match.redAllianceTeamNumbers)
         fuelPts = sum(map(lambda t: t.calculatedData.numHighShotsAuto + t.calculatedData.numLowShotsAuto / 3.0, timds))
@@ -430,7 +428,6 @@ class Calculator(object):
         return int(float(filter(lambda x: int(x[1]) == team.number, self.cachedComp.actualSeedings)[0][2]))
 
     #CACHING
-
     def cacheFirstTeamData(self):
         for team in self.comp.teams:
             self.doCachingForTeam(team)
@@ -467,7 +464,6 @@ class Calculator(object):
         cachedData = self.cachedTeamDatas[team.number]
 
     #CALCULATIONS
-
     def getFirstCalculationsForAverageTeam(self):
         averageTeamDict(self)
 
@@ -510,8 +506,10 @@ class Calculator(object):
 
     def doCalculations(self, PBC): #Does calculations...What the hell do you think it does lmao
         isData = len(self.su.getCompletedTIMDsInCompetition()) > 0
-        if isData: #Only do if there is any data
-            startTime = time.time() #Get time to later calculate time for a server cycle...
+        if isData:
+            #Only do if there is any data
+            startTime = time.time()
+            #Get time to later calculate time for a server cycle...
             threads = []
             #creates an empty list for timds accessible in multiple processes (manager.list)
             manager = multiprocessing.Manager()

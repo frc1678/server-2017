@@ -37,10 +37,10 @@ class ScoutPrecision(object):
 			'lowShotTimesForBoilerTele': 0.1
 		}
 
-	#SPR
-	#Scout precision ranking: checks accuracy of scouts by comparing their previous TIMDs to the consensus
+	'''SPR
+	Scout precision ranking: checks accuracy of scouts by comparing their previous TIMDs to the consensus
 
-	#outputs list of TIMDs that an inputted scout was involved in
+	outputs list of TIMDs that an inputted scout was involved in'''
 	def getTotalTIMDsForScoutName(self, scoutName, tempTIMDs):
 		return len(filter(lambda v: v.get('scoutName') == scoutName, tempTIMDs.values()))
 
@@ -56,10 +56,10 @@ class ScoutPrecision(object):
 				consolidationGroups[key] = [v]
 		return consolidationGroups
 
-	#Note: the next 3 functions compare data in tempTIMDs to find scout accuracy
-	#The actual comparison to determine correct values is done in dataChecker
+	'''Note: the next 3 functions compare data in tempTIMDs to find scout accuracy
+	The actual comparison to determine correct values is done in dataChecker
 
-	#Compares scout performances for individual data points in tempTIMDs
+	Compares scout performances for individual data points in tempTIMDs'''
 	def findOddScoutForDataPoint(self, tempTIMDs, key):
 		weight = self.gradingKeys[key]
 		#finds scout names in tempTIMDs
@@ -115,9 +115,9 @@ class ScoutPrecision(object):
 				if len(aScout) < largestListLength:
 					aScout += [{'numShots': 0, 'position': 'Other', 'time': 0}] * (largestListLength - len(aScout))
 			for num in range(largestListLength):
-				#comparing dicts that should be the same (e.g. each shot time dict for the same shot) within the tempTIMDs
-				#This means the nth shot by a given robot, as recorded by multiple scouts
-				#The comparison itself is the same as the other findOddScout functions
+				'''comparing dicts that should be the same (e.g. each shot time dict for the same shot) within the tempTIMDs
+				This means the nth shot by a given robot, as recorded by multiple scouts
+				The comparison itself is the same as the other findOddScout functions'''
 				dicts = [lis[num] for lis in lists]
 				consolidationDict = {}
 				for key in dicts[0].keys():
@@ -142,16 +142,16 @@ class ScoutPrecision(object):
 			g = self.consolidateTIMDs(temp)
 			#Removes any data from previous calculations from sprs
 			self.sprs = {}
-			#These three grade each scout for each of the values in the grading keys, dicts, and lists of dicts
-			#Each scout gets more "points" if they are further off from the consensus on the actual values
-			#The grades are stored by scout name in sprs
-			#see the findOddScout functions for details on how
+			'''These three grade each scout for each of the values in the grading keys, dicts, and lists of dicts
+			Each scout gets more "points" if they are further off from the consensus on the actual values
+			The grades are stored by scout name in sprs
+			see the findOddScout functions for details on how'''
 			[self.findOddScoutForDataPoint(v, k) for v in g.values() for k in self.gradingKeys.keys()]
 			[self.findOddScoutForDict(v, k) for v in g.values() for k in self.gradingDicts.keys()]
 			[self.findOddScoutForListOfDicts(v, k) for v in g.values() for k in self.gradingListsOfDicts.keys()]
-			#divides values for scouts by number of TIMDs the scout has participated in
-			#if a scout is in more matches, they will likely have more disagreements, but the same number per match if they are equally accurate
-			#If someone hasn't scouted yet, their SPR score is set to -1 (to be changed later)
+			'''divides values for scouts by number of TIMDs the scout has participated in
+			if a scout is in more matches, they will likely have more disagreements, but the same number per match if they are equally accurate
+			If someone hasn't scouted yet, their SPR score is set to -1 (to be changed later)'''
 			self.sprs = {k:((v/float(self.getTotalTIMDsForScoutName(k, temp))) or -1) for (k,v) in self.sprs.items()}
 			#Changes all sprs of -1 (someone who somehow has an spr key but no matches) to average or 1
 			for a in self.sprs.keys():
@@ -171,7 +171,7 @@ class ScoutPrecision(object):
 
 	#Scout Assignment
 
-	#sorts scouts by spr score
+	#sorts scouts by SPR score
 	def rankScouts(self, available):
 		return sorted(self.sprs.keys(), key=lambda k: self.sprs[k])
 
