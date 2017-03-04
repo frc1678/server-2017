@@ -1,16 +1,11 @@
 import pyrebase
 import DataModel
 import SPR
+import firebaseCommunicator
 
-config = {
-	"apiKey": "mykey",
-	"authDomain": "scouting-2017-5f51c.firebaseapp.com",
-	"databaseURL": "https://scouting-2017-5f51c.firebaseio.com/",
-	"storageBucket": "scouting-2017-5f51c.appspot.com"
-}
-
-f = pyrebase.initialize_app(config)
-fb = f.database()
+PBC = firebaseCommunicator.PyrebaseCommunicator()
+PBC.initializeFirebase()
+fb = PBC.firebase
 # testScouts = "calvin ethan nathan wentao janet carter kenny ryan nate astha astha gemma livy ben".split()
 testScouts = "janet justin alex wesley kyle mx aiden westley katie jesse jack sage jon ayush sam evan mingyo zoe gemma carter".split()
 SPR = SPR.ScoutPrecision()
@@ -62,6 +57,7 @@ def startStreamAfterAssignment(newNum, newerNum):
 		doSPRsAndAssignments(newNum)
 
 #Use this if you are restarting the server and need to reassign scouts but scouts already have tablets
+#Also useful for unexpected changes in availability
 def simpleStream():
 	fb.child("currentMatchNum").stream(doSPRsAndAssignments)
 

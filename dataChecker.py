@@ -25,7 +25,7 @@ class DataChecker(multiprocessing.Process):
 		super(DataChecker, self).__init__()
 		self.consolidationGroups = {}
 
-	#Used many times, gets a common value for a list depending on the data type
+	#Gets a common value for a list depending on the data type
 	def commonValue(self, vals):
 		#If there are several types, they are probably misformatted bools, so attempt tries turning them into bools and trying again
 		if len(set(map(type, vals))) != 1:
@@ -109,6 +109,7 @@ class DataChecker(multiprocessing.Process):
 				returnList[num].update({'position': commonPosition})
 		return returnList
 
+	#Combines data from whole TIMDs
 	def joinValues(self, key):
 		returnDict = {}
 		#flattens the list of lists of keys into a list of keys
@@ -142,12 +143,12 @@ class DataChecker(multiprocessing.Process):
 		keys = self.getAllKeys(map(lambda d: d.keys(), dicts))
 		return {k : self.commonValue(map(lambda v: (v.get(k) or 0), dicts)) for k in keys}
 
-	#Combines tempTIMDs for the same team and match
+	#Consolidates tempTIMDs for the same team and match
 	def getConsolidationGroups(self, tempTIMDs):
 		actualKeys = list(set([key.split('-')[0] for key in tempTIMDs.keys()]))
 		return {key : [v for k, v in tempTIMDs.items() if k.split('-')[0] == key] for key in actualKeys}
 
-	#Combines tempTIMDs from firebase and combines their data, putting the result back onto firebase as TIMDs
+	#Retrieves and consolidates tempTIMDs from firebase and combines their data, putting the result back onto firebase as TIMDs
 	def run(self):
 		while True:
 			tempTIMDs = firebase.child("TempTeamInMatchDatas").get().val()

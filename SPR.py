@@ -59,6 +59,7 @@ class ScoutPrecision(object):
 	#Note: the next 3 functions compare data in tempTIMDs to find scout accuracy
 	#The actual comparison to determine correct values is done in dataChecker
 
+	#Compares scout performances for individual data points in tempTIMDs
 	def findOddScoutForDataPoint(self, tempTIMDs, key):
 		weight = self.gradingKeys[key]
 		#finds scout names in tempTIMDs
@@ -124,7 +125,7 @@ class ScoutPrecision(object):
 					for aDict in dicts:
 						consolidationDict[key] += [aDict[key]]
 				for key in consolidationDict.keys():
-					#position is a string, so should not be compared, due to the averaging later
+					#position is a string, so can't be compared, due to the averaging later
 					#without averaging, one person could be declared correct for no reason
 					if key != 'position':
 						values = consolidationDict[key]
