@@ -4,21 +4,6 @@ import utils
 import time
 import multiprocessing
 import pdb
-
-config = {
-	"apiKey": "mykey",
-	"authDomain": "scouting-2017-5f51c.firebaseapp.com",
- 	"databaseURL": "https://scouting-2017-5f51c.firebaseio.com/",
- 	"storageBucket": "scouting-2017-5f51c.appspot.com"
-}
-
-'''config = {
-	"apiKey": "mykey",
-	"authDomain": "1678-scouting-2016.firebaseapp.com",
-	"databaseURL": "https://1678-scouting-2016.firebaseio.com/",
-	"storageBucket": "1678-scouting-2016.appspot.com"
-}
-'''
 import firebaseCommunicator
 
 #These are the keys that have lists of dicts
