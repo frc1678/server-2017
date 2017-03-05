@@ -1,8 +1,6 @@
-# by Bryton Moeller (2015-2016)
+#by Bryton Moeller (2015-2016)
 import sys
 import traceback
-
-#Our Modules
 import DataModel
 import firebaseCommunicator
 import Math
@@ -26,7 +24,7 @@ cycle = 1
 shouldSlack = False
 consolidator = dataChecker.DataChecker()
 consolidator.start()
-''' APNServer.startNotiStream()
+'''APNServer.startNotiStream()
 
 Use this to reset scouts and availability before assigning tablets
 e.g. at the beginning of the day at a competition
