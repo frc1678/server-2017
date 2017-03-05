@@ -152,7 +152,7 @@ class ScoutPrecision(object):
 			#Changes all sprs of -1 (someone who somehow has an spr key but no matches) to average or 1
 			for a in self.sprs.keys():
 				if self.sprs[a] == -1:
-					realValues = filter(lambda x: x!= -1, self.sprs.values())
+					realValues = filter(lambda x: x != -1, self.sprs.values())
 					avgScore = np.mean(realValues) if realValues else 1
 					self.sprs[a] = avgScore
 			#Any scout in available without an spr score or without any matches is set to the average score or 1
@@ -168,7 +168,7 @@ class ScoutPrecision(object):
 	#Scout Assignment
 	#Sorts scouts by SPR score
 	def rankScouts(self, available):
-		return sorted(self.sprs.keys(), key=lambda k: self.sprs[k])
+		return sorted(self.sprs.keys(), key = lambda k: self.sprs[k])
 
 	#Orders available scouts by spr ranking, then makes a list of how frequently each scout should be selected
 	#Better (lower scoring) scouts appear more frequently
@@ -177,7 +177,7 @@ class ScoutPrecision(object):
 		#It is reversed so the scouts with lower spr are later, causing them to be repeated more
 		rankedScouts.reverse()
 		#Lower SPRs, so higher number list index scouts are repeated more frequently, but less if there are more scouts
-		func = lambda s: [s] * (rankedScouts.index(s) + 1) * ((100/(len(rankedScouts) + 1)) + 1)
+		func = lambda s: [s] * ((rankedScouts.index(s) + 1) * ((100/(len(rankedScouts) + 1)) + 1))
 		return utils.extendList(map(func, available))
 
 	def organizeScouts(self, available, currentTeams, scoutSpots):

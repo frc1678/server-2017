@@ -6,7 +6,7 @@ import numpy as np
 import pdb
 
 ########## Defining Util/Convenience Functions ############
-''' If there were too many more of these, or if this
+'''If there were too many more of these, or if this
 were actual server code, I would make a module, but
 for fake database creation purposes it is not worth it'''
 #?????
@@ -19,7 +19,7 @@ def convertFirebaseBoolean(fbBool):
 	return True if fbBool == 'true' else False
 
 def rms(values):
-	if len(values) == 0: return None
+	if len(values) == 0: return
 	return math.sqrt(np.mean(map(lambda x: x**2, values)))
 
 def convertNoneToIdentity(x, identity):
@@ -152,7 +152,7 @@ def extendListWithStrings(lis):
 #Finds possible groupings of individuals (n of them) into a specified number of groups (size) with each group's maximum size of limit
 #e.g. sum_to_n(6, 3) -> (2,2,2), (1,2,3)
 #sum_to_n(6, 3, 3) -> (2,2,2)
-def sum_to_n(n, size, limit=None):
+def sum_to_n(n, size, limit = None):
     if size == 1:
         yield [n]
         return

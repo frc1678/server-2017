@@ -20,7 +20,7 @@ PBC.initializeFirebase()
 firebase = PBC.firebase
 
 class DataChecker(multiprocessing.Process):
-	"""Checks data..."""
+	"""Combines data from tempTIMDs into TIMDs..."""
 	def __init__(self):
 		super(DataChecker, self).__init__()
 		self.consolidationGroups = {}
@@ -76,15 +76,15 @@ class DataChecker(multiprocessing.Process):
 		#If someone missed a dict (for a shot, that is, they did not include one that another scout did, this makes one with no values)
 		for aScout in lis:
 			if len(aScout) < largestListLength:
-				aScout += [{'numShots': 0, 'position': 'Other ', 'time': 0}] * (largestListLength - len(aScout))
+				aScout += [{'numShots': 0, 'position': 'Other  ', 'time': 0}] * (largestListLength - len(aScout))
 		returnList = []
 		for num in range(largestListLength):
 			returnList += [{}]
-			#finds dicts that should be the same (e.g. each shot time dict for the same shot) within the tempTIMDs
+			#Finds dicts that should be the same (e.g. each shot time dict for the same shot) within the tempTIMDs
 			#This means comparisons such as the first shot in teleop by a given robot, as recorded by multiple scouts
 			dicts = [scout[num] for scout in lis]
 			consolidationDict = {}
-			#combines dicts that should be the same into a consolidation dict
+			#Combines dicts that should be the same into a consolidation dict
 			for key in dicts[0].keys():
 				consolidationDict[key] = []
 				for aDict in dicts:
@@ -130,10 +130,10 @@ class DataChecker(multiprocessing.Process):
 				else:
 					returnDict.update({k: self.commonValue(map(lambda tm: tm.get(k) or 0, self.consolidationGroups[key]))})
 		return returnDict
-		'''The line below is supposed to do the same thing as this 'joinvalues' function, and may or may not work
-		return {k : self.findCommonValuesForKeys(map(lambda tm: (tm.get(k) or []), self.consolidationGroups[key])) if k in listKeys else self.consolidationGroups[key][0][k] if k in constants else self.avgDict(map(lambda c: (c.get(k) or {}), self.consolidationGroups[key])) if k in standardDictKeys else self.commonValue(map(lambda tm: tm.get(k) or 0, self.consolidationGroups[key])) for k in self.getAllKeys(map(lambda v: v.keys(), self.consolidationGroups[key]))}
+		#The line below is supposed to do the same thing as this 'joinvalues' function, and may or may not work
+		#return {k : self.findCommonValuesForKeys(map(lambda tm: (tm.get(k) or []), self.consolidationGroups[key])) if k in listKeys else self.consolidationGroups[key][0][k] if k in constants else self.avgDict(map(lambda c: (c.get(k) or {}), self.consolidationGroups[key])) if k in standardDictKeys else self.commonValue(map(lambda tm: tm.get(k) or 0, self.consolidationGroups[key])) for k in self.getAllKeys(map(lambda v: v.keys(), self.consolidationGroups[key]))}
 
-	flattens the list of lists of keys into a list of keys'''
+	#Flattens the list of lists of keys into a list of keys
 	def getAllKeys(self, keyArrays):
 		return list(set([v for l in keyArrays for v in l]))
 

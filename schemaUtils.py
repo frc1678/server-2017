@@ -12,7 +12,7 @@ class SchemaUtils(object):
         try: return [team for team in self.comp.teams if team.number == teamNumber][0]
         except:
             print (str(teamNumber) + " doesn't exist.")
-            return None
+            return
 
     def getMatchesForTeam(self, team):
         return [m for m in self.comp.matches if team.number in m.redAllianceTeamNumbers + m.blueAllianceTeamNumbers]

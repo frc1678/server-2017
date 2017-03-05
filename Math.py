@@ -104,11 +104,11 @@ class Calculator(object):
 
     def getDF(self, s1, s2, n1, n2):
         #degrees of freedom to determine shape of Student t-distribution
-        if np.nan in [s1, s2, n1, n2] or 0.0 in [n1,n2]:
+        if np.nan in [s1, s2, n1, n2] or 0.0 in [n1, n2]:
             return
         try:
-            numerator = ((s1**4/n1) + (s2**4/n2)) ** 2
-            denominator = (s1**8/((n1**2)*(n1-1))) + (s2**8/((n2**2)*(n2-1)))
+            numerator = ((s1 ** 4 / n1) + (s2 ** 4 / n2)) ** 2
+            denominator = (s1 ** 8 / ((n1 ** 2) * (n1 - 1))) + (s2 ** 8 / ((n2 ** 2) * (n2 - 1)))
         except:
             numerator = 0.0
             denominator = 0.0

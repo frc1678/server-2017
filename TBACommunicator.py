@@ -23,7 +23,7 @@ class TBACommunicator(object):
 		return self.makeRequest(self.makeEventKeyRequestURL('teams'))
 
 	def makeTeamMediaRequest(self, teamKey):
-		return self.makeRequest(self.basicURL+'team/'+teamKey+"/"+str(self.year)+'/media')
+		return self.makeRequest(self.basicURL + 'team/' + teamKey + "/" + str(self.year)+'/media')
 
 	def makeEventRankingsRequest(self):
 		return self.makeRequest(self.makeEventKeyRequestURL('rankings'))[1:]

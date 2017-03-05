@@ -6,7 +6,7 @@ import firebaseCommunicator
 PBC = firebaseCommunicator.PyrebaseCommunicator()
 PBC.initializeFirebase()
 fb = PBC.firebase
-# testScouts = "calvin ethan nathan wentao janet carter kenny ryan nate astha astha gemma livy ben".split()
+#testScouts = "calvin ethan nathan wentao janet carter kenny ryan nate astha astha gemma livy ben".split()
 scouts = "janet justin alex wesley kyle mx aiden westley katie jesse jack sage jon ayush sam evan mingyo zoe gemma carter".split()
 SPR = SPR.ScoutPrecision()
 
