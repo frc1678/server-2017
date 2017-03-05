@@ -121,7 +121,6 @@ class Calculator(object):
         weightage = fuelPts / float(scoutedFuelPoints) if None not in [scoutedFuelPoints, fuelPts] and scoutedFuelPoints != 0 else None
         return sum(map(lambda v: (v.get('numShots') or 0), boilerPoint)) * weightage if weightage != None and weightage > 0 else 0
 
-
     def getShotPointsForMatchForAlliance(self, timds, allianceIsRed, match):
         baselinePts = 5 * sum(map(lambda t: t.didReachBaselineAuto, timds))
         liftoffPts = 50 * sum(map(lambda t: t.didLiftoff, timds))

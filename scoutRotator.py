@@ -21,7 +21,7 @@ def resetScouts():
 	scouts = {'scout' + str(num) : {'currentUser': '', 'scoutStatus': ''} for num in range(1,19)}
 	fb.child('scouts').set(scouts)
 
-def dosprsAndAssignments(newMatchNumber):
+def doSprsAndAssignments(newMatchNumber):
 	if newMatchNumber.get('data') == None: return
 	print('Setting scouts for match ' + str(fb.child('currentMatchNum').get().val()))
 	newMatchNumber = str(fb.child('currentMatchNum').get().val())
@@ -43,7 +43,7 @@ def dosprsAndAssignments(newMatchNumber):
 def tabletHandoutStream():
 	resetScouts()
 	resetAvailability()
-	fb.child("currentMatchNum").stream(dosprsAndAssignments)
+	fb.child("currentMatchNum").stream(doSprsAndAssignments)
 
 #Use this for running the server again (e.g. after a crash) to avoid reassigning scouts
 def alreadyAssignedStream():
@@ -53,9 +53,9 @@ def alreadyAssignedStream():
 
 def startAtNewMatch(newMatchNum):
 	if fb.child("currentMatchNum").get().val() > oldMatchNum:
-		dosprsAndAssignments(newMatchNum)
+		doSprsAndAssignments(newMatchNum)
 
 #Use this if you are restarting the server and need to reassign scouts but scouts already have tablets
 #Also useful for unexpected changes in availability
 def simpleStream():
-	fb.child("currentMatchNum").stream(dosprsAndAssignments)
+	fb.child("currentMatchNum").stream(doSprsAndAssignments)

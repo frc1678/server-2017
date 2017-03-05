@@ -38,7 +38,7 @@ class ScoutPrecision(object):
 			'lowShotTimesForBoilerTele': 0.1
 		}
 
-	'''spr
+	'''SPR
 	Scout precision ranking: checks accuracy of scouts by comparing their past TIMDs to the consensus'''
 
 	#Outputs list of TIMDs that an inputted scout was involved in

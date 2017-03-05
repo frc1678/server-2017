@@ -7,8 +7,10 @@ import pdb
 import firebaseCommunicator
 
 #These are the keys that have lists of dicts
+#Lists may have different numbers of dicts, but the keys in the dicts should be the same
 listKeys = ["highShotTimesForBoilerTele", "highShotTimesForBoilerAuto", "lowShotTimesForBoilerAuto", "lowShotTimesForBoilerTele"]
 #These ought to be the same across all tempTIMDs for the same TIMD
+#(TIMD -> TeamInMatchData, so for a specific team in a specific match)
 constants = ['matchNumber', 'teamNumber']
 #These are the keys within each dict from the listKeys
 boilerKeys = ['time', 'numShots', 'position']
