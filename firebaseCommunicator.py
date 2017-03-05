@@ -101,3 +101,6 @@ class PyrebaseCommunicator(object):
 
 	def getPythonObjectForFirebaseDataAtLocation(self, location):
 		return self.firebase.child(location).get().val()
+
+	def addCurrentMatchToFirebase(self):
+		self.firebase.child("currentMatchNum").set(1)
