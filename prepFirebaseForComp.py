@@ -10,7 +10,7 @@ import time
 TBAC = TBACommunicator.TBACommunicator()
 competition = DataModel.Competition()
 competition.eventCode = TBAC.code
-FBC = firebaseCommunicator.FirebaseCommunicator(competition)
+FBC = firebaseCommunicator.PyrebaseCommunicator()
 
 FBC.JSONteams = TBAC.makeEventTeamsRequest()
 FBC.JSONmatches = TBAC.makeEventMatchesRequest()
