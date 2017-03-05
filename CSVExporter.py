@@ -6,11 +6,11 @@ import csv
 from DataModel import Team
 
 def CSVExportScoutZScores(zscores):
-	with open('./SPRExport.csv', 'w') as f:
-		writer = csv.DictWriter(f, fieldnames = ['name', 'SPR', 'Z-Score'])
+	with open('./sprExport.csv', 'w') as f:
+		writer = csv.DictWriter(f, fieldnames = ['name', 'spr', 'Z-Score'])
 		writer.writeheader()
 		for k,v in zscores.items():
-			writer.writerow({'name' : k, 'SPR' : zscores[k][1], 'Z-Score' : zscores[k][0]})
+			writer.writerow({'name' : k, 'spr' : zscores[k][1], 'Z-Score' : zscores[k][0]})
 
 def CSVExport(comp, name, keys = []):
 	excluded = ['calculatedData', 'name', 'imageKeys']

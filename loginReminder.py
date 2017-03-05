@@ -2,8 +2,8 @@ import time
 from slackclient import SlackClient
 slack_token = os.environ["my_token"]
 sc = SlackClient(slack_token)
-
 loginReminderChannels = ["list", "of", "usernames"]
+
 while(True):
 	for person in loginReminderChannels:
 		currentDay = time.strftime("%A")

@@ -38,7 +38,7 @@ class ScoutPrecision(object):
 			'lowShotTimesForBoilerTele': 0.1
 		}
 
-	'''SPR
+	'''spr
 	Scout precision ranking: checks accuracy of scouts by comparing their past TIMDs to the consensus'''
 
 	#Outputs list of TIMDs that an inputted scout was involved in
@@ -80,8 +80,8 @@ class ScoutPrecision(object):
 			#Adds the difference from this tempTIMD for this value to each scout's previous differences (spr score)
 			self.sprs.update({scouts[c] : (self.sprs.get(scouts[c]) or 0) + differenceFromCommonValue[c] for c in range(len(differenceFromCommonValue))})
 
-	#similar to findOddScoutForDataPoint, but for each data point inside of a dict
 	def findOddScoutForDict(self, tempTIMDs, key):
+		#Similar to findOddScoutForDataPoint, but for each data point inside of a dict
 		weight = self.gradingDicts[key]
 		scouts = filter(lambda v: v, map(lambda k: k.get('scoutName'), tempTIMDs))
 		dicts = filter(lambda k: k, map(lambda t: t[key] if t.get('scoutName') else None, tempTIMDs))
@@ -99,9 +99,9 @@ class ScoutPrecision(object):
 				differenceFromCommonValue = map(lambda v: abs(v - commonValue) * weight, values)
 				self.sprs.update({scouts[c] : (self.sprs.get(scouts[c]) or 0) + differenceFromCommonValue[c] for c in range(len(differenceFromCommonValue))})
 
-	#Similar to findOddScoutForDict, but for lists of several dicts instead of individual dicts
-	#The nth dict on each list should be the same
 	def findOddScoutForListOfDicts(self, tempTIMDs, key):
+		#Similar to findOddScoutForDict, but for lists of several dicts instead of individual dicts
+		#The nth dict on each list should be the same
 		weight = self.gradingListsOfDicts[key]
 		scouts = filter(lambda v: v, map(lambda k: k.get('scoutName'), tempTIMDs))
 		lists = filter(lambda k: k, map(lambda t: t.get(key) if t.get('scoutName') else None, tempTIMDs))
@@ -109,7 +109,7 @@ class ScoutPrecision(object):
 		#i.e. if there is disagreement over how many shots a robot took
 		if lists:
 			largestListLength = max(map(len, lists))
-			#If someone missed a dict (for a shot) (that is, they did not include one that another scout did), this makes one with no values
+			#If someone missed a dict (for a shot, that is, they did not include one that another scout did), this makes one with no values
 			for aScout in lists:
 				if len(aScout) < largestListLength:
 					aScout += [{'numShots': 0, 'position': 'Other', 'time': 0}] * (largestListLength - len(aScout))
@@ -166,8 +166,8 @@ class ScoutPrecision(object):
 				self.sprs[a] = 1
 
 	#Scout Assignment
-	#Sorts scouts by SPR score
 	def rankScouts(self, available):
+		#Sorts scouts by spr score
 		return sorted(self.sprs.keys(), key = lambda k: self.sprs[k])
 
 	#Orders available scouts by spr ranking, then makes a list of how frequently each scout should be selected
@@ -176,7 +176,7 @@ class ScoutPrecision(object):
 		rankedScouts = self.rankScouts(available)
 		#It is reversed so the scouts with lower spr are later, causing them to be repeated more
 		rankedScouts.reverse()
-		#Lower SPRs, so higher number list index scouts are repeated more frequently, but less if there are more scouts
+		#Lower sprs, so higher number list index scouts are repeated more frequently, but less if there are more scouts
 		func = lambda s: [s] * ((rankedScouts.index(s) + 1) * ((100/(len(rankedScouts) + 1)) + 1))
 		return utils.extendList(map(func, available))
 
@@ -273,7 +273,7 @@ class ScoutPrecision(object):
 			scoutRotatorDict[newSpace].update({'team': teams[availableScout], 'currentUser': availableScout, 'scoutStatus': 'requested'})
 		return scoutRotatorDict
 
-	#Records z-scores of each scouts SPR, for later checking and comparison
+	#Records z-scores of each scouts spr, for later checking and comparison
 	def sprZScores(self):
 		zscores = {k : (0.0, self.sprs[k]) for k in self.sprs.keys()} if len(set(self.sprs.values())) == 1 else {k : (zscore, self.sprs[k]) for (k, zscore) in zip(self.sprs.keys(), stats.zscore(self.sprs.values()))}
 		CSVExporter.CSVExportScoutZScores(zscores)

@@ -7,7 +7,7 @@ class SchemaUtils(object):
         super(SchemaUtils, self).__init__()
         self.comp = comp
         self.calc = calc
-     #team utility functions
+     #Team utility functions
     def getTeamForNumber(self, teamNumber):
         try: return [team for team in self.comp.teams if team.number == teamNumber][0]
         except:
@@ -32,7 +32,7 @@ class SchemaUtils(object):
     def replaceWithAverageIfNecessary(self, team):
         return team if team and self.teamCalculatedDataHasValues(team.calculatedData) and len(self.getCompletedMatchesForTeam(team)) > 0 else self.calc.averageTeam
 
-    #match utility functions
+    #Match utility functions
     def getMatchForNumber(self, matchNumber):
         if not len([match for match in self.comp.matches if match.number == matchNumber]): print ("Match " + str(matchNumber) + " doesn't exist.")
         return [match for match in self.comp.matches if match.number == matchNumber][0]
