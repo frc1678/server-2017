@@ -8,7 +8,7 @@ import CSVExporter
 
 #Scout Performance Analysis
 class ScoutPrecision(object):
-	"""docstring for ScoutPerformance"""
+	"""Scores and ranks scouts and assigns them to robots"""
 	def __init__(self):
 		super(ScoutPrecision, self).__init__()
 		self.sprs = {}
@@ -72,7 +72,7 @@ class ScoutPrecision(object):
 		if values:
 			commonValue = values[valueFrequencies.index(max(valueFrequencies))]
 			#If less than half of the values agree, the best estimate is the average
-			if values.count(commonValue) <= len(values) / 2 and type(commonValue) != str:
+			if values.count(commonValue) <= len(values) / 2:
 				commonValue = np.mean(values)
 			#Makes a list of the differences from the common value
 			#Multiplied by weight, for relative importance of data points

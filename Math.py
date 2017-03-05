@@ -20,7 +20,7 @@ from FirebaseWriterProcess import FirebaseWriteObjectProcess
 from schemaUtils import SchemaUtils
 
 class Calculator(object):
-    """docstring for Calculator"""
+    """Does math with scouted data"""
 
     def __init__(self, competition):
         super(Calculator, self).__init__()
@@ -78,7 +78,7 @@ class Calculator(object):
     def standardDeviationForRetrievalFunctionForAlliance(self, retrievalFunction, alliance):
         return utils.sumStdDevs(map(retrievalFunction, alliance))
 
-    def monteCarloForMeanForStDevForValueFunction(self, mean, stDev, valueFunction): 
+    def monteCarloForMeanForStDevForValueFunction(self, mean, stDev, valueFunction):
         if stDev == 0.0:
             return 0.0
         return np.std([valueFunction(np.random.normal(mean, stDev)) for i in range(self.monteCarloIterations)])
@@ -86,7 +86,7 @@ class Calculator(object):
     def normalCDF(self, x, mu, sigma):
         #Calculates probability of reaching a threshold (x) based on the mean(mu) and the standard deviation(sigma)
         if sigma == 0.0:
-            return int(x <= mu) 
+            return int(x <= mu)
         if None not in [x,mu,sigma]:
             #Integrate bell curve from -infinity to x and get complement
             return 1.0 - stats.norm.cdf(x, mu, sigma)
@@ -308,7 +308,7 @@ class Calculator(object):
         sdOpposingPredictedScore = self.sdPredictedScoreForMatchForAlliance(match, not allianceIsRed)
         sampleSize = self.sampleSizeForMatchForAlliance(alliance)
         opposingSampleSize = self.sampleSizeForMatchForAlliance(alliance)
-        tscoreRPs = self.welchsTest(predictedScore, 
+        tscoreRPs = self.welchsTest(predictedScore,
                                        opposingPredictedScore,
                                        sdPredictedScore,
                                        sdOpposingPredictedScore,
