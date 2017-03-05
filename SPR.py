@@ -85,17 +85,14 @@ class ScoutPrecision(object):
 		dicts = filter(lambda k: k, map(lambda t: t[key] if t.get('scoutName') else None, tempTIMDs))
 		#this section groups keys of the dicts found earlier
 		if dicts:
-			consolidationDict = {}
 			for key in dicts[0].keys():
-				consolidationDict[key] = []
+				values = []
 				for aDict in dicts:
-					consolidationDict[key] += [aDict[key]]
-			#see descriptions in findOddScoutForDataPoint for this section (comparing data on each key)
-			for key in consolidationDict.keys():
-				values = consolidationDict[key]
+					values += [aDict[key]]
+				#see descriptions in findOddScoutForDataPoint for this section (comparing data on each key)
 				valueFrequencies = map(values.count, values)
 				commonValue = values[valueFrequencies.index(max(valueFrequencies))]
-				if values.count(commonValue) <= len(values) / 2 and type(commonValue) != str:
+				if values.count(commonValue) <= len(values) / 2:
 					commonValue = np.mean(values)
 				differenceFromCommonValue = map(lambda v: abs(v - commonValue) * weight, values)
 				self.sprs.update({scouts[c] : (self.sprs.get(scouts[c]) or 0) + differenceFromCommonValue[c] for c in range(len(differenceFromCommonValue))})
@@ -109,7 +106,7 @@ class ScoutPrecision(object):
 		#finds the most largest of dicts within each list in the larger list (within each scout's observations)
 		#i.e. if there is disagreement over how many shots a robot took
 		if lists:
-			largestListLength = max(map(lambda x: len(x), lists))
+			largestListLength = max(map(len, lists))
 			#if someone missed a dict (for a shot) (that is, they did not include one that another scout did), this makes one with no values
 			for aScout in lists:
 				if len(aScout) < largestListLength:
@@ -119,16 +116,13 @@ class ScoutPrecision(object):
 				This means the nth shot by a given robot, as recorded by multiple scouts
 				The comparison itself is the same as the other findOddScout functions'''
 				dicts = [lis[num] for lis in lists]
-				consolidationDict = {}
 				for key in dicts[0].keys():
-					consolidationDict[key] = []
-					for aDict in dicts:
-						consolidationDict[key] += [aDict[key]]
-				for key in consolidationDict.keys():
 					#position is a string, so can't be compared, due to the averaging later
 					#without averaging, one person could be declared correct for no reason
 					if key != 'position':
-						values = consolidationDict[key]
+						values = []
+						for aDict in dicts:
+							values += [aDict[key]]
 						valueFrequencies = map(values.count, values)
 						commonValue = values[valueFrequencies.index(max(valueFrequencies))]
 						if values.count(commonValue) <= len(values) / 2:

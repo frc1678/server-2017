@@ -70,7 +70,7 @@ class DataChecker(multiprocessing.Process):
 		#Finds the largest number of dicts within each list (within each scout's observations)
 		#(e.g. if there is disagreement over how many shots a robot took in a particular match)
 		if lis:
-			largestListLength = max(map(lambda x: len(x), lis))
+			largestListLength = max(map(len, lis))
 		else:
 			largestListLength = 0
 		#If someone missed a dict (for a shot, that is, they did not include one that another scout did, this makes one with no values)
@@ -89,8 +89,7 @@ class DataChecker(multiprocessing.Process):
 				consolidationDict[key] = []
 				for aDict in dicts:
 					consolidationDict[key] += [aDict[key]]
-			#The time and number of shots can be compared to get a common value
-			for key in consolidationDict.keys():
+				#The time and number of shots can be compared to get a common value
 				if key != 'position':
 					returnList[num].update({key: self.commonValue(consolidationDict[key])})
 			#If there is only one scout, their statement about position is accepted as right
