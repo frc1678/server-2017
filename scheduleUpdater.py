@@ -1,5 +1,3 @@
-import time
-import datetime
 import pyrebase
 import firebaseCommunicator
 

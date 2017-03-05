@@ -1,8 +1,6 @@
-# by Bryton Moeller (2015-2016)
+#by Bryton Moeller (2015-2016)
 import sys
 import traceback
-
-#Our Modules
 import DataModel
 import firebaseCommunicator
 import Math
@@ -26,18 +24,18 @@ cycle = 1
 shouldSlack = False
 consolidator = dataChecker.DataChecker()
 consolidator.start()
-# APNServer.startNotiStream()
+'''APNServer.startNotiStream()
 
-#Use this to reset scouts and availability before assigning tablets
-#e.g. at the beginning of the day at a competition
-# scoutRotator.tabletHandoutStream()
+Use this to reset scouts and availability before assigning tablets
+e.g. at the beginning of the day at a competition
+ scoutRotator.tabletHandoutStream()
 
-#Use this for running the server again (e.g. after a crash) to avoid reassigning scouts
-# scoutRotator.alreadyAssignedStream()
+Use this for running the server again (e.g. after a crash) to avoid reassigning scouts
+ scoutRotator.alreadyAssignedStream()
 
-#Use this if you are restarting the server and need to reassign scouts but scouts already have tablets
-#Also useful for unexpected changes in availability
-# scoutRotator.simpleStream()
+Use this if you are restarting the server and need to reassign scouts but scouts already have tablets
+Also useful for unexpected changes in availability
+ scoutRotator.simpleStream()'''
 
 def checkForMissingData():
 	with open('missing_data.txt', 'w') as missingDataFile:
