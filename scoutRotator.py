@@ -10,12 +10,12 @@ fb = PBC.firebase
 scouts = "janet justin alex wesley kyle mx aiden westley katie jesse jack sage jon ayush sam evan mingyo zoe gemma carter".split()
 SPR = SPR.ScoutPrecision()
 
-#creates list of availability values in firebase for each scout
+#Creates list of availability values in firebase for each scout
 def resetAvailability():
 	availability = {name: 1 for name in scouts}
 	fb.child('availability').set(availability)
 
-#creates firebase objects for 18 scouts
+#Creates firebase objects for 18 scouts
 def resetScouts():
 	scouts = {'scout' + str(num) : {'currentUser': '', 'scoutStatus': ''} for num in range(1,19)}
 	fb.child('scouts').set(scouts)
@@ -25,16 +25,16 @@ def doSPRsAndAssignments(newMatchNumber):
 	print('Setting scouts for match ' + str(fb.child('currentMatchNum').get().val()))
 	newMatchNumber = str(fb.child('currentMatchNum').get().val())
 	scoutDict = fb.child("scouts").get().val()
-	#gets the teams we need to scout for
+	#Gets the teams we need to scout for
 	blueTeams = fb.child("Matches").child(newMatchNumber).get().val()['blueAllianceTeamNumbers']
 	redTeams = fb.child("Matches").child(newMatchNumber).get().val()['redAllianceTeamNumbers']
-	#These next lines find and assign available scouts
+	#Finds and assigns available scouts
 	available = [k for (k, v) in fb.child("availability").get().val().items() if v == 1]
-	#Each scout is assigned to a robot in the next 2 lines
+	#Grades scouts and assigns them to robots
 	SPR.calculateScoutPrecisionScores(fb.child("TempTeamInMatchDatas").get().val(), available)
 	SPR.sprZScores()
 	newAssignments = SPR.assignScoutsToRobots(available, redTeams + blueTeams, fb.child("scouts").get().val())
-	#and it is put on firebase
+	#Puts assignments on firebase
 	fb.child("scouts").update(newAssignments)
 
 #Use this to reset scouts and availability before assigning tablets

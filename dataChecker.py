@@ -40,7 +40,7 @@ class DataChecker(multiprocessing.Process):
 		else:
 			return self.joinList(vals)
 
-	#Uses commonValue if at least one value is a bool, on the basis that they should all be the same type, but some are just not written properly as bools
+	#Uses commonValue if at least one value is a bool, on the basis that they should all be bools, but some are just not written properly
 	def attempt(self, vals):
 		if map(type, vals).count(bool) > 0:
 			return self.commonValue(map(bool, vals))
@@ -111,7 +111,7 @@ class DataChecker(multiprocessing.Process):
 	#Combines data from whole TIMDs
 	def joinValues(self, key):
 		returnDict = {}
-		#flattens the list of lists of keys into a list of keys
+		#Flattens the list of lists of keys into a list of keys
 		for k in self.getAllKeys(map(lambda v: v.keys(), self.consolidationGroups[key])):
 			if k in listKeys:
 				#Gets a common value for lists of dicts (for boiler/ball values) and puts it into the combined TIMD

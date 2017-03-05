@@ -141,12 +141,12 @@ class ScoutPrecision(object):
 			'''These three grade each scout for each of the values in the grading keys, dicts, and lists of dicts
 			Each scout gets more "points" if they are further off from the consensus on the actual values
 			The grades are stored by scout name in sprs
-			see the findOddScout functions for details on how'''
+			See the findOddScout functions for details on how'''
 			[self.findOddScoutForDataPoint(v, k) for v in g.values() for k in self.gradingKeys.keys()]
 			[self.findOddScoutForDict(v, k) for v in g.values() for k in self.gradingDicts.keys()]
 			[self.findOddScoutForListOfDicts(v, k) for v in g.values() for k in self.gradingListsOfDicts.keys()]
-			'''divides values for scouts by number of TIMDs the scout has participated in
-			if a scout is in more matches, they will likely have more disagreements, but the same number per match if they are equally accurate
+			'''Divides values for scouts by number of TIMDs the scout has participated in
+			If a scout is in more matches, they will likely have more disagreements, but the same number per match if they are equally accurate
 			If someone hasn't scouted yet, their SPR score is set to -1 (to be changed later)'''
 			self.sprs = {k:((v/float(self.getTotalTIMDsForScoutName(k, temp))) or -1) for (k,v) in self.sprs.items()}
 			#Changes all sprs of -1 (someone who somehow has an spr key but no matches) to average or 1
