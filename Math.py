@@ -1,18 +1,15 @@
 import math
 from operator import attrgetter
 import pdb
-
 import numpy as np
 import scipy as sp
 import scipy.stats as stats
-
 import CacheModel as cache
 import DataModel
 import utils
 import time
 import TBACommunicator
 from teamCalcDataKeysToLambda import *
-
 import multiprocessing
 import warnings
 from FirstTIMDProcess import FirstTIMDProcess
@@ -56,10 +53,9 @@ class Calculator(object):
 
     #Calculated Team Data
     #Hardcore Math
-
     def getAverageForDataFunctionForTeam(self, team, dataFunction):
         validTIMDs = filter(lambda timd: dataFunction(timd) != None, self.su.getCompletedTIMDsForTeam(team))
-        return np.mean(map(dataFunction, validTIMDs)) if validTIMDs else None #return None if validTIMDs has no elements
+        return np.mean(map(dataFunction, validTIMDs)) if validTIMDs else None #returns None if validTIMDs has no elements
 
     def getSumForDataFunctionForTeam(self, team, dataFunction):
         return sum([dataFunction(tm) for tm in self.su.getCompletedTIMDsForTeam(team) if dataFunction(tm) != None])
@@ -103,7 +99,7 @@ class Calculator(object):
         return np.mean(values) if values else None
 
     def getDF(self, s1, s2, n1, n2):
-        #degrees of freedom to determine shape of Student t-distribution
+        #Degrees of freedom to determine shape of Student t-distribution
         if np.nan in [s1, s2, n1, n2] or 0.0 in [n1, n2]:
             return
         try:
@@ -206,14 +202,14 @@ class Calculator(object):
     def liftoffAbilityForTIMD(self, timd):
         return 50 * timd.didLiftoff
 
-    def rValuesForAverageFunctionForDict(self, averageFunction, d): #gets Z-score for each super data point for all teams
+    def rValuesForAverageFunctionForDict(self, averageFunction, d): #Gets Z-score for each super data point for all teams
         values = map(averageFunction, self.cachedComp.teamsWithMatchesCompleted)
         if len(values) == 0:
             return
         initialValue = values[0]
         impossible = not len(filter(lambda v: v != initialValue, values[1:]))
         if not np.std(values):
-            zscores = [0.0 for v in values] #don't calculate z-score if the standard deviation is 0
+            zscores = [0.0 for v in values] #Don't calculate z-score if the standard deviation is 0
         else:
             zscores = stats.zscore(values)
         for i in range(len(self.cachedComp.teamsWithMatchesCompleted)):
@@ -270,7 +266,7 @@ class Calculator(object):
         ballControl = (team.calculatedData.RScoreGearControl or 0) * 0.14
         functionalPercentage = (1 - team.calculatedData.disfunctionalPercentage)
         freqLiftOurTeam = self.getMostFrequentLift(self.su.getTeamForNumber(self.ourTeamNum))
-        gA = self.gearPlacementAbilityExcludeLift(team, freqLiftOurTeam) #convert to some number of points
+        gA = self.gearPlacementAbilityExcludeLift(team, freqLiftOurTeam) #Convert to some number of points
         return functionalPercentage * (gA + defense + team.calculatedData.liftoffAbility + agility + speed)
 
     def predictedScoreForMatchForAlliance(self, match, allianceIsRed):
@@ -280,7 +276,7 @@ class Calculator(object):
         return match.calculatedData.sdPredictedRedScore if allianceIsRed else match.calculatedData.sdPredictedBlueScore
 
     def getAvgNumCompletedTIMDsForTeamsOnAlliance(self, alliance):
-        return sum(map(lambda t: len(self.su.getCompletedTIMDsForTeam(t)), alliance)) # TODO:WATCHOUT!!!
+        return sum(map(lambda t: len(self.su.getCompletedTIMDsForTeam(t)), alliance)) #TODO: WATCHOUT!!!
 
     def getAvgNumCompletedTIMDsForAlliance(self, alliance):
         return self.getAvgNumCompletedTIMDsForTeamsOnAlliance(alliance)
@@ -504,25 +500,26 @@ class Calculator(object):
             file.write('Time: ' + str(time) + '    TIMDs: ' + str(len(self.su.getCompletedTIMDsInCompetition())) + '\n')
             file.close()
 
-    def doCalculations(self, PBC): #Does calculations...What the hell do you think it does lmao
+    def doCalculations(self, PBC):
+        #Does calculations... What the hell do you think it does lmao
         isData = len(self.su.getCompletedTIMDsInCompetition()) > 0
         if isData:
-            #Only do if there is any data
+            #Only proceeds if there is any data
             startTime = time.time()
-            #Get time to later calculate time for a server cycle...
+            #Gets time to later calculate time for a server cycle...
             threads = []
-            #creates an empty list for timds accessible in multiple processes (manager.list)
+            #Creates an empty list for timds accessible in multiple processes (manager.list)
             manager = multiprocessing.Manager()
             calculatedTIMDs = manager.list()
             for timd in self.comp.TIMDs:
-                #does TIMD calculations to each TIMD in the competition, and puts the process into a list
-                #the calculation results get put into
+                #Does TIMD calculations to each TIMD in the competition, and puts the process into a list
+                #The calculation results get put into
                 thread = FirstTIMDProcess(timd, calculatedTIMDs, self)
                 threads.append(thread)
                 thread.start()
-            #the main function does not continue until all of the TIMD processes are done (join)
+            #The main function does not continue until all of the TIMD processes are done (join)
             map(lambda t: t.join(), threads)
-            #converts the shared list into a normal list
+            #Converts the shared list into a normal list
             self.comp.TIMDs = [timd for timd in calculatedTIMDs]
             self.cacheFirstTeamData()
             self.doFirstTeamCalculations()

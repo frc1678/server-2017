@@ -134,7 +134,7 @@ firebase = fb.FirebaseApplication(url, auth)
 cm = 1
 while(True):
 	match = firebase.get('/Matches', cm)
-	m = Match(number = cm,redAllianceTeamNumbers = match['redAllianceTeamNumbers'],blueAllianceTeamNumbers = match['blueAllianceTeamNumbers'], calculatedData = CalculatedMatchData().__dict__)
+	m = Match(number = cm, redAllianceTeamNumbers = match['redAllianceTeamNumbers'], blueAllianceTeamNumbers = match['blueAllianceTeamNumbers'], calculatedData = CalculatedMatchData().__dict__)
 	firebase.put('/Matches/', str(cm), m.__dict__)
 	for t in match['redAllianceTeamNumbers'] + match['blueAllianceTeamNumbers']:
 		for i in range(3):
