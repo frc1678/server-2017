@@ -55,7 +55,7 @@ class PyrebaseCommunicator(object):
 		key = str(timd.teamNumber) + "Q" + str(timd.matchNumber)
 		try:
 			self.firebase.child("TeamInMatchDatas").child(key).child("calculatedData").set(calculatedTIMDataDict)
-		except:				
+		except:
 			pass
 
 	def addCalculatedMatchDataToFirebase(self, match):
