@@ -1,8 +1,6 @@
-# by Bryton Moeller (2015-2016)
+#By Bryton Moeller (2015-2016)
 import sys
 import traceback
-
-#Our Modules
 import DataModel
 import firebaseCommunicator
 import Math
@@ -27,7 +25,7 @@ cycle = 1
 shouldSlack = False
 consolidator = dataChecker.DataChecker()
 consolidator.start()
-# APNServer.startNotiStream()
+#APNServer.startNotiStream()
 
 #Use this if tablets are assigned to scouts by the server, and then given to the correct scouts
 #This means at the beginning of a competition day
@@ -59,10 +57,9 @@ while(True):
 		except Exception as e:
 			print(e)
 			pass
-	# checkForMissingData()
+	checkForMissingData()
 	try:
 		calculator.doCalculations(PBC)
-		print 'hi'
 	except OSError:
 		continue
 	except:

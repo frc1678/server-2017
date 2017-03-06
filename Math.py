@@ -1,18 +1,15 @@
 import math
 from operator import attrgetter
 import pdb
-
 import numpy as np
 import scipy as sp
 import scipy.stats as stats
-
 import CacheModel as cache
 import DataModel
 import utils
 import time
 import TBACommunicator
 from teamCalcDataKeysToLambda import *
-
 import multiprocessing
 import warnings
 from FirstTIMDProcess import FirstTIMDProcess
@@ -20,7 +17,7 @@ from FirebaseWriterProcess import FirebaseWriteObjectProcess
 from schemaUtils import SchemaUtils
 
 class Calculator(object):
-    """docstring for Calculator"""
+    """Does math with scouted data"""
 
     def __init__(self, competition):
         super(Calculator, self).__init__()
@@ -61,12 +58,10 @@ class Calculator(object):
         return incompleteSuperTIMDs.update(incompleteScoutTIMDs)
 
     #Calculated Team Data
-
     #Hardcore Math
-
     def getAverageForDataFunctionForTeam(self, team, dataFunction):
         validTIMDs = filter(lambda timd: dataFunction(timd) != None, self.su.getCompletedTIMDsForTeam(team))
-        return np.mean(map(dataFunction, validTIMDs)) if validTIMDs else None #return None if validTIMDs has no elements
+        return np.mean(map(dataFunction, validTIMDs)) if validTIMDs else None #returns None if validTIMDs has no elements
 
     def getSumForDataFunctionForTeam(self, team, dataFunction):
         return sum([dataFunction(tm) for tm in self.su.getCompletedTIMDsForTeam(team) if dataFunction(tm) != None])
@@ -85,16 +80,18 @@ class Calculator(object):
     def standardDeviationForRetrievalFunctionForAlliance(self, retrievalFunction, alliance):
         return utils.sumStdDevs(map(retrievalFunction, alliance))
 
-    def monteCarloForMeanForStDevForValueFunction(self, mean, stDev, valueFunction): 
+    def monteCarloForMeanForStDevForValueFunction(self, mean, stDev, valueFunction):
         if stDev == 0.0:
             return 0.0
         return np.std([valueFunction(np.random.normal(mean, stDev)) for i in range(self.monteCarloIterations)])
 
-    def normalCDF(self, x, mu, sigma): #Calculates probability of reaching a threshold (x) based on the mean(mu) and the standard deviation(sigma)
+    def normalCDF(self, x, mu, sigma):
+        #Calculates probability of reaching a threshold (x) based on the mean(mu) and the standard deviation(sigma)
         if sigma == 0.0:
-            return int(x <= mu) 
+            return int(x <= mu)
         if None not in [x,mu,sigma]:
-            return 1.0 - stats.norm.cdf(x, mu, sigma) #Integrate bell curve from -infinity to x and get complement
+            #Integrate bell curve from -infinity to x and get complement
+            return 1.0 - stats.norm.cdf(x, mu, sigma)
 
     def welchsTest(self, mean1, mean2, std1, std2, sampleSize1, sampleSize2):
         if std1 == 0.0 or std2 == 0.0 or sampleSize1 <= 0 or sampleSize2 <= 0:
@@ -107,19 +104,19 @@ class Calculator(object):
         values = [dataFunction(timd) for timd in timds]
         return np.mean(values) if values else None
 
-    def getDF(self, s1, s2, n1, n2): #degrees of freedom to determine shape of Student t-distribution
-        if np.nan in [s1, s2, n1, n2] or 0.0 in [n1,n2]:
+    def getDF(self, s1, s2, n1, n2):
+        #Degrees of freedom to determine shape of Student t-distribution
+        if np.nan in [s1, s2, n1, n2] or 0.0 in [n1, n2]:
             return
         try:
-            numerator = ((s1**4/n1) + (s2**4/n2)) ** 2
-            denominator = (s1**8/((n1**2)*(n1-1))) + (s2**8/((n2**2)*(n2-1)))
+            numerator = ((s1 ** 4 / n1) + (s2 ** 4 / n2)) ** 2
+            denominator = (s1 ** 8 / ((n1 ** 2) * (n1 - 1))) + (s2 ** 8 / ((n2 ** 2) * (n2 - 1)))
         except:
             numerator = 0.0
             denominator = 0.0
         return numerator / denominator if denominator != 0 else 0.0
 
     #SHOTS DATA
-
     def fieldsForShots(self, timd):
         return sum([sum(map(lambda v: (v.get('numShots') or 0), timd.highShotTimesForBoilerTele)) / 3.0, sum(map(lambda v: (v.get('numShots') or 0), timd.highShotTimesForBoilerAuto)), sum(map(lambda v: (v.get('numShots') or 0), timd.lowShotTimesForBoilerTele)) / 9.0, sum(map(lambda v: (v.get('numShots') or 0), timd.lowShotTimesForBoilerAuto)) / 3.0])
 
@@ -129,7 +126,6 @@ class Calculator(object):
         scoutedFuelPoints = sum(map(self.fieldsForShots, timds))
         weightage = fuelPts / float(scoutedFuelPoints) if None not in [scoutedFuelPoints, fuelPts] and scoutedFuelPoints != 0 else None
         return sum(map(lambda v: (v.get('numShots') or 0), boilerPoint)) * weightage if weightage != None and weightage > 0 else 0
-
 
     def getShotPointsForMatchForAlliance(self, timds, allianceIsRed, match):
         baselinePts = 5 * sum(map(lambda t: t.didReachBaselineAuto, timds))
@@ -161,8 +157,7 @@ class Calculator(object):
         timds = self.su.getCompletedTIMDsForTeam(team)
         return list(set([d.get('position') for timd in timds for d in timd.highShotTimesForBoilerAuto + timd.lowShotTimesForBoilerAuto]))
 
-    # GEARS DATA
-
+    #GEARS DATA
     def getTotalValueForValueDict(self, valueDict):
         return sum(filter(lambda v: v, valueDict.values()))
 
@@ -208,18 +203,17 @@ class Calculator(object):
     def totalGearsPlacedForTIMD(self, timd):
         return timd.calculatedData.numGearsPlacedAuto + timd.calculatedData.numGearsPlacedTele
 
-    # OVERALL DATA
-
+    #OVERALL DATA
     def liftoffAbilityForTIMD(self, timd):
         return 50 * timd.didLiftoff
 
-    def rValuesForAverageFunctionForDict(self, averageFunction, d): #gets Z-score for each super data point for all teams
+    def rValuesForAverageFunctionForDict(self, averageFunction, d): #Gets Z-score for each super data point for all teams
         values = map(averageFunction, self.cachedComp.teamsWithMatchesCompleted)
         print values
         if len(values) == 0:
             return
         if not np.std(values):
-            zscores = [0.0 for v in values] #don't calculate z-score if the standard deviation is 0
+            zscores = [0.0 for v in values] #Don't calculate z-score if the standard deviation is 0
         else:
             zscores = stats.zscore(values)
         for i in range(len(self.cachedComp.teamsWithMatchesCompleted)):
@@ -275,7 +269,7 @@ class Calculator(object):
         agility = (team.calculatedData.RScoreAgility or 0) * 1.2
         ballControl = (team.calculatedData.RScoreGearControl or 0) * 0.14
         functionalPercentage = (1 - team.calculatedData.disfunctionalPercentage)
-        freqLiftOurTeam = 'lift1' #self.getMostFrequentLift(self.su.getTeamForNumber(self.ourTeamNum))
+        freqLiftOurTeam = #self.getMostFrequentLift(self.su.getTeamForNumber(self.ourTeamNum))
         gA = self.gearPlacementAbilityExcludeLift(team, freqLiftOurTeam) #convert to some number of points
         return functionalPercentage * (gA + defense + team.calculatedData.liftoffAbility + agility + speed)
 
@@ -286,7 +280,7 @@ class Calculator(object):
         return match.calculatedData.sdPredictedRedScore if allianceIsRed else match.calculatedData.sdPredictedBlueScore
 
     def getAvgNumCompletedTIMDsForTeamsOnAlliance(self, alliance):
-        return sum(map(lambda t: len(self.su.getCompletedTIMDsForTeam(t)), alliance)) # TODO:WATCHOUT!!!
+        return sum(map(lambda t: len(self.su.getCompletedTIMDsForTeam(t)), alliance)) #TODO: WATCHOUT!!!
 
     def getAvgNumCompletedTIMDsForAlliance(self, alliance):
         return self.getAvgNumCompletedTIMDsForTeamsOnAlliance(alliance)
@@ -306,7 +300,6 @@ class Calculator(object):
         return inc.index(max(incrementsReached)) + 1 if incrementsReached else 0
 
     #PROBABILITIES
-
     def winChanceForMatchForAllianceIsRed(self, match, allianceIsRed):
         alliance = self.su.getAllianceForMatch(match, allianceIsRed)
         predictedScore  = self.predictedScoreForMatchForAlliance(match, allianceIsRed)
@@ -315,7 +308,7 @@ class Calculator(object):
         sdOpposingPredictedScore = self.sdPredictedScoreForMatchForAlliance(match, not allianceIsRed)
         sampleSize = self.sampleSizeForMatchForAlliance(alliance)
         opposingSampleSize = self.sampleSizeForMatchForAlliance(alliance)
-        tscoreRPs = self.welchsTest(predictedScore, 
+        tscoreRPs = self.welchsTest(predictedScore,
                                        opposingPredictedScore,
                                        sdPredictedScore,
                                        sdOpposingPredictedScore,
@@ -448,7 +441,6 @@ class Calculator(object):
         return int(float(filter(lambda x: int(x[1]) == team.number, self.cachedComp.actualSeedings)[0][2]))
 
     #CACHING
-
     def cacheFirstTeamData(self):
         for team in self.comp.teams:
             self.doCachingForTeam(team)
@@ -489,7 +481,6 @@ class Calculator(object):
         return sum([match["score_breakdown"]["red" if team in self.getMatchForNumber(match["match_number"]).redAllianceTeamNumbers else "blue"][key] for match in TBAMatches])
 
     #CALCULATIONS
-
     def getFirstCalculationsForAverageTeam(self):
         averageTeamDict(self)
 
@@ -530,23 +521,26 @@ class Calculator(object):
             file.write('Time: ' + str(time) + '    TIMDs: ' + str(len(self.su.getCompletedTIMDsInCompetition())) + '\n')
             file.close()
 
-    def doCalculations(self, PBC): #Does calculations...What the hell do you think it does lmao
+    def doCalculations(self, PBC):
+        #Does calculations... What the hell do you think it does lmao
         isData = len(self.su.getCompletedTIMDsInCompetition()) > 0
-        if isData: #Only do if there is any data
-            startTime = time.time() #Get time to later calculate time for a server cycle...
+        if isData:
+            #Only proceeds if there is any data
+            startTime = time.time()
+            #Gets time to later calculate time for a server cycle...
             threads = []
-            #creates an empty list for timds accessible in multiple processes (manager.list)
+            #Creates an empty list for timds accessible in multiple processes (manager.list)
             manager = multiprocessing.Manager()
             calculatedTIMDs = manager.list()
             for timd in self.comp.TIMDs:
-                #does TIMD calculations to each TIMD in the competition, and puts the process into a list
-                #the calculation results get put into
+                #Does TIMD calculations to each TIMD in the competition, and puts the process into a list
+                #The calculation results get put into
                 thread = FirstTIMDProcess(timd, calculatedTIMDs, self)
                 threads.append(thread)
                 thread.start()
-            #the main function does not continue until all of the TIMD processes are done (join)
+            #The main function does not continue until all of the TIMD processes are done (join)
             map(lambda t: t.join(), threads)
-            #converts the shared list into a normal list
+            #Converts the shared list into a normal list
             self.comp.TIMDs = [timd for timd in calculatedTIMDs]
             self.cacheFirstTeamData()
             self.doFirstTeamCalculations()

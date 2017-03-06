@@ -59,7 +59,7 @@ class PyrebaseCommunicator(object):
 		key = str(timd.teamNumber) + "Q" + str(timd.matchNumber)
 		try:
 			self.firebase.child("TeamInMatchDatas").child(key).child("calculatedData").set(calculatedTIMDataDict)
-		except:				
+		except:
 			pass
 
 	def addCalculatedMatchDataToFirebase(self, match):
@@ -80,8 +80,9 @@ class PyrebaseCommunicator(object):
 		matches = filter(lambda m: m["comp_level"] == 'qm', self.JSONmatches)
 		map(lambda m: self.updateFirebaseWithMatch(utils.setDataForMatch(m)), matches)
 
-	def addTIMDsToFirebase(self, matches): #addTIMD function get all team numbers in a given match and updates firebase with the
-		print("\nDoing TIMDs...")																			#corresponding TIMD
+	def addTIMDsToFirebase(self, matches): 
+		#gets all team numbers in a given match and updates firebase with the corresponding TIMD
+		print("\nDoing TIMDs...")
 		timdFunc = lambda t, m: self.updateFirebaseWithTIMD(utils.makeTIMDFromTeamNumberAndMatchNumber(t, m.number))
 		addTIMD = lambda m: map(lambda t: timdFunc(t, m), m.redAllianceTeamNumbers + m.blueAllianceTeamNumbers)
 		map(addTIMD, matches)
@@ -95,7 +96,8 @@ class PyrebaseCommunicator(object):
 		except Exception as e:
 			pass
 
-	def addCompInfoToFirebase(self): #Doing these keys manually so less clicking in firebase is better and because just easier
+	def addCompInfoToFirebase(self):
+		#Doing these keys manually so less clicking in firebase is better and because just easier
 		self.firebase.child("code").set("cama")
 
 	def wipeDatabase(self):
@@ -110,4 +112,8 @@ class PyrebaseCommunicator(object):
 		now = str(datetime.datetime.now())
 		filePath = './' + fileName
 		self.fbStorage.child("Exports").child(fileName).put(filePath)
+		return self.firebase.child(location).get().val()
+
+	def addCurrentMatchToFirebase(self):
+		self.firebase.child("currentMatchNum").set(1)
 

@@ -8,6 +8,6 @@ def reportServerCrash(message):
 	map(lambda u:
 	sc.api_call(
 		"chat.postMessage",
-		channel="@" + u,
-		text=message
+		channel = "@" + u,
+		text = message
 	), ["bimbunky", "tesseract", "rytonbay", "sam", "peterc"])

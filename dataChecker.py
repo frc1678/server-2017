@@ -7,8 +7,10 @@ import pdb
 import firebaseCommunicator
 
 #These are the keys that have lists of dicts
+#Lists may have different numbers of dicts, but the keys in the dicts should be the same
 listKeys = ["highShotTimesForBoilerTele", "highShotTimesForBoilerAuto", "lowShotTimesForBoilerAuto", "lowShotTimesForBoilerTele"]
 #These ought to be the same across all tempTIMDs for the same TIMD
+#(TIMD -> TeamInMatchData, so for a specific team in a specific match)
 constants = ['matchNumber', 'teamNumber']
 #These are the keys within each dict from the listKeys
 boilerKeys = ['time', 'numShots', 'position']
@@ -20,14 +22,14 @@ PBC.initializeFirebase()
 firebase = PBC.firebase
 
 class DataChecker(multiprocessing.Process):
-	"""Checks data..."""
+	"""Combines data from tempTIMDs into TIMDs..."""
 	def __init__(self):
 		super(DataChecker, self).__init__()
 		self.consolidationGroups = {}
 
 	#Gets a common value for a list depending on the data type
 	def commonValue(self, vals):
-		#If there are several types, they are probably misformatted bools, so attempt tries turning them into bools and trying again
+		#If there are several types, they are probably misformatted bools (e.g. 0 or None for False), so attempt tries turning them into bools and trying again
 		if len(set(map(type, vals))) != 1:
 			return self.attempt(vals)
 		#If the values are bools, it goes to a function for bools
@@ -36,11 +38,11 @@ class DataChecker(multiprocessing.Process):
 		#Text does not need to be joined
 		elif type(vals[0]) == str or type(vals[0]) == unicode:
 			return vals
-		#otherwise, if it is something like ints or floats, it goes to a general purpose function
+		#Otherwise, if the values are something like ints or floats, it goes to a general purpose function
 		else:
 			return self.joinList(vals)
 
-	#Uses commonValue if at least one value is a bool, on the basis that they should all be the same type, but some are just not written properly as bools
+	#Uses commonValue if at least one value is a bool, on the basis that they should all be bools, but some are just not written properly
 	def attempt(self, vals):
 		if map(type, vals).count(bool) > 0:
 			return self.commonValue(map(bool, vals))
@@ -59,9 +61,9 @@ class DataChecker(multiprocessing.Process):
 			try:
 				return mCV if values.count(mCV) > len(values) / 2 else np.mean(values)
 			except:
-				return None
+				return
 		else:
-			return None
+			return
 
 	#This is the common value function for lists of dicts
 	#It consolidates the data on shots from scouts, by comparing each shot to other scouts' info on the same shot
@@ -70,27 +72,26 @@ class DataChecker(multiprocessing.Process):
 		#Finds the largest number of dicts within each list (within each scout's observations)
 		#(e.g. if there is disagreement over how many shots a robot took in a particular match)
 		if lis:
-			largestListLength = max(map(lambda x: len(x), lis))
+			largestListLength = max(map(len, lis))
 		else:
 			largestListLength = 0
-		#If someone missed a dict (for a shot) (that is, they did not include one that another scout did), this makes one with no values
+		#If someone missed a dict (for a shot, that is, they did not include one that another scout did, this makes one with no values)
 		for aScout in lis:
 			if len(aScout) < largestListLength:
 				aScout += [{'numShots': 0, 'position': 'Other  ', 'time': 0}] * (largestListLength - len(aScout))
 		returnList = []
 		for num in range(largestListLength):
 			returnList += [{}]
-			#finds dicts that should be the same (e.g. each shot time dict for the same shot) within the tempTIMDs
+			#Finds dicts that should be the same (e.g. each shot time dict for the same shot) within the tempTIMDs
 			#This means comparisons such as the first shot in teleop by a given robot, as recorded by multiple scouts
 			dicts = [scout[num] for scout in lis]
 			consolidationDict = {}
-			#combines dicts that should be the same into a consolidation dict
+			#Combines dicts that should be the same into a consolidation dict
 			for key in dicts[0].keys():
 				consolidationDict[key] = []
 				for aDict in dicts:
 					consolidationDict[key] += [aDict[key]]
-			#The time and number of shots can be compared to get a common value
-			for key in consolidationDict.keys():
+				#The time and number of shots can be compared to get a common value
 				if key != 'position':
 					returnList[num].update({key: self.commonValue(consolidationDict[key])})
 			#If there is only one scout, their statement about position is accepted as right
@@ -112,7 +113,7 @@ class DataChecker(multiprocessing.Process):
 	#Combines data from whole TIMDs
 	def joinValues(self, key):
 		returnDict = {}
-		#flattens the list of lists of keys into a list of keys
+		#Flattens the list of lists of keys into a list of keys
 		for k in self.getAllKeys(map(lambda v: v.keys(), self.consolidationGroups[key])):
 			if k in listKeys:
 				#Gets a common value for lists of dicts (for boiler/ball values) and puts it into the combined TIMD
@@ -122,19 +123,16 @@ class DataChecker(multiprocessing.Process):
 				#Puts the value into the combined TIMD
 				returnDict.update({k: self.consolidationGroups[key][0][k]})
 			elif k in standardDictKeys:
-				#Gets a common value for dicts (placed gears) and puts it into the combined TIMD
+				#Gets a common value for each key in a dict and puts the combined dict into the combined TIMD
 				returnDict.update({k: self.avgDict(map(lambda c: (c.get(k) or {}), self.consolidationGroups[key]))})
 			else:
 				#Gets a common value across any kind of list of values and puts it into the combined TIMD
-				if type(self.consolidationGroups[key][0]) == bool:
-					returnDict.update({k: self.commonValue(map(lambda tm: tm.get(k) or False, self.consolidationGroups[key]))})
-				else:
-					returnDict.update({k: self.commonValue(map(lambda tm: tm.get(k) or 0, self.consolidationGroups[key]))})
+				returnDict.update({k: self.commonValue(map(lambda tm: tm.get(k) or 0, self.consolidationGroups[key]))})
 		return returnDict
-		#The line below is supposed to do the same thing as this function, and may or may not work, and may or may not have correct parentheses
+		#The line below is supposed to do the same thing as this 'joinvalues' function, and may or may not work
 		#return {k : self.findCommonValuesForKeys(map(lambda tm: (tm.get(k) or []), self.consolidationGroups[key])) if k in listKeys else self.consolidationGroups[key][0][k] if k in constants else self.avgDict(map(lambda c: (c.get(k) or {}), self.consolidationGroups[key])) if k in standardDictKeys else self.commonValue(map(lambda tm: tm.get(k) or 0, self.consolidationGroups[key])) for k in self.getAllKeys(map(lambda v: v.keys(), self.consolidationGroups[key]))}
 
-	#flattens the list of lists of keys into a list of keys
+	#Flattens the list of lists of keys into a list of keys
 	def getAllKeys(self, keyArrays):
 		return list(set([v for l in keyArrays for v in l]))
 
@@ -150,7 +148,7 @@ class DataChecker(multiprocessing.Process):
 
 	#Retrieves and consolidates tempTIMDs from firebase and combines their data, putting the result back onto firebase as TIMDs
 	def run(self):
-		while True:
+		while(True):
 			tempTIMDs = firebase.child("TempTeamInMatchDatas").get().val()
 			if tempTIMDs == None:
 				time.sleep(5)
@@ -158,5 +156,3 @@ class DataChecker(multiprocessing.Process):
 			self.consolidationGroups = self.getConsolidationGroups(tempTIMDs)
 			map(lambda key: firebase.child("TeamInMatchDatas").child(key).update(self.joinValues(key)), self.consolidationGroups.keys())
 			time.sleep(10)
-
-DataChecker().start()
