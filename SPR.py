@@ -39,7 +39,7 @@ class ScoutPrecision(object):
 		}
 
 	'''SPR
-	Scout precision ranking: checks accuracy of scouts by comparing their past TIMDs to the consensus'''
+	Scout precision rank(ing): checks accuracy of scouts by comparing their past TIMDs to the consensus'''
 
 	#Outputs list of TIMDs that an inputted scout was involved in
 	def getTotalTIMDsForScoutName(self, scoutName, tempTIMDs):
@@ -58,7 +58,7 @@ class ScoutPrecision(object):
 		return consolidationGroups
 
 	'''Note: the next 3 functions compare data in tempTIMDs to find scout accuracy
-	The actual comparison to determine correct values is done in dataChecker'''
+	The comparison to determine correct values is done in dataChecker'''
 
 	#Compares scout performances for individual data points in tempTIMDs
 	def findOddScoutForDataPoint(self, tempTIMDs, key):
@@ -74,10 +74,9 @@ class ScoutPrecision(object):
 			#If less than half of the values agree, the best estimate is the average
 			if values.count(commonValue) <= len(values) / 2:
 				commonValue = np.mean(values)
-			#Makes a list of the differences from the common value
-			#Multiplied by weight, for relative importance of data points
+			#Makes a list of the differences from the common value multiplied by weight, for relative importance of data points
 			differenceFromCommonValue = map(lambda v: abs(v - commonValue) * weight, values)
-			#Adds the difference from this tempTIMD for this value to each scout's previous differences (spr score)
+			#Adds the difference from this tempTIMD for this key to each scout's previous differences (spr score)
 			self.sprs.update({scouts[c] : (self.sprs.get(scouts[c]) or 0) + differenceFromCommonValue[c] for c in range(len(differenceFromCommonValue))})
 
 	def findOddScoutForDict(self, tempTIMDs, key):
@@ -86,8 +85,8 @@ class ScoutPrecision(object):
 		scouts = filter(lambda v: v, map(lambda k: k.get('scoutName'), tempTIMDs))
 		dicts = filter(lambda k: k, map(lambda t: t[key] if t.get('scoutName') else None, tempTIMDs))
 		if dicts:
+			#Compares each key within the dict
 			for key in dicts[0].keys():
-				#This section groups keys of the dicts found earlier
 				values = []
 				for aDict in dicts:
 					values += [aDict[key]]
@@ -147,7 +146,7 @@ class ScoutPrecision(object):
 			[self.findOddScoutForListOfDicts(v, k) for v in g.values() for k in self.gradingListsOfDicts.keys()]
 			'''Divides values for scouts by number of TIMDs the scout has participated in
 			If a scout is in more matches, they will likely have more disagreements, but the same number per match if they are equally accurate
-			If someone hasn't scouted yet, their SPR score is set to -1 (to be changed later)'''
+			If someone has no tempTIMDs (but still an SPR key somehow), their SPR score is set to -1 (to be changed later)'''
 			self.sprs = {k:((v/float(self.getTotalTIMDsForScoutName(k, temp))) or -1) for (k,v) in self.sprs.items()}
 			#Changes all sprs of -1 (someone who somehow has an spr key but no matches) to average or 1
 			for a in self.sprs.keys():
@@ -166,8 +165,9 @@ class ScoutPrecision(object):
 				self.sprs[a] = 1
 
 	#Scout Assignment
+
+	#Sorts scouts by spr score
 	def rankScouts(self, available):
-		#Sorts scouts by spr score
 		return sorted(self.sprs.keys(), key = lambda k: self.sprs[k])
 
 	#Orders available scouts by spr ranking, then makes a list of how frequently each scout should be selected
@@ -177,7 +177,7 @@ class ScoutPrecision(object):
 		#It is reversed so the scouts with lower spr are later, causing them to be repeated more
 		rankedScouts.reverse()
 		#Lower sprs, so higher number list index scouts are repeated more frequently, but less if there are more scouts
-		func = lambda s: [s] * ((rankedScouts.index(s) + 1) * ((100/(len(rankedScouts) + 1)) + 1))
+		func = lambda s: [s] * (rankedScouts.index(s) + 1) * ((100/(len(rankedScouts) + 1)) + 1)
 		return utils.extendList(map(func, available))
 
 	def organizeScouts(self, available, currentTeams, scoutSpots):

@@ -29,7 +29,7 @@ class DataChecker(multiprocessing.Process):
 
 	#Gets a common value for a list depending on the data type
 	def commonValue(self, vals):
-		#If there are several types, they are probably misformatted bools, so attempt tries turning them into bools and trying again
+		#If there are several types, they are probably misformatted bools (e.g. 0 or None for False), so attempt tries turning them into bools and trying again
 		if len(set(map(type, vals))) != 1:
 			return self.attempt(vals)
 		#If the values are bools, it goes to a function for bools
@@ -38,7 +38,7 @@ class DataChecker(multiprocessing.Process):
 		#Text does not need to be joined
 		elif type(vals[0]) == str or type(vals[0]) == unicode:
 			return vals
-		#otherwise, if it is something like ints or floats, it goes to a general purpose function
+		#Otherwise, if the values are something like ints or floats, it goes to a general purpose function
 		else:
 			return self.joinList(vals)
 
@@ -123,14 +123,11 @@ class DataChecker(multiprocessing.Process):
 				#Puts the value into the combined TIMD
 				returnDict.update({k: self.consolidationGroups[key][0][k]})
 			elif k in standardDictKeys:
-				#Gets a common value for dicts (placed gears) and puts it into the combined TIMD
+				#Gets a common value for each key in a dict and puts the combined dict into the combined TIMD
 				returnDict.update({k: self.avgDict(map(lambda c: (c.get(k) or {}), self.consolidationGroups[key]))})
 			else:
 				#Gets a common value across any kind of list of values and puts it into the combined TIMD
-				if type(self.consolidationGroups[key][0]) == bool:
-					returnDict.update({k: self.commonValue(map(lambda tm: tm.get(k) or False, self.consolidationGroups[key]))})
-				else:
-					returnDict.update({k: self.commonValue(map(lambda tm: tm.get(k) or 0, self.consolidationGroups[key]))})
+				returnDict.update({k: self.commonValue(map(lambda tm: tm.get(k) or 0, self.consolidationGroups[key]))})
 		return returnDict
 		#The line below is supposed to do the same thing as this 'joinvalues' function, and may or may not work
 		#return {k : self.findCommonValuesForKeys(map(lambda tm: (tm.get(k) or []), self.consolidationGroups[key])) if k in listKeys else self.consolidationGroups[key][0][k] if k in constants else self.avgDict(map(lambda c: (c.get(k) or {}), self.consolidationGroups[key])) if k in standardDictKeys else self.commonValue(map(lambda tm: tm.get(k) or 0, self.consolidationGroups[key])) for k in self.getAllKeys(map(lambda v: v.keys(), self.consolidationGroups[key]))}

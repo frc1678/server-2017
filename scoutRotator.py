@@ -24,9 +24,10 @@ def resetScouts():
 def doSprsAndAssignments(newMatchNumber):
 	if newMatchNumber.get('data') == None: return
 	print('Setting scouts for match ' + str(fb.child('currentMatchNum').get().val()))
+	#Gets scouting data from firebase
 	newMatchNumber = str(fb.child('currentMatchNum').get().val())
 	scoutDict = fb.child("scouts").get().val()
-	#Gets the teams we need to scout for
+	#Gets the teams we need to scout for in the upcoming match
 	blueTeams = fb.child("Matches").child(newMatchNumber).get().val()['blueAllianceTeamNumbers']
 	redTeams = fb.child("Matches").child(newMatchNumber).get().val()['redAllianceTeamNumbers']
 	#Finds and assigns available scouts
@@ -34,7 +35,7 @@ def doSprsAndAssignments(newMatchNumber):
 	#Grades scouts and assigns them to robots
 	SPR.calculateScoutPrecisionScores(fb.child("TempTeamInMatchDatas").get().val(), available)
 	SPR.sprZScores()
-	newAssignments = SPR.assignScoutsToRobots(available, redTeams + blueTeams, fb.child("scouts").get().val())
+	newAssignments = SPR.assignScoutsToRobots(available, redTeams + blueTeams, scoutDict)
 	#Puts assignments on firebase
 	fb.child("scouts").update(newAssignments)
 
