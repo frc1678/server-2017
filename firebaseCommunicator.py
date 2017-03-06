@@ -12,7 +12,9 @@ class PyrebaseCommunicator(object):
 		self.JSONmatches = []
 		self.JSONteams = []
 		self.firebase = None
-		self.url = 'scouting-2017-5f51c'
+		self.fbStorage = None
+		# self.url = 'scouting-2017-5f51c'
+		self.url = '1678-scouting-2016'
 
 	def initializeFirebase(self):
 		config = {
@@ -23,6 +25,8 @@ class PyrebaseCommunicator(object):
 		}
 		app = pyrebase.initialize_app(config)
 		self.firebase = app.database()
+		self.fbStorage = app.storage()
+
 
 	def updateFirebaseWithTeam(self, team):
 		print(str(team.number) + ",",)
@@ -100,4 +104,10 @@ class PyrebaseCommunicator(object):
 		self.firebase.remove()
 
 	def getPythonObjectForFirebaseDataAtLocation(self, location):
-		return self.firebase.child(location).get().val()
+		return utils.makeASCIIFromJSON(self.firebase.child(location).get().val())
+
+	def sendExport(self, fileName):
+		now = str(datetime.datetime.now())
+		filePath = './' + fileName
+		self.fbStorage.child("Exports").child(fileName).put(filePath)
+

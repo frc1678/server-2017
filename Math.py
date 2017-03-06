@@ -39,6 +39,12 @@ class Calculator(object):
         self.teleGearIncrements = [0, 2, 6, 12]
         self.autoGearIncrements = [1, 3, 7, 13]
         self.lifts = ['lift1', 'lift2', 'lift3']
+        self.shotKeys = {
+            'autoFuelLow' : 'avgLowShotsAuto', 
+            'autoFuelHigh' : 'avgHighShotsAuto', 
+            'teleopFuelLow' : 'avgLowShotsTele', 
+            'teleopFuelHigh' : 'avgHighShotsTele'
+        }
         self.cachedTeamDatas = {}
         self.cachedComp = cache.CachedCompetitionData()
         self.cachedTeamDatas[self.averageTeam.number] = cache.CachedTeamData(**{'teamNumber': self.averageTeam.number})
@@ -130,10 +136,10 @@ class Calculator(object):
         liftoffPts = 50 * sum(map(lambda t: t.didLiftoff, timds))
         fields = self.su.getFieldsForAllianceForMatch(allianceIsRed, match)
         gearPts = fields[2] * 60 + fields[3] * 40
-        return fields[0] - fields[4] - gearPts - baselinePts - liftoffPts if None not in [fields[0], fields[3]] else None
+        return fields[0] - fields[4] - gearPts - baselinePts - liftoffPts if None not in [fields[0], fields[4]] else None
 
     def getTotalAverageShotPointsForTeam(self, team):
-        return sum([(team.calculatedData.avgHighShotsTele or 0) / 3.0, (team.calculatedData.avgLowShotsTele or 0) / 9.0, team.calculatedData.avgHighShotsAuto, (team.calculatedData.avgLowShotsAuto or 0) / 3.0])
+        return sum([(team.calculatedData.avgHighShotsTele or 0) / 3.0, (team.calculatedData.avgLowShotsTele or 0) / 9.0, team.calculatedData.avgHighShotsAuto or 0, (team.calculatedData.avgLowShotsAuto or 0) / 3.0])
 
     def getStandardDevShotPointsForTeam(self, team):
         return utils.sumStdDevs([(team.calculatedData.sdHighShotsTele or 0) / 3.0, (team.calculatedData.sdLowShotsTele or 0) / 9.0, (team.calculatedData.sdHighShotsAuto or 0), (team.calculatedData.sdLowShotsAuto or 0) / 3.0])
@@ -163,7 +169,7 @@ class Calculator(object):
     def getAvgFuncForKeys(self, team, dic, retrievalFunction):
         timds = self.su.getCompletedTIMDsForTeam(team)
         getAvgForKey = lambda t: np.mean(map(lambda tm: (retrievalFunction(tm).get(t) or 0), timds))
-        [utils.setDictionaryValue(dic, l, getAvgForKey(l)) for l in calc.lifts]
+        [utils.setDictionaryValue(dic, l, getAvgForKey(l)) for l in self.lifts]
 
     def getGearPtsForAllianceTIMDs(self, timds):
         return self.getRotorsTurningForDatasForGearFunc(timds, lambda t: (t.calculatedData.numGearsPlacedTele or 0), lambda t: (t.calculatedData.numGearsPlacedAuto or 0))
@@ -209,10 +215,9 @@ class Calculator(object):
 
     def rValuesForAverageFunctionForDict(self, averageFunction, d): #gets Z-score for each super data point for all teams
         values = map(averageFunction, self.cachedComp.teamsWithMatchesCompleted)
+        print values
         if len(values) == 0:
             return
-        initialValue = values[0]
-        impossible = not len(filter(lambda v: v != initialValue, values[1:]))
         if not np.std(values):
             zscores = [0.0 for v in values] #don't calculate z-score if the standard deviation is 0
         else:
@@ -220,14 +225,16 @@ class Calculator(object):
         for i in range(len(self.cachedComp.teamsWithMatchesCompleted)):
             d[self.cachedComp.teamsWithMatchesCompleted[i].number] = zscores[i]
 
-    def drivingAbility(self, team):
+    def drivingAbility(self, timd):
         gCWeight = 0.0
         bCWeight = 0.0
         spWeight = 0.4
         agWeight = 0.4
         dfWeight = 0.0
-        if None in [team.calculatedData.avgSpeed, team.calculatedData.avgGearControl, team.calculatedData.avgBallControl, team.calculatedData.avgDefense, team.calculatedData.avgAgility]: return
-        return team.calculatedData.avgSpeed * spWeight + team.calculatedData.avgGearControl * gCWeight + team.calculatedData.avgBallControl * bCWeight + team.calculatedData.avgAgility * agWeight + team.calculatedData.avgDefense * dfWeight
+        data = [timd.rankSpeed, timd.rankGearControl, timd.rankBallControl, timd.rankDefense, timd.rankAgility]
+        if None in data: return
+        print data
+        return timd.rankSpeed * spWeight + timd.rankGearControl * gCWeight + timd.rankBallControl * bCWeight + timd.rankAgility * agWeight + timd.rankDefense * dfWeight
 
     def predictedScoreForAllianceWithNumbers(self, allianceNumbers):
         return self.predictedScoreForAlliance(self.su.teamsForTeamNumbersOnAlliance(allianceNumbers))
@@ -255,13 +262,11 @@ class Calculator(object):
         return 20 * self.get40KilopascalChanceForAlliance(alliance) + self.predictedScoreForAlliance(alliance) + 100 * self.getAllRotorsTurningChanceForAlliance(alliance)
 
     def firstPickAbility(self, team):
-        ourTeam = self.su.getTeamForNumber(self.ourTeamNum)
-        if self.predictedScoreForAlliance([ourTeam, team, self.averageTeam]) == None or math.isnan(self.predictedScoreForAlliance([ourTeam, team, self.averageTeam])):
-            return
-        return self.predictedPlayoffScoreForAlliance([ourTeam, team])
+        ourTeam = self.su.getTeamForNumber(self.ourTeamNum) or self.averageTeam
+        return self.predictedPlayoffScoreForAlliance([ourTeam, team]) or 0
 
     def firstPickAllRotorsChance(self, team):
-        ourTeam = self.su.getTeamForNumber(self.ourTeamNum)
+        ourTeam = self.su.getTeamForNumber(self.ourTeamNum) or self.averageTeam
         return self.getAllRotorsTurningChanceForTwoRobotAlliance([ourTeam, team])
 
     def overallSecondPickAbility(self, team):
@@ -270,7 +275,7 @@ class Calculator(object):
         agility = (team.calculatedData.RScoreAgility or 0) * 1.2
         ballControl = (team.calculatedData.RScoreGearControl or 0) * 0.14
         functionalPercentage = (1 - team.calculatedData.disfunctionalPercentage)
-        freqLiftOurTeam = self.getMostFrequentLift(self.su.getTeamForNumber(self.ourTeamNum))
+        freqLiftOurTeam = 'lift1' #self.getMostFrequentLift(self.su.getTeamForNumber(self.ourTeamNum))
         gA = self.gearPlacementAbilityExcludeLift(team, freqLiftOurTeam) #convert to some number of points
         return functionalPercentage * (gA + defense + team.calculatedData.liftoffAbility + agility + speed)
 
@@ -349,6 +354,19 @@ class Calculator(object):
 
     def getAllRotorsTurningChanceForAllianceWithNumbers(self, allianceNumbers):
         return self.getAllRotorsTurningChanceForAlliance(self.su.teamsForTeamNumbersOnAlliance(allianceNumbers))
+
+    def shotOPRForKey(self, key):
+        teams = self.cachedComp.teamsWithMatchesCompleted
+        teamsTogetherFunc = lambda t, t1: sum(map(lambda m: self.su.teamsAreOnSameAllianceInMatch(t, t1, m)), self.su.getMatchesForTeam(t))
+        getTeamRowFunc = lambda t: map(lambda t1: teamsTogetherFunc(t, t1), teams)
+        matrix = np.matrix(map(getTeamRowFunc, self.comp.teams))
+        try:
+            inverse = np.linalg.inv(matrix)
+        except:
+            return
+        shots = np.matrix(map(lambda t: self.getTBAShotsForTeamForKey(t, key), teams)).shape(len(teams), 1)
+        newMatrix = np.dot(inverse, shots)
+        for team in teams: team.calculatedData.__dict__[self.shotKeys[key]] = newMatrix.item(teams.index(team), 0)
 
     # Seeding
     def autoPointsForAlliance(self, team, match):
@@ -442,7 +460,7 @@ class Calculator(object):
                      (lambda t: t.calculatedData.avgAgility, self.cachedComp.agilityZScores),
                      (lambda t: t.calculatedData.avgBallControl, self.cachedComp.ballControlZScores),
                      (lambda t: t.calculatedData.avgGearControl, self.cachedComp.gearControlZScores),
-                     (lambda t: t.calculatedData.avgDefense, self.cachedComp.defenseZScores),
+                     (lambda t: t.calculatedData.avgDefense or 0, self.cachedComp.defenseZScores),
                      (lambda t: t.calculatedData.avgDrivingAbility, self.cachedComp.drivingAbilityZScores)]
 
     def cacheSecondTeamData(self):
@@ -465,6 +483,10 @@ class Calculator(object):
 
     def doSecondCachingForTeam(self, team):
         cachedData = self.cachedTeamDatas[team.number]
+
+    def getTBAShotsForTeamForKey(self, team, key):
+        TBAMatches = filter(lambda m: m['comp_level'] == 'qf', self.TBAC.makeEventMatchesRequest())
+        return sum([match["score_breakdown"]["red" if team in self.getMatchForNumber(match["match_number"]).redAllianceTeamNumbers else "blue"][key] for match in TBAMatches])
 
     #CALCULATIONS
 

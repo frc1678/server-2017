@@ -146,7 +146,6 @@ class DataChecker(multiprocessing.Process):
 	#Consolidates tempTIMDs for the same team and match
 	def getConsolidationGroups(self, tempTIMDs):
 		actualKeys = list(set([key.split('-')[0] for key in tempTIMDs.keys()]))
-		print {key : [v for k, v in tempTIMDs.items() if k.split('-')[0] == key] for key in actualKeys}
 		return {key : [v for k, v in tempTIMDs.items() if k.split('-')[0] == key] for key in actualKeys}
 
 	#Retrieves and consolidates tempTIMDs from firebase and combines their data, putting the result back onto firebase as TIMDs

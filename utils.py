@@ -64,6 +64,7 @@ def makeMatchFromDict(d):
 	return match
 
 def makeTeamFromDict(d):
+	if type(d) != dict: print d
 	team = DataModel.Team(**d)
 	if 'calculatedData' in d.keys():
 		team.calculatedData = DataModel.CalculatedTeamData(**d['calculatedData'])

@@ -281,6 +281,8 @@ class ScoutPrecision(object):
 			scoutRotatorDict[newSpace].update({'team': teams[availableScout], 'currentUser': availableScout, 'scoutStatus': 'requested'})
 		return scoutRotatorDict
 
-	def sprZScores(self):
+	def sprZScores(self, PBC):
 		zscores = {k : (0.0, self.sprs[k]) for k in self.sprs.keys()} if len(set(self.sprs.values())) == 1 else {k : (zscore, self.sprs[k]) for (k, zscore) in zip(self.sprs.keys(), stats.zscore(self.sprs.values()))}
 		CSVExporter.CSVExportScoutZScores(zscores)
+		PBC.sendExport('SPRExport.csv')
+

@@ -3,6 +3,7 @@ import pdb
 import DataModel
 
 def firstCalculationDict(team, calc):
+    cd = team.calculatedData
     mapFuncForCalcAvgsForTeam(team, lambda f: calc.getAverageForDataFunctionForTeam(team, f), 
         avgHighShotsTele = lambda tm: tm.calculatedData.numHighShotsTele, 
         avgHighShotsAuto = lambda tm: tm.calculatedData.numHighShotsAuto,
@@ -76,12 +77,13 @@ def TIMDCalcDict(timd, calc):
     c.numLowShotsTele = calc.weightFuelShotsForDataPoint(timd, match, timd.lowShotTimesForBoilerTele)
     c.numLowShotsAuto = calc.weightFuelShotsForDataPoint(timd, match, timd.lowShotTimesForBoilerAuto)
     c.liftoffAbility = calc.liftoffAbilityForTIMD(timd)
+    c.drivingAbility = calc.drivingAbility(timd)
     c.wasDisfunctional = utils.convertFirebaseBoolean(timd.didStartDisabled + utils.convertFirebaseBoolean(timd.didBecomeIncapacitated))
     c.numRPs = calc.RPsGainedFromMatchForAlliance(team.number in match.redAllianceTeamNumbers, match)
 
 def averageTeamDict(calc):
     a = calc.averageTeam
-    mapFuncForCalcAvgsForTeam(calc.averageTeam, lambda f: calc.getAverageOfDataFunctionAcrossCompettion(a, f),
+    mapFuncForCalcAvgsForTeam(calc.averageTeam, lambda f: calc.getAverageOfDataFunctionAcrossCompetition(f),
         avgHighShotsTele = lambda t: t.calculatedData.avgHighShotsTele,
         avgHighShotsAuto = lambda t: t.calculatedData.avgHighShotsAuto,
         avgLowShotsAuto = lambda t: t.calculatedData.avgLowShotsAuto,
@@ -99,7 +101,7 @@ def averageTeamDict(calc):
         avgDefense = lambda t: t.calculatedData.avgDefense,
         avgKeyShotTime = lambda t: t.calculatedData.avgKeyShotTime,
         liftoffAbility = lambda t: t.calculatedData.liftoffAbility)
-    mapFuncForCalcAvgsForTeam(calc.averageTeam, lambda f: calc.getStandardDeviationOfDataFunctionAcrossCompettion(a, f),
+    mapFuncForCalcAvgsForTeam(calc.averageTeam, lambda f: calc.getStandardDeviationOfDataFunctionAcrossCompetition(f),
         sdBaselineReachedPercentage = lambda t: t.calculatedData.baselineReachedPercentage,
         sdLiftoffAbility = lambda t: t.calculatedData.sdLiftoffAbility,
         sdGearsPlacedTele = lambda t: t.calculatedData.sdGearsPlacedTele,
