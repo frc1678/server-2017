@@ -231,7 +231,8 @@ class Calculator(object):
         agWeight = 0.4
         dfWeight = 0.0
         data = [timd.rankSpeed, timd.rankGearControl, timd.rankBallControl, timd.rankDefense, timd.rankAgility]
-        if None in data: return
+        if None in data:
+            return
         return timd.rankSpeed * spWeight + timd.rankGearControl * gCWeight + timd.rankBallControl * bCWeight + timd.rankAgility * agWeight + timd.rankDefense * dfWeight
 
     def predictedScoreForAllianceWithNumbers(self, allianceNumbers):

@@ -146,7 +146,7 @@ class ScoutPrecision(object):
 			[self.findOddScoutForListOfDicts(v, k) for v in g.values() for k in self.gradingListsOfDicts.keys()]
 			'''Divides values for scouts by number of TIMDs the scout has participated in
 			If a scout is in more matches, they will likely have more disagreements, but the same number per match if they are equally accurate
-			If someone has no tempTIMDs (but still an SPR key somehow), their SPR score is set to -1 (to be changed later)'''
+			If someone has no tempTIMDs (but still an SPR key somehow), their SPR score is set to -1 (changed in the next section)'''
 			self.sprs = {k:((v/float(self.getTotalTIMDsForScoutName(k, temp))) or -1) for (k,v) in self.sprs.items()}
 			#Changes all sprs of -1 (someone who somehow has an spr key but no matches) to average or 1
 			for a in self.sprs.keys():
@@ -236,7 +236,9 @@ class ScoutPrecision(object):
 
 	#Returns the first scout key that doesn't have a current user
 	def findFirstEmptySpotForScout(self, scoutRotatorDict, available):
-		emptyScouts = filter(lambda k: scoutRotatorDict[k].get('currentUser') == None or scoutRotatorDict[k].get('currentUser') == "" or scoutRotatorDict[k].get('currentUser') not in available, scoutRotatorDict.keys())
+		emptyScouts = filter(lambda k: scoutRotatorDict[k].get('currentUser') == None, scoutRotatorDict.keys())
+		emptyScouts += filter(lambda k: scoutRotatorDict[k].get('currentUser') == "", scoutRotatorDict.keys())
+		emptyScouts += filter(lambda k: scoutRotatorDict[k].get('currentUser') not in available, scoutRotatorDict.keys())
 		return emptyScouts
 
 	#Updates a dict going to firebase with information about scouts for the next match
@@ -275,7 +277,10 @@ class ScoutPrecision(object):
 
 	#Records z-scores of each scouts spr, for later checking and comparison
 	def sprZScores(self):
-		zscores = {k : (0.0, self.sprs[k]) for k in self.sprs.keys()} if len(set(self.sprs.values())) == 1 else {k : (zscore, self.sprs[k]) for (k, zscore) in zip(self.sprs.keys(), stats.zscore(self.sprs.values()))}
+		if len(set(self.sprs.values())) == 1:
+			zscores = {k : (0.0, self.sprs[k]) for k in self.sprs.keys()}
+		else:
+			zscores = {k : (zscore, self.sprs[k]) for (k, zscore) in zip(self.sprs.keys(), stats.zscore(self.sprs.values()))}
+		#zscores = {k : (0.0, self.sprs[k]) for k in self.sprs.keys()} if len(set(self.sprs.values())) == 1 else {k : (zscore, self.sprs[k]) for (k, zscore) in zip(self.sprs.keys(), stats.zscore(self.sprs.values()))}
 		CSVExporter.CSVExportScoutZScores(zscores)
 		PBC.sendExport('SPRExport.csv')
-
