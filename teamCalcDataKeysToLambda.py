@@ -10,6 +10,7 @@ def firstCalculationDict(team, calc):
         avgLowShotsAuto = lambda tm: tm.calculatedData.numLowShotsAuto, 
         avgLowShotsTele = lambda tm: tm.calculatedData.numLowShotsTele, 
         incapacitatedPercentage = lambda tm: tm.didBecomeIncapacitated,
+        disabledPercentage = lambda tm: tm.didStartDisabled,
         liftoffPercentage = lambda tm: tm.didLiftoff, 
         baselineReachedPercentage = lambda tm: tm.didReachBaselineAuto,
         avgAgility = lambda tm: tm.rankAgility, 
@@ -48,12 +49,12 @@ def secondCalculationDict(team, calc):
     cd.actualNumRPs = calc.actualNumberOfRPs(team)
     cd.firstPickRotorBonusChance = calc.firstPickAllRotorsChance(team)
     try:
-        cd.predictedSeed = calc.cachedComp.predictedSeedings.index(team) + 1
         cd.actualNumRPs = calc.getTeamRPsFromTBA(team)
         cd.actualSeed = calc.getTeamSeed(team)
     except:
         cd.actualSeed = calc.cachedComp.actualSeedings.index(team) + 1
         cd.actualNumRPs = calc.actualNumberOfRPs(team)
+        cd.predictedSeed = calc.cachedComp.predictedSeedings.index(team) + 1
     cd.RScoreDefense = calc.cachedComp.defenseZScores[team.number]
     cd.RScoreBallControl = calc.cachedComp.ballControlZScores[team.number]
     cd.RScoreGearControl = calc.cachedComp.gearControlZScores[team.number]

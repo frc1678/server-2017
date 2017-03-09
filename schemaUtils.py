@@ -56,7 +56,6 @@ class SchemaUtils(object):
         return map(self.getTeamForNumber, alliance)
 
     def getAllianceForMatch(self, match, allianceIsRed):
-        print match.redAllianceTeamNumbers + match.blueAllianceTeamNumbers
         return map(self.getTeamForNumber, match.redAllianceTeamNumbers) if allianceIsRed else map(self.getTeamForNumber, match.blueAllianceTeamNumbers)
 
     def getAllianceForTeamInMatch(self, team, match):
@@ -75,7 +74,6 @@ class SchemaUtils(object):
 
     #TIMD utility function
     def getTIMDsForTeam(self, team):
-        print team.number if team else "NONE"
         return filter(lambda t: t.teamNumber == team.number, self.comp.TIMDs)
 
     def getTIMDsForMatch(self, match):

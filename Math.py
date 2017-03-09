@@ -209,7 +209,6 @@ class Calculator(object):
 
     def rValuesForAverageFunctionForDict(self, averageFunction, d): #Gets Z-score for each super data point for all teams
         values = map(averageFunction, self.cachedComp.teamsWithMatchesCompleted)
-        print values
         if len(values) == 0:
             return
         if not np.std(values):
@@ -227,7 +226,6 @@ class Calculator(object):
         dfWeight = 0.0
         data = [timd.rankSpeed, timd.rankGearControl, timd.rankBallControl, timd.rankDefense, timd.rankAgility]
         if None in data: return
-        print data
         return timd.rankSpeed * spWeight + timd.rankGearControl * gCWeight + timd.rankBallControl * bCWeight + timd.rankAgility * agWeight + timd.rankDefense * dfWeight
 
     def predictedScoreForAllianceWithNumbers(self, allianceNumbers):
@@ -267,10 +265,9 @@ class Calculator(object):
         defense = (team.calculatedData.RScoreDefense or 0) * 1.0
         speed = (team.calculatedData.RScoreSpeed or 0) * 2.4
         agility = (team.calculatedData.RScoreAgility or 0) * 1.2
-        ballControl = (team.calculatedData.RScoreGearControl or 0) * 0.14
         functionalPercentage = (1 - team.calculatedData.disfunctionalPercentage)
-        freqLiftOurTeam = #self.getMostFrequentLift(self.su.getTeamForNumber(self.ourTeamNum))
-        gA = self.gearPlacementAbilityExcludeLift(team, freqLiftOurTeam) #convert to some number of points
+        freqLiftOurTeam = 'lift1' #self.getMostFrequentLift(self.su.getTeamForNumber(self.ourTeamNum))
+        gA = self.gearPlacementAbilityExcludeLift(team, freqLiftOurTeam) * 0.14 #convert to some number of points
         return functionalPercentage * (gA + defense + team.calculatedData.liftoffAbility + agility + speed)
 
     def predictedScoreForMatchForAlliance(self, match, allianceIsRed):
@@ -406,6 +403,8 @@ class Calculator(object):
         return np.mean([predictedRPs, self.actualNumberOfRPs(team)])
 
     def actualNumberOfRPs(self, team):
+        print self.getAverageForDataFunctionForTeam(team, lambda tm: tm.calculatedData.numRPs)
+        print team.number
         return self.getAverageForDataFunctionForTeam(team, lambda tm: tm.calculatedData.numRPs)
 
     def scoreRPsGainedFromMatchWithScores(self, score, opposingScore):
