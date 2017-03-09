@@ -18,11 +18,11 @@ PBC.initializeFirebase()
 comp = DataModel.Competition(PBC)
 comp.updateTeamsAndMatchesFromFirebase()
 comp.updateTIMDsFromFirebase()
-# scheduleUpdater.updateSchedule()
+scheduleUpdater.updateSchedule()
 CSVExporter.CSVExportAll(comp)
 calculator = Math.Calculator(comp)
 cycle = 1
-shouldSlack = False
+shouldSlack = True
 consolidator = dataChecker.DataChecker()
 consolidator.start()
 #APNServer.startNotiStream()
