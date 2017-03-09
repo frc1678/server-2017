@@ -1,5 +1,4 @@
 import utils
-import pdb
 import DataModel
 
 def firstCalculationDict(team, calc):

@@ -2,7 +2,6 @@ import DataModel
 import firebaseCommunicator
 import TBACommunicator
 import utils
-import time
 
 ############# Getting TBA Data ###################
 #Set to "<your initials>:TBA_communicator:0"

@@ -28,7 +28,7 @@ def resetScouts():
 #Main function for scout assignment
 def doSPRsAndAssignments(newMatchNumber):
 	#Wait until the availability has been confirmed to be correct
-	while True:
+	while(True):
 		try:
 			availabilityUpdated = fb.child("availabilityUpdated").get().val()
 		except:

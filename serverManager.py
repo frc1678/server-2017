@@ -1,14 +1,13 @@
 import CSVExporter
 import DataModel
 import firebaseCommunicator
-import time
 import os
 
 PBC = firebaseCommunicator.PyrebaseCommunicator()
 PBC.initializeFirebase()
 comp = DataModel.Competition(PBC)
 
-while True:
+while(True):
 	comp.updateTeamsAndMatchesFromFirebase()
 	comp.updateTIMDsFromFirebase()
 	cmd = raw_input(">>> ").split()

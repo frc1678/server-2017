@@ -1,6 +1,5 @@
 import utils
 import json
-import pdb
 import datetime
 import numpy as np
 import pyrebase
