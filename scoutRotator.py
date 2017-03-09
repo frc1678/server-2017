@@ -26,7 +26,7 @@ def resetScouts():
 	fb.child('scouts').set(scouts)
 
 def doSPRsAndAssignments(newMatchNumber):
-	while True:
+	while(True):
 		try:
 			availabilityUpdated = fb.child("availabilityUpdated").get().val()
 		except:
