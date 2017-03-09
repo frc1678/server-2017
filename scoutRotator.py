@@ -17,7 +17,7 @@ oldMatchNum = 0
 
 #Creates list of availability values in firebase for each scout
 def resetAvailability():
-	availability = {name: 1 for name in scouts} 
+	availability = {name: 1 for name in scouts}
 	fb.child('availability').set(availability)
 
 #Creates firebase objects for 18 scouts
@@ -25,17 +25,21 @@ def resetScouts():
 	scouts = {'scout' + str(num) : {'currentUser': '', 'scoutStatus': ''} for num in range(1,19)}
 	fb.child('scouts').set(scouts)
 
+#Main function for scout assignment
 def doSPRsAndAssignments(newMatchNumber):
+	#Wait until the availability has been confirmed to be correct
 	while True:
 		try:
 			availabilityUpdated = fb.child("availabilityUpdated").get().val()
 		except:
 			availabilityUpdated = 0
-		if availabilityUpdated: break
+		if availabilityUpdated:
+			break
 		time.sleep(2)
 	try:
 		fb.child("availabilityUpdated").set(0)
-		if newMatchNumber.get('data') == None: return
+		if newMatchNumber.get('data') == None:
+			return
 		print('Setting scouts for match ' + str(fb.child('currentMatchNum').get().val()))
 		#Gets scouting data from firebase
 		newMatchNumber = str(fb.child('currentMatchNum').get().val())
@@ -51,7 +55,7 @@ def doSPRsAndAssignments(newMatchNumber):
 		newAssignments = SPR.assignScoutsToRobots(available, redTeams + blueTeams, fb.child("scouts").get().val())
 		#and it is put on firebase
 		fb.child("scouts").update(newAssignments)
-	except e:
+	except:
 		CrashReporter.reportServerCrash(traceback.format_exc())
 
 #Use this to reset scouts and availability before assigning tablets
@@ -61,7 +65,7 @@ def tabletHandoutStream():
 	resetAvailability()
 	fb.child("currentMatchNum").stream(doSPRsAndAssignments)
 
-#Use this for running the server again (e.g. after a crash) to avoid reassigning scouts
+#Use this for running the server again (e.g. after a crash) to avoid assigning scouts to new robots or tablets
 def alreadyAssignedStream():
 	global oldMatchNum
 	oldMatchNum = fb.child("currentMatchNum").get().val()

@@ -37,9 +37,9 @@ class Calculator(object):
         self.autoGearIncrements = [1, 3, 7, 13]
         self.lifts = ['lift1', 'lift2', 'lift3']
         self.shotKeys = {
-            'autoFuelLow' : 'avgLowShotsAuto', 
-            'autoFuelHigh' : 'avgHighShotsAuto', 
-            'teleopFuelLow' : 'avgLowShotsTele', 
+            'autoFuelLow' : 'avgLowShotsAuto',
+            'autoFuelHigh' : 'avgHighShotsAuto',
+            'teleopFuelLow' : 'avgLowShotsTele',
             'teleopFuelHigh' : 'avgHighShotsTele'
         }
         self.cachedTeamDatas = {}
@@ -118,7 +118,13 @@ class Calculator(object):
 
     #SHOTS DATA
     def fieldsForShots(self, timd):
-        return sum([sum(map(lambda v: (v.get('numShots') or 0), timd.highShotTimesForBoilerTele)) / 3.0, sum(map(lambda v: (v.get('numShots') or 0), timd.highShotTimesForBoilerAuto)), sum(map(lambda v: (v.get('numShots') or 0), timd.lowShotTimesForBoilerTele)) / 9.0, sum(map(lambda v: (v.get('numShots') or 0), timd.lowShotTimesForBoilerAuto)) / 3.0])
+        teleHighShots = sum(map(lambda v: (v.get('numShots') or 0), timd.highShotTimesForBoilerTele)) / 3.0
+        autoHighShots = sum(map(lambda v: (v.get('numShots') or 0), timd.highShotTimesForBoilerAuto))
+        teleLowShots = sum(map(lambda v: (v.get('numShots') or 0), timd.lowShotTimesForBoilerTele)) / 9.0
+        autoLowShots = sum(map(lambda v: (v.get('numShots') or 0), timd.lowShotTimesForBoilerAuto)) / 3.0
+        return sum([teleHighShots, autoHighShots, teleLowShots, autoLowShots])
+        #We don't need a 350 character line
+        #return sum([sum(map(lambda v: (v.get('numShots') or 0), timd.highShotTimesForBoilerTele)) / 3.0, sum(map(lambda v: (v.get('numShots') or 0), timd.highShotTimesForBoilerAuto)), sum(map(lambda v: (v.get('numShots') or 0), timd.lowShotTimesForBoilerTele)) / 9.0, sum(map(lambda v: (v.get('numShots') or 0), timd.lowShotTimesForBoilerAuto)) / 3.0])
 
     def weightFuelShotsForDataPoint(self, timd, match, boilerPoint):
         timds = self.su.getCompletedTIMDsForMatchForAllianceIsRed(match, timd.teamNumber in match.redAllianceTeamNumbers)
