@@ -121,7 +121,7 @@ class Calculator(object):
         teleLowShots = sum(map(lambda v: (v.get('numShots') or 0), timd.lowShotTimesForBoilerTele)) / 9.0
         autoLowShots = sum(map(lambda v: (v.get('numShots') or 0), timd.lowShotTimesForBoilerAuto)) / 3.0
         return sum([teleHighShots, autoHighShots, teleLowShots, autoLowShots])
-        #We don't need a 350 character line
+        #We don't need a 344 character line
         #return sum([sum(map(lambda v: (v.get('numShots') or 0), timd.highShotTimesForBoilerTele)) / 3.0, sum(map(lambda v: (v.get('numShots') or 0), timd.highShotTimesForBoilerAuto)), sum(map(lambda v: (v.get('numShots') or 0), timd.lowShotTimesForBoilerTele)) / 9.0, sum(map(lambda v: (v.get('numShots') or 0), timd.lowShotTimesForBoilerAuto)) / 3.0])
 
     def weightFuelShotsForDataPoint(self, timd, match, boilerPoint):

@@ -21,5 +21,5 @@ while(True):
 		except Exception as e:
 			print e
 	elif cmd[0] == "hi":
-		pass
+		pass #Is there supposed to be a break statement here or is it supposed to keep looping after?
 	time.sleep(1)				
