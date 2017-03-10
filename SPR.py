@@ -38,9 +38,8 @@ class ScoutPrecision(object):
 			'lowShotTimesForBoilerTele': 0.1
 		}
 
-	'''SPR
-	Scout precision rank(ing): checks accuracy of scouts by comparing their past TIMDs to the consensus'''
-
+	#SPR
+	#Scout precision rank(ing): checks accuracy of scouts by comparing their past TIMDs to the consensus
 	#Outputs list of TIMDs that an inputted scout was involved in
 	def getTotalTIMDsForScoutName(self, scoutName, tempTIMDs):
 		return len(filter(lambda v: v.get('scoutName') == scoutName, tempTIMDs.values()))

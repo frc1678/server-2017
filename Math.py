@@ -16,7 +16,6 @@ from schemaUtils import SchemaUtils
 
 class Calculator(object):
     """Does math with scouted data"""
-
     def __init__(self, competition):
         super(Calculator, self).__init__()
         warnings.simplefilter('error', RuntimeWarning)
@@ -363,7 +362,7 @@ class Calculator(object):
         newMatrix = np.dot(inverse, shots)
         for team in teams: team.calculatedData.__dict__[self.shotKeys[key]] = newMatrix.item(teams.index(team), 0)
 
-    # Seeding
+    #Seeding
     def autoPointsForAlliance(self, team, match):
         timds = self.su.getTIMDsForMatchForAllianceIsRed(match, team.number in match.redAllianceTeamNumbers)
         fuelPts = sum(map(lambda t: t.calculatedData.numHighShotsAuto + t.calculatedData.numLowShotsAuto / 3.0, timds))
@@ -526,10 +525,8 @@ class Calculator(object):
             file.close()
 
     def doCalculations(self, PBC):
-        #Does calculations... What the hell do you think it does lmao
         isData = len(self.su.getCompletedTIMDsInCompetition()) > 0
         if isData:
-            #Only proceeds if there is any data
             startTime = time.time()
             #Gets time to later calculate time for a server cycle...
             threads = []
