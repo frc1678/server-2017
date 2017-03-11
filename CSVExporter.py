@@ -14,7 +14,6 @@ def CSVExportScoutZScores(zscores):
 
 def CSVExport(comp, name, keys = []):
 	excluded = ['calculatedData', 'name', 'imageKeys']
-	print keys
 	with open('./CSVExport-' + name + '.csv', 'w') as f:
 		defaultKeys = [k for k in Team().__dict__.keys() if k not in excluded and k in keys]
 		defaultKeys += [k for k in Team().calculatedData.__dict__.keys() if k in keys]

@@ -52,9 +52,10 @@ def secondCalculationDict(team, calc):
         cd.actualNumRPs = calc.getTeamRPsFromTBA(team)
         cd.actualSeed = calc.getTeamSeed(team)
     except:
-        cd.actualSeed = calc.cachedComp.actualSeedings.index(team) + 1
-        cd.actualNumRPs = calc.actualNumberOfRPs(team)
-        cd.predictedSeed = calc.cachedComp.predictedSeedings.index(team) + 1
+        if team in calc.cachedComp.teamsWithMatchesCompleted:
+            cd.actualSeed = calc.cachedComp.actualSeedings.index(team) + 1
+            cd.actualNumRPs = calc.actualNumberOfRPs(team)
+            cd.predictedSeed = calc.cachedComp.predictedSeedings.index(team) + 1
     cd.RScoreDefense = calc.cachedComp.defenseZScores[team.number]
     cd.RScoreBallControl = calc.cachedComp.ballControlZScores[team.number]
     cd.RScoreGearControl = calc.cachedComp.gearControlZScores[team.number]

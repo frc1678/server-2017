@@ -31,7 +31,7 @@ class PyrebaseCommunicator(object):
 	def updateFirebaseWithTeam(self, team):
 		print(str(team.number) + ",",)
 		teamDict = utils.makeDictFromTeam(team)
-		firebase.child("Teams").child(team.number).set(teamDict)
+		self.firebase.child("Teams").child(team.number).set(teamDict)
 
 	def updateFirebaseWithMatch(self, match):
 		print(str(match.number) + ",",)
@@ -43,7 +43,7 @@ class PyrebaseCommunicator(object):
 	def updateFirebaseWithTIMD(self, timd):
 		timdDict = utils.makeDictFromTIMD(timd)
 		print(str(timd.teamNumber) + "Q" + str(timd.matchNumber) + "," ,)
-		firebase.child("TeamInMatchDatas").child(str(timd.teamNumber) + "Q" + str(timd.matchNumber)).set(timdDict)
+		self.firebase.child("TeamInMatchDatas").child(str(timd.teamNumber) + "Q" + str(timd.matchNumber)).set(timdDict)
 
 	def addCalculatedTeamDataToFirebase(self, team):
 		print("Writing team " + str(team.number) + " to Firebase...")
@@ -112,7 +112,6 @@ class PyrebaseCommunicator(object):
 		now = str(datetime.datetime.now())
 		filePath = './' + fileName
 		self.fbStorage.child("Exports").child(fileName).put(filePath)
-		return self.firebase.child(location).get().val()
 
 	def addCurrentMatchToFirebase(self):
 		self.firebase.child("currentMatchNum").set(1)

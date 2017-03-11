@@ -11,7 +11,7 @@ PBC.initializeFirebase()
 fb = PBC.firebase
 
 #testScouts = "calvin ethan nathan wentao janet carter kenny ryan nate astha astha gemma livy ben".split()
-scouts = "aidan alex calvin carter evan gemma jack janet jesse jon justi katie kyle mingyo mx rachel sage sam sophia wesley westley zoe".split()
+scouts = "aidan alex calvin carter evan gemma jack janet jesse jon justin jishnu katie kyle mingyo mx rachel sage sam sophia wesley westley zoe".split()
 SPR = SPR.ScoutPrecision()
 oldMatchNum = 0
 
@@ -47,11 +47,11 @@ def doSPRsAndAssignments(newMatchNumber):
 		available = [k for (k, v) in fb.child("availability").get().val().items() if v == 1]
 		#Grades scouts and assigns them to robots
 		SPR.calculateScoutPrecisionScores(fb.child("TempTeamInMatchDatas").get().val(), available)
-		SPR.sprZScores(PBC)
+		# SPR.sprZScores(PBC)
 		newAssignments = SPR.assignScoutsToRobots(available, redTeams + blueTeams, fb.child("scouts").get().val())
 		#and it is put on firebase
 		fb.child("scouts").update(newAssignments)
-	except e:
+	except Exception as e:
 		CrashReporter.reportServerCrash(traceback.format_exc())
 
 #Use this to reset scouts and availability before assigning tablets
@@ -76,3 +76,4 @@ def startAtNewMatch(newMatchNum):
 def simpleStream():
 	fb.child("currentMatchNum").stream(doSPRsAndAssignments)
 
+tabletHandoutStream()

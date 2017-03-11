@@ -125,6 +125,7 @@ class Calculator(object):
         fuelPts = self.getShotPointsForMatchForAlliance(timds, timd.teamNumber in match.redAllianceTeamNumbers, match)
         scoutedFuelPoints = sum(map(self.fieldsForShots, timds))
         weightage = fuelPts / float(scoutedFuelPoints) if None not in [scoutedFuelPoints, fuelPts] and scoutedFuelPoints != 0 else None
+        if fuelPts < 0: raise OSError("Data overestimate, server will keep running")
         return sum(map(lambda v: (v.get('numShots') or 0), boilerPoint)) * weightage if weightage != None and weightage > 0 else 0
 
     def getShotPointsForMatchForAlliance(self, timds, allianceIsRed, match):
@@ -145,7 +146,7 @@ class Calculator(object):
         return filter(lambda v: v.get('position') == 'Key', shots)
 
     def getAvgKeyShotTimeForTIMD(self, timd):
-        return np.mean(map(lambda t: (t.get('time') or 0), self.getAllBoilerFieldsAtKey(timd))) / 1000.0 if self.getAllBoilerFieldsAtKey(timd) else None
+        return np.mean(map(lambda t: (t.get('time') or 0), self.getAllBoilerFieldsAtKey(timd))) if self.getAllBoilerFieldsAtKey(timd) else None
 
     def getTotalAverageShotPointsForAlliance(self, alliance):
         return sum(map(self.getTotalAverageShotPointsForTeam, alliance))
@@ -247,7 +248,7 @@ class Calculator(object):
         baselinePts = sum(map(lambda t: (t.calculatedData.baselineReachedPercentage or 0) * 5, alliance))
         fuelPts = self.getTotalAverageShotPointsForAlliance(alliance)
         liftoffPoints = sum(map(lambda t: (t.calculatedData.liftoffAbility or 0), alliance))
-        gearPts = self.getRotorsTurningForDatasForGearFunc(alliance, lambda t: t.calculatedData.avgGearsPlacedTele, lambda t: t.calculatedData.avgGearsPlacedAuto)
+        gearPts = self.getRotorsTurningForDatasForGearFunc(alliance, lambda t: t.calculatedData.avgGearsPlacedTele or 0, lambda t: t.calculatedData.avgGearsPlacedAuto or 0)
         return baselinePts + fuelPts + liftoffPoints + gearPts
 
     def predictedPlayoffScoreForAlliance(self, alliance):
@@ -266,8 +267,8 @@ class Calculator(object):
         speed = (team.calculatedData.RScoreSpeed or 0) * 2.4
         agility = (team.calculatedData.RScoreAgility or 0) * 1.2
         functionalPercentage = (1 - team.calculatedData.disfunctionalPercentage)
-        freqLiftOurTeam = 'lift1' #self.getMostFrequentLift(self.su.getTeamForNumber(self.ourTeamNum))
-        gA = self.gearPlacementAbilityExcludeLift(team, freqLiftOurTeam) * 0.14 #convert to some number of points
+        freqLiftOurTeam = self.getMostFrequentLift(self.su.getTeamForNumber(self.ourTeamNum))
+        gA = self.gearPlacementAbilityExcludeLift(team, freqLiftOurTeam) * 0.14 
         return functionalPercentage * (gA + defense + team.calculatedData.liftoffAbility + agility + speed)
 
     def predictedScoreForMatchForAlliance(self, match, allianceIsRed):
@@ -403,8 +404,6 @@ class Calculator(object):
         return np.mean([predictedRPs, self.actualNumberOfRPs(team)])
 
     def actualNumberOfRPs(self, team):
-        print self.getAverageForDataFunctionForTeam(team, lambda tm: tm.calculatedData.numRPs)
-        print team.number
         return self.getAverageForDataFunctionForTeam(team, lambda tm: tm.calculatedData.numRPs)
 
     def scoreRPsGainedFromMatchWithScores(self, score, opposingScore):
@@ -492,7 +491,7 @@ class Calculator(object):
             print("Completed first calcs for " + str(team.number))
 
     def doSecondCalculationsForTeam(self, team):
-        if all([len(self.su.getCompletedTIMDsForTeam(team)), len(self.su.getCompletedMatchesForTeam(team))]):
+        if len(self.su.getCompletedTIMDsForTeam(team)):
             secondCalculationDict(team, self)
             print("Completed second calculations for team " + str(team.number))
 

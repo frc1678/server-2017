@@ -8,15 +8,15 @@ import time
 #Set to "<your initials>:TBA_communicator:0"
 
 TBAC = TBACommunicator.TBACommunicator()
-competition = DataModel.Competition()
-competition.eventCode = TBAC.code
 FBC = firebaseCommunicator.PyrebaseCommunicator()
-
-FBC.JSONteams = TBAC.makeEventTeamsRequest()
-FBC.JSONmatches = TBAC.makeEventMatchesRequest()
-FBC.wipeDatabase()
-FBC.addCurrentMatchToFirebase()
-FBC.addTeamsToFirebase()
-FBC.addMatchesToFirebase()
+FBC.initializeFirebase()
+competition = DataModel.Competition(FBC)
+competition.eventCode = TBAC.code
+competition.FBC.JSONteams = TBAC.makeEventTeamsRequest()
+competition.FBC.JSONmatches = TBAC.makeEventMatchesRequest()
+competition.FBC.wipeDatabase()
+competition.FBC.addCurrentMatchToFirebase()
+competition.FBC.addTeamsToFirebase()
+competition.FBC.addMatchesToFirebase()
 competition.updateTeamsAndMatchesFromFirebase()
-FBC.addTIMDsToFirebase(competition.matches) #You need to create the matches and teams before you call this
+competition.FBC.addTIMDsToFirebase(competition.matches) #You need to create the matches and teams before you call this
