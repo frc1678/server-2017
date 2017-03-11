@@ -1,13 +1,12 @@
 import math
+import time
 from operator import attrgetter
-import pdb
 import numpy as np
 import scipy as sp
 import scipy.stats as stats
 import CacheModel as cache
 import DataModel
 import utils
-import time
 import TBACommunicator
 from teamCalcDataKeysToLambda import *
 import multiprocessing
@@ -18,7 +17,6 @@ from schemaUtils import SchemaUtils
 
 class Calculator(object):
     """Does math with scouted data"""
-
     def __init__(self, competition):
         super(Calculator, self).__init__()
         warnings.simplefilter('error', RuntimeWarning)
@@ -37,9 +35,9 @@ class Calculator(object):
         self.autoGearIncrements = [1, 3, 7, 13]
         self.lifts = ['lift1', 'lift2', 'lift3']
         self.shotKeys = {
-            'autoFuelLow' : 'avgLowShotsAuto', 
-            'autoFuelHigh' : 'avgHighShotsAuto', 
-            'teleopFuelLow' : 'avgLowShotsTele', 
+            'autoFuelLow' : 'avgLowShotsAuto',
+            'autoFuelHigh' : 'avgHighShotsAuto',
+            'teleopFuelLow' : 'avgLowShotsTele',
             'teleopFuelHigh' : 'avgHighShotsTele'
         }
         self.cachedTeamDatas = {}
@@ -118,7 +116,13 @@ class Calculator(object):
 
     #SHOTS DATA
     def fieldsForShots(self, timd):
-        return sum([sum(map(lambda v: (v.get('numShots') or 0), timd.highShotTimesForBoilerTele)) / 3.0, sum(map(lambda v: (v.get('numShots') or 0), timd.highShotTimesForBoilerAuto)), sum(map(lambda v: (v.get('numShots') or 0), timd.lowShotTimesForBoilerTele)) / 9.0, sum(map(lambda v: (v.get('numShots') or 0), timd.lowShotTimesForBoilerAuto)) / 3.0])
+        teleHighShots = sum(map(lambda v: (v.get('numShots') or 0), timd.highShotTimesForBoilerTele)) / 3.0
+        autoHighShots = sum(map(lambda v: (v.get('numShots') or 0), timd.highShotTimesForBoilerAuto))
+        teleLowShots = sum(map(lambda v: (v.get('numShots') or 0), timd.lowShotTimesForBoilerTele)) / 9.0
+        autoLowShots = sum(map(lambda v: (v.get('numShots') or 0), timd.lowShotTimesForBoilerAuto)) / 3.0
+        return sum([teleHighShots, autoHighShots, teleLowShots, autoLowShots])
+        #We don't need a 344 character line
+        #return sum([sum(map(lambda v: (v.get('numShots') or 0), timd.highShotTimesForBoilerTele)) / 3.0, sum(map(lambda v: (v.get('numShots') or 0), timd.highShotTimesForBoilerAuto)), sum(map(lambda v: (v.get('numShots') or 0), timd.lowShotTimesForBoilerTele)) / 9.0, sum(map(lambda v: (v.get('numShots') or 0), timd.lowShotTimesForBoilerAuto)) / 3.0])
 
     def weightFuelShotsForDataPoint(self, timd, match, boilerPoint):
         timds = self.su.getCompletedTIMDsForMatchForAllianceIsRed(match, timd.teamNumber in match.redAllianceTeamNumbers)
@@ -226,7 +230,8 @@ class Calculator(object):
         agWeight = 0.4
         dfWeight = 0.0
         data = [timd.rankSpeed, timd.rankGearControl, timd.rankBallControl, timd.rankDefense, timd.rankAgility]
-        if None in data: return
+        if None in data:
+            return
         return timd.rankSpeed * spWeight + timd.rankGearControl * gCWeight + timd.rankBallControl * bCWeight + timd.rankAgility * agWeight + timd.rankDefense * dfWeight
 
     def predictedScoreForAllianceWithNumbers(self, allianceNumbers):
@@ -359,7 +364,7 @@ class Calculator(object):
         newMatrix = np.dot(inverse, shots)
         for team in teams: team.calculatedData.__dict__[self.shotKeys[key]] = newMatrix.item(teams.index(team), 0)
 
-    # Seeding
+    #Seeding
     def autoPointsForAlliance(self, team, match):
         timds = self.su.getTIMDsForMatchForAllianceIsRed(match, team.number in match.redAllianceTeamNumbers)
         fuelPts = sum(map(lambda t: t.calculatedData.numHighShotsAuto + t.calculatedData.numLowShotsAuto / 3.0, timds))
@@ -520,10 +525,8 @@ class Calculator(object):
             file.close()
 
     def doCalculations(self, PBC):
-        #Does calculations... What the hell do you think it does lmao
         isData = len(self.su.getCompletedTIMDsInCompetition()) > 0
         if isData:
-            #Only proceeds if there is any data
             startTime = time.time()
             #Gets time to later calculate time for a server cycle...
             threads = []

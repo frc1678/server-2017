@@ -1,10 +1,9 @@
 import pyrebase
 import numpy as np
 import utils
-import time
 import multiprocessing
-import pdb
 import firebaseCommunicator
+import time
 
 #These are the keys that have lists of dicts
 #Lists may have different numbers of dicts, but the keys in the dicts should be the same

@@ -1,6 +1,5 @@
 import utils
 import json
-import pdb
 import datetime
 import numpy as np
 import pyrebase
@@ -26,7 +25,6 @@ class PyrebaseCommunicator(object):
 		app = pyrebase.initialize_app(config)
 		self.firebase = app.database()
 		self.fbStorage = app.storage()
-
 
 	def updateFirebaseWithTeam(self, team):
 		print(str(team.number) + ",",)
@@ -80,7 +78,7 @@ class PyrebaseCommunicator(object):
 		matches = filter(lambda m: m["comp_level"] == 'qm', self.JSONmatches)
 		map(lambda m: self.updateFirebaseWithMatch(utils.setDataForMatch(m)), matches)
 
-	def addTIMDsToFirebase(self, matches): 
+	def addTIMDsToFirebase(self, matches):
 		#gets all team numbers in a given match and updates firebase with the corresponding TIMD
 		print("\nDoing TIMDs...")
 		timdFunc = lambda t, m: self.updateFirebaseWithTIMD(utils.makeTIMDFromTeamNumberAndMatchNumber(t, m.number))
@@ -93,7 +91,7 @@ class PyrebaseCommunicator(object):
 			now = str(datetime.datetime.now())
 			with open("./CachedFirebases/" + now + '.json', 'w+') as f:
 				json.dump(data, f)
-		except Exception as e:
+		except:
 			pass
 
 	def addCompInfoToFirebase(self):
@@ -115,4 +113,3 @@ class PyrebaseCommunicator(object):
 
 	def addCurrentMatchToFirebase(self):
 		self.firebase.child("currentMatchNum").set(1)
-

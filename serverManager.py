@@ -1,14 +1,13 @@
 import CSVExporter
 import DataModel
 import firebaseCommunicator
-import time
 import os
 
 PBC = firebaseCommunicator.PyrebaseCommunicator()
 PBC.initializeFirebase()
 comp = DataModel.Competition(PBC)
 
-while True:
+while(True):
 	comp.updateTeamsAndMatchesFromFirebase()
 	comp.updateTIMDsFromFirebase()
 	cmd = raw_input(">>> ").split()
@@ -22,5 +21,5 @@ while True:
 		except Exception as e:
 			print e
 	elif cmd[0] == "hi":
-		pass
+		pass #Is there supposed to be a break statement here or is it supposed to keep looping after?
 	time.sleep(1)				

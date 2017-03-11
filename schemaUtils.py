@@ -83,7 +83,10 @@ class SchemaUtils(object):
         return filter(self.timdIsCompleted, self.getTIMDsForTeam(team))
 
     def getTIMDsForMatchForAllianceIsRed(self, match, allianceIsRed):
-        return filter(lambda t: t.teamNumber in match.redAllianceTeamNumbers, self.getTIMDsForMatch(match)) if allianceIsRed else filter(lambda t: t.teamNumber in match.blueAllianceTeamNumbers, self.getTIMDsForMatch(match))
+        if allianceIsRed:
+            return filter(lambda t: t.teamNumber in match.redAllianceTeamNumbers, self.getTIMDsForMatch(match))
+        else:
+            return filter(lambda t: t.teamNumber in match.blueAllianceTeamNumbers, self.getTIMDsForMatch(match))
 
     def getCompletedTIMDsForMatchForAllianceIsRed(self, match, allianceIsRed):
         return filter(self.timdIsCompleted, self.getTIMDsForMatchForAllianceIsRed(match, allianceIsRed))

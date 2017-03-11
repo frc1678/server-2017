@@ -1,1 +1,1 @@
-print "hi"
+print "hi" #Some nice syntax error should pop up yay
