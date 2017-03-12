@@ -1,5 +1,7 @@
 import utils
 import DataModel
+import pdb
+import traceback
 
 def firstCalculationDict(team, calc):
     cd = team.calculatedData
@@ -20,6 +22,7 @@ def firstCalculationDict(team, calc):
         avgGearControl = lambda tm: tm.rankGearControl,
         avgDefense = lambda tm: tm.rankDefense if tm.rankDefense else None, 
         avgKeyShotTime = lambda tm: tm.calculatedData.avgKeyShotTime,
+        avgHopperShotTime = lambda tm: tm.calculatedData.avgHopperShotTime,
         liftoffAbility = lambda tm: tm.calculatedData.liftoffAbility, 
         disfunctionalPercentage = lambda tm: tm.calculatedData.wasDisfunctional,
         avgGearsPlacedAuto = lambda tm: tm.calculatedData.numGearsPlacedAuto, 
@@ -50,17 +53,20 @@ def secondCalculationDict(team, calc):
     try:
         cd.actualNumRPs = calc.getTeamRPsFromTBA(team)
         cd.actualSeed = calc.getTeamSeed(team)
-    except:
+    except Exception as e:
+        print traceback.format_exc()
         if team in calc.cachedComp.teamsWithMatchesCompleted:
+            print team.number
             cd.actualSeed = calc.cachedComp.actualSeedings.index(team) + 1
             cd.actualNumRPs = calc.actualNumberOfRPs(team)
             cd.predictedSeed = calc.cachedComp.predictedSeedings.index(team) + 1
-    cd.RScoreDefense = calc.cachedComp.defenseZScores[team.number]
-    cd.RScoreBallControl = calc.cachedComp.ballControlZScores[team.number]
-    cd.RScoreGearControl = calc.cachedComp.gearControlZScores[team.number]
-    cd.RScoreSpeed = calc.cachedComp.speedZScores[team.number]
-    cd.RScoreAgility = calc.cachedComp.agilityZScores[team.number]
-    cd.RScoreDrivingAbility = calc.cachedComp.drivingAbilityZScores[team.number]
+    if team in calc.cachedComp.teamsWithMatchesCompleted:
+        cd.RScoreDefense = calc.cachedComp.defenseZScores[team.number]
+        cd.RScoreBallControl = calc.cachedComp.ballControlZScores[team.number]
+        cd.RScoreGearControl = calc.cachedComp.gearControlZScores[team.number]
+        cd.RScoreSpeed = calc.cachedComp.speedZScores[team.number]
+        cd.RScoreAgility = calc.cachedComp.agilityZScores[team.number]
+        cd.RScoreDrivingAbility = calc.cachedComp.drivingAbilityZScores[team.number]
     cd.firstPickAbility = calc.firstPickAbility(team)
     cd.overallSecondPickAbility = calc.overallSecondPickAbility(team)
 
@@ -72,7 +78,8 @@ def TIMDCalcDict(timd, calc):
     c = timd.calculatedData
     c.numGearsPlacedAuto = calc.getTotalValueForValueDict(timd.gearsPlacedByLiftAuto)
     c.numGearsPlacedTele = calc.getTotalValueForValueDict(timd.gearsPlacedByLiftTele)
-    c.avgKeyShotTime = calc.getAvgKeyShotTimeForTIMD(timd)
+    c.avgKeyShotTime = calc.getAvgKeyShotTimeForTIMD(timd, 'Key')
+    c.avgHopperShotTime = calc.getAvgKeyShotTimeForTIMD(timd, 'Hopper')
     c.numHighShotsTele = calc.weightFuelShotsForDataPoint(timd, match, timd.highShotTimesForBoilerTele)
     c.numHighShotsAuto = calc.weightFuelShotsForDataPoint(timd, match, timd.highShotTimesForBoilerAuto)
     c.numLowShotsTele = calc.weightFuelShotsForDataPoint(timd, match, timd.lowShotTimesForBoilerTele)

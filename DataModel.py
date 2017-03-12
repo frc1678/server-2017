@@ -61,6 +61,7 @@ class CalculatedTeamData(object):
 		self.sdLowShotsTele = None
 		self.sdBaselineReachedPercentage = None
 		self.avgKeyShotTime = None
+		self.avgHopperShotTime = None
 		self.avgAgility = None
 		self.avgSpeed = None
 		self.avgBallControl = None
@@ -219,5 +220,6 @@ class CalculatedTeamInMatchData(object):
 		self.numGearsPlacedAuto = None
 		self.wasDisfunctional = None
 		self.avgKeyShotTime = None
+		self.avgHopperShotTime = None
 		self.drivingAbility = None
 		self.__dict__.update(args)

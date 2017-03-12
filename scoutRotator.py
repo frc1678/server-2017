@@ -61,8 +61,8 @@ def doSPRsAndAssignments(newMatchNumber):
 #Use this to reset scouts and availability before assigning tablets
 #e.g. at the beginning of the day at a competition
 def tabletHandoutStream():
-	resetScouts()
-	resetAvailability()
+	# resetScouts()
+	# resetAvailability()
 	fb.child("currentMatchNum").stream(doSPRsAndAssignments)
 
 #Use this for running the server again (e.g. after a crash) to avoid assigning scouts to new robots or tablets
@@ -79,4 +79,3 @@ def startAtNewMatch(newMatchNum):
 #Also useful for unexpected changes in availability
 def simpleStream():
 	fb.child("currentMatchNum").stream(doSPRsAndAssignments)
-

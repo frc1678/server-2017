@@ -2,6 +2,7 @@ import CSVExporter
 import DataModel
 import firebaseCommunicator
 import os
+import time
 
 PBC = firebaseCommunicator.PyrebaseCommunicator()
 PBC.initializeFirebase()

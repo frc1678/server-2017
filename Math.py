@@ -145,12 +145,12 @@ class Calculator(object):
     def getStandardDevShotPointsForTeam(self, team):
         return utils.sumStdDevs([(team.calculatedData.sdHighShotsTele or 0) / 3.0, (team.calculatedData.sdLowShotsTele or 0) / 9.0, (team.calculatedData.sdHighShotsAuto or 0), (team.calculatedData.sdLowShotsAuto or 0) / 3.0])
 
-    def getAllBoilerFieldsAtKey(self, timd):
+    def getAllBoilerFieldsForKey(self, timd, key):
         shots = timd.highShotTimesForBoilerTele + timd.highShotTimesForBoilerAuto + timd.lowShotTimesForBoilerAuto + timd.lowShotTimesForBoilerTele
         return filter(lambda v: v.get('position') == 'Key', shots)
 
-    def getAvgKeyShotTimeForTIMD(self, timd):
-        return np.mean(map(lambda t: (t.get('time') or 0), self.getAllBoilerFieldsAtKey(timd))) if self.getAllBoilerFieldsAtKey(timd) else None
+    def getAvgKeyShotTimeForTIMD(self, timd, key):
+        return np.mean(map(lambda t: (t.get('time') or 0), self.getAllBoilerFieldsForKey(timd, key))) if self.getAllBoilerFieldsForKey(timd, key) else None
 
     def getTotalAverageShotPointsForAlliance(self, alliance):
         return sum(map(self.getTotalAverageShotPointsForTeam, alliance))
@@ -435,7 +435,7 @@ class Calculator(object):
         return RPs if not math.isnan(RPs) else None
 
     def teamsSortedByRetrievalFunctions(self, retrievalFunctions):
-        return sorted(self.cachedComp.teamsWithMatchesCompleted, key=lambda t: (retrievalFunctions[0](t), retrievalFunctions[1](t), retrievalFunctions[2](t)), reverse=True)
+        return sorted(self.cachedComp.teamsWithMatchesCompleted, key=lambda t: (retrievalFunctions[0](t) or 0, retrievalFunctions[1](t) or 0, retrievalFunctions[2](t) or 0), reverse=True)
 
     def getTeamSeed(self, team):
         return int(filter(lambda x: int(x[1]) == team.number, self.cachedComp.actualSeedings)[0][0])
@@ -463,7 +463,8 @@ class Calculator(object):
         map(self.doSecondCachingForTeam, self.comp.teams)
         try:
             self.cachedComp.actualSeedings = self.TBAC.makeEventRankingsRequest()
-        except:
+        except Exception as e:
+            print e
             self.cachedComp.actualSeedings = self.teamsSortedByRetrievalFunctions(self.getSeedingFunctions())
         self.cachedComp.zGearProbabilities = self.getAllGearProbabilitiesForTeams(lambda tm: self.totalGearsPlacedForTIMD(tm))
         self.cachedComp.predictedSeedings = self.teamsSortedByRetrievalFunctions(self.getPredictedSeedingFunctions())
@@ -546,6 +547,7 @@ class Calculator(object):
             self.cacheFirstTeamData()
             self.doFirstTeamCalculations()
             self.cacheSecondTeamData()
+            print len(self.cachedComp.teamsWithMatchesCompleted)
             self.doMatchesCalculations()
             self.doSecondTeamCalculations()
             map(lambda o: FirebaseWriteObjectProcess(o, PBC).start(), self.cachedComp.teamsWithMatchesCompleted + self.su.getCompletedTIMDsInCompetition() + self.comp.matches)

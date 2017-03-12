@@ -6,7 +6,7 @@ class TBACommunicator(object):
 	"""docstring for TBACommunicator"""
 	def __init__(self):
 		super(TBACommunicator, self).__init__()
-		self.code = 'txlu'
+		self.code = 'cama'
 		self.year = 2017
 		self.key = str(self.year) + self.code
 		self.basicURL = "http://www.thebluealliance.com/api/v2/"
