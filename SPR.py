@@ -275,8 +275,8 @@ class ScoutPrecision(object):
 		return scoutRotatorDict
 
 	#Records z-scores of each scouts spr, for later checking and comparison
-	def sprZScores(self):
-		if len(set(self.sprs.values())) == 1:
+	def sprZScores(self, PBC):
+		if np.std(self.sprs.values()) == 0:
 			zscores = {k : (0.0, self.sprs[k]) for k in self.sprs.keys()}
 		else:
 			zscores = {k : (zscore, self.sprs[k]) for (k, zscore) in zip(self.sprs.keys(), stats.zscore(self.sprs.values()))}

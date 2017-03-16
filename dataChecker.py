@@ -133,7 +133,6 @@ class DataChecker(multiprocessing.Process):
 			else:
 				#Gets a common value across any kind of list of values and puts it into the combined TIMD
 				returnDict.update({k: self.commonValue(k, map(lambda tm: tm.get(k) or 0, self.consolidationGroups[key]))})
-				print returnDict
 		for k,v in returnDict.items():
 			if v == 0 and k in boolKeys:
 				returnDict[k] = False

@@ -92,11 +92,10 @@ class Calculator(object):
             return 1.0 - stats.norm.cdf(x, mu, sigma)
 
     def welchsTest(self, mean1, mean2, std1, std2, sampleSize1, sampleSize2):
+        t = stats.ttest_ind_from_stats(mean1, std1, sampleSize1, mean2, std2, sampleSize2, False).statistic #False means the variances are unequal
         if std1 == 0.0 or std2 == 0.0 or sampleSize1 <= 0 or sampleSize2 <= 0:
             return mean1 > mean2
-        numerator = mean1 - mean2
-        denominator = ((std1 ** 2) / sampleSize1 + (std2 ** 2) / sampleSize2) ** 0.5
-        return numerator / denominator
+        return t
 
     def getAverageForDataFunctionForTIMDValues(self, timds, dataFunction):
         values = [dataFunction(timd) for timd in timds]
@@ -147,7 +146,7 @@ class Calculator(object):
 
     def getAllBoilerFieldsForKey(self, timd, key):
         shots = timd.highShotTimesForBoilerTele + timd.highShotTimesForBoilerAuto + timd.lowShotTimesForBoilerAuto + timd.lowShotTimesForBoilerTele
-        return filter(lambda v: v.get('position') == 'Key', shots)
+        return filter(lambda v: v.get('position') == key, shots)
 
     def getAvgKeyShotTimeForTIMD(self, timd, key):
         return np.mean(map(lambda t: (t.get('time') or 0), self.getAllBoilerFieldsForKey(timd, key))) if self.getAllBoilerFieldsForKey(timd, key) else None
@@ -405,8 +404,8 @@ class Calculator(object):
 
     def predictedNumberOfRPs(self, team): #Get average predicted RPs based on predicted score RPs and other parameters
         predictedRPsFunction = lambda m: self.predictedRPsForAllianceForMatch(self.su.getTeamAllianceIsRedInMatch(team, m), m)
-        predictedRPs = np.mean([predictedRPsFunction(m) for m in self.su.getMatchesForTeam(team) if not self.su.matchIsCompleted(m) and predictedRPsFunction(m) != None])
-        return np.mean([predictedRPs, self.actualNumberOfRPs(team)])
+        predicted = [predictedRPsFunction(m) for m in self.su.getMatchesForTeam(team) if not self.su.matchIsCompleted(m) and predictedRPsFunction(m) != None]
+        return np.mean([np.mean(predicted), self.actualNumberOfRPs(team)]) if len(predicted) else self.actualNumberOfRPs(team)
 
     def actualNumberOfRPs(self, team):
         return self.getAverageForDataFunctionForTeam(team, lambda tm: tm.calculatedData.numRPs)

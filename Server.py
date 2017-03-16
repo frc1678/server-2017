@@ -24,8 +24,8 @@ calculator = Math.Calculator(comp)
 cycle = 1
 shouldSlack = False
 consolidator = dataChecker.DataChecker()
-consolidator.start()
-APNServer.startNotiStream()
+# consolidator.start()
+# APNServer.startNotiStream()
 
 #Use this if tablets are assigned to scouts by the server, and then given to the correct scouts
 #This means at the beginning of a competition day

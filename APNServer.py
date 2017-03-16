@@ -29,7 +29,7 @@ def sendNotiForUsers(data):
 def sendNotiForUser(usr, currentMatchNum):
         token = usr["Token"]
         starred = usr.get("StarredMatches").values() if "StarredMatches" in usr.keys() else []
-        observedMs = filter(lambda n: (n - currentMatchNum) >= 2, starred)
+        observedMs = filter(lambda n: (n - currentMatchNum) >= 2 and (n - currentMatchNum) <= 0, starred)
         [sendNoti(n, currentMatchNum, token) for n in observedMs]
 
 def startNotiStream():

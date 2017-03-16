@@ -12,8 +12,8 @@ class PyrebaseCommunicator(object):
 		self.JSONteams = []
 		self.firebase = None
 		self.fbStorage = None
-		# self.url = 'scouting-2017-5f51c'
-		self.url = '1678-scouting-2016'
+		self.url = 'scouting-2017-5f51c'
+		# self.url = '1678-scouting-2016'
 
 	def initializeFirebase(self):
 		config = {

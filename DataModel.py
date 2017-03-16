@@ -151,6 +151,7 @@ class TeamInMatchData(object):
 		self.teamNumber = None
 		self.matchNumber = None
 		self.scoutName = None
+		self.superNotes = None
 		self.numHoppersOpenedTele = None
 		self.numGearGroundIntakesTele = None
 		self.numGearLoaderIntakesTele = None

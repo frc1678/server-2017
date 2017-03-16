@@ -54,12 +54,10 @@ def secondCalculationDict(team, calc):
         cd.actualNumRPs = calc.getTeamRPsFromTBA(team)
         cd.actualSeed = calc.getTeamSeed(team)
     except Exception as e:
-        print traceback.format_exc()
+        print e
         if team in calc.cachedComp.teamsWithMatchesCompleted:
-            print team.number
             cd.actualSeed = calc.cachedComp.actualSeedings.index(team) + 1
             cd.actualNumRPs = calc.actualNumberOfRPs(team)
-            cd.predictedSeed = calc.cachedComp.predictedSeedings.index(team) + 1
     if team in calc.cachedComp.teamsWithMatchesCompleted:
         cd.RScoreDefense = calc.cachedComp.defenseZScores[team.number]
         cd.RScoreBallControl = calc.cachedComp.ballControlZScores[team.number]
@@ -67,6 +65,7 @@ def secondCalculationDict(team, calc):
         cd.RScoreSpeed = calc.cachedComp.speedZScores[team.number]
         cd.RScoreAgility = calc.cachedComp.agilityZScores[team.number]
         cd.RScoreDrivingAbility = calc.cachedComp.drivingAbilityZScores[team.number]
+        cd.predictedSeed = calc.cachedComp.predictedSeedings.index(team) + 1
     cd.firstPickAbility = calc.firstPickAbility(team)
     cd.overallSecondPickAbility = calc.overallSecondPickAbility(team)
 

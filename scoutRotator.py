@@ -51,7 +51,7 @@ def doSPRsAndAssignments(newMatchNumber):
 		available = [k for (k, v) in fb.child("availability").get().val().items() if v == 1]
 		#Grades scouts and assigns them to robots
 		SPR.calculateScoutPrecisionScores(fb.child("TempTeamInMatchDatas").get().val(), available)
-		# SPR.sprZScores(PBC)
+		SPR.sprZScores(PBC)
 		newAssignments = SPR.assignScoutsToRobots(available, redTeams + blueTeams, fb.child("scouts").get().val())
 		#and it is put on firebase
 		fb.child("scouts").update(newAssignments)
@@ -61,8 +61,8 @@ def doSPRsAndAssignments(newMatchNumber):
 #Use this to reset scouts and availability before assigning tablets
 #e.g. at the beginning of the day at a competition
 def tabletHandoutStream():
-	# resetScouts()
-	# resetAvailability()
+	resetScouts()
+	resetAvailability()
 	fb.child("currentMatchNum").stream(doSPRsAndAssignments)
 
 #Use this for running the server again (e.g. after a crash) to avoid assigning scouts to new robots or tablets
