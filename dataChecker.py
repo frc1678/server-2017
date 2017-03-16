@@ -131,7 +131,6 @@ class DataChecker(multiprocessing.Process):
 					if tm.get(k) != None:
 						listToConsolidate += [tm.get(k)]
 					else:
-						print "I'm an error"
 						listToConsolidate += [0]
 				returnDict.update({k: self.commonValue(k, listToConsolidate)})
 		for k,v in returnDict.items():
