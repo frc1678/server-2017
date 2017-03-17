@@ -48,7 +48,6 @@ def firstCalculationDict(team, calc):
 def secondCalculationDict(team, calc):
     cd = team.calculatedData
     cd.predictedNumRPs = calc.predictedNumberOfRPs(team)
-    cd.actualNumRPs = calc.actualNumberOfRPs(team)
     cd.firstPickRotorBonusChance = calc.firstPickAllRotorsChance(team)
     try:
         cd.actualNumRPs = calc.getTeamRPsFromTBA(team)

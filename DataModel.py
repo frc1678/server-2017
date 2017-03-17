@@ -96,7 +96,7 @@ class Team(object):
 		self.pitAvailableWeight = None
 		self.pitNotes = None
 		self.pitOrganization = None
-		self.pitDidTankTread = None
+		self.pitDriveTrain = None
 		self.pitCheesecake = None
 		self.pitProgrammingLanguage = None
 		self.__dict__.update(args)

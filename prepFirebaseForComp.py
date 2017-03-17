@@ -11,11 +11,11 @@ FBC = firebaseCommunicator.PyrebaseCommunicator()
 FBC.initializeFirebase()
 competition = DataModel.Competition(FBC)
 competition.eventCode = TBAC.code
-competition.FBC.JSONteams = TBAC.makeEventTeamsRequest()
-competition.FBC.JSONmatches = TBAC.makeEventMatchesRequest()
-competition.FBC.wipeDatabase()
-competition.FBC.addCurrentMatchToFirebase()
-competition.FBC.addTeamsToFirebase()
-competition.FBC.addMatchesToFirebase()
+competition.PBC.JSONteams = TBAC.makeEventTeamsRequest()
+competition.PBC.JSONmatches = TBAC.makeEventMatchesRequest()
+competition.PBC.wipeDatabase()
+competition.PBC.addCurrentMatchToFirebase()
+competition.PBC.addTeamsToFirebase()
+competition.PBC.addMatchesToFirebase()
 competition.updateTeamsAndMatchesFromFirebase()
-competition.FBC.addTIMDsToFirebase(competition.matches) #You need to create the matches and teams before you call this
+competition.PBC.addTIMDsToFirebase(competition.matches) #You need to create the matches and teams before you call this

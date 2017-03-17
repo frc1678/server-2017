@@ -259,8 +259,17 @@ class Calculator(object):
         return 20 * self.get40KilopascalChanceForAlliance(alliance) + self.predictedScoreForAlliance(alliance) + 100 * self.getAllRotorsTurningChanceForAlliance(alliance)
 
     def firstPickAbility(self, team):
-        ourTeam = self.su.getTeamForNumber(self.ourTeamNum) or self.averageTeam
-        return self.predictedPlayoffScoreForAlliance([ourTeam, team]) or 0
+        team = self.su.replaceWithAverageIfNecessary(team)
+        ourTeam = self.su.replaceWithAverageIfNecessary(self.su.getTeamForNumber(self.ourTeamNum)) or self.averageTeam
+        score = self.predictedPlayoffScoreForAlliance([team, ourTeam]) or 0
+        score -= (ourTeam.calculatedData.liftoffAbility or 0)
+        score -= self.getTotalAverageShotPointsForTeam(ourTeam)
+        score -= (ourTeam.calculatedData.baselineReachedPercentage or 0) * 5
+        gearFrac = ourTeam.calculatedData.avgGearsPlacedAuto + ourTeam.calculatedData.avgGearsPlacedTele
+        gearFrac /= (gearFrac + team.calculatedData.avgGearsPlacedAuto + team.calculatedData.avgGearsPlacedTele)
+        gearPts = self.getRotorsTurningForDatasForGearFunc([ourTeam, team], lambda t: t.calculatedData.avgGearsPlacedTele or 0, lambda t: t.calculatedData.avgGearsPlacedAuto or 0)
+        score -= gearPts * gearFrac
+        return score
 
     def firstPickAllRotorsChance(self, team):
         ourTeam = self.su.getTeamForNumber(self.ourTeamNum) or self.averageTeam
@@ -440,7 +449,7 @@ class Calculator(object):
         return int(filter(lambda x: int(x[1]) == team.number, self.cachedComp.actualSeedings)[0][0])
 
     def getTeamRPsFromTBA(self, team):
-        return int(float(filter(lambda x: int(x[1]) == team.number, self.cachedComp.actualSeedings)[0][2]))
+        return filter(lambda x: int(x[1]) == team.number, self.cachedComp.actualSeedings)[0][2]
 
     #CACHING
     def cacheFirstTeamData(self):

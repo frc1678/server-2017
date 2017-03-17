@@ -1,26 +1,20 @@
 import shutil
 import sys
-import pyrebase
 import os
+import TBACommunicator
 
 def getSchedule():
-	config = {
-		"apiKey": "mykey",
-		"authDomain": "scouting-2017-5f51c.firebaseapp.com",
-		"databaseURL": "https://scouting-2017-5f51c.firebaseio.com/",
-		"storageBucket": "scouting-2017-5f51c'.appspot.com"
-	}
-	app = pyrebase.initialize_app(config)
-	fb = app.database()
-	return fb.child('Matches').get().val()
+	tbac = TBACommunicator.TBACommunicator()
+	print tbac.makeEventRankingsRequest()
+	return filter(lambda v: v['comp_level'] == 'qf', tbac.makeEventMatchesRequest())
 
 print "Downloading schedule..."
 matches = getSchedule()
 
 def getVideoKey(number):
 	match = matches[number]
-	key = list('Q' + str(match['number']) + '_')
-	teams = match['redAllianceTeamNumbers'] + match['blueAllianceTeamNumbers']
+	key = list('Q' + str(match['match_number']) + '_')
+	teams = match['alliances']['red']['teams'] + match['alliances']['blue']['teams']
 	[key.append(str(number) + "_") for number in teams]
 	return "".join(key)
 
@@ -28,17 +22,31 @@ def moveVids(folder, dest, startnum=1):
 	if not folder or not dest:
 		print "Error: Folders not set"
 		return
+	files = os.listdir(folder)
+	print len(files)
+	destFiles = os.listdir(dest)[1:]
+	if destFiles:
+		matchToStartFrom = len(destFiles)
+		files = files[matchToStartFrom:]
+		files = sorted(files, key=lambda k: os.stat(folder + k).st_ctime)
+		matchesToFiles = dict(zip(range(matchToStartFrom, len(files) + matchToStartFrom), files))
+		[moveVid(getVideoKey(k), folder + fileName, dest) for k, fileName in matchesToFiles.items()]
+		return
+	files = sorted(files, key=lambda k: os.stat(folder + k).st_ctime)
+	map(lambda n: moveVid(getVideoKey(n), folder + files[n], dest), range(len(files)))
+
+def replayLastMatch(folder):
+	if not folder:
+		print "ERROR: Folders not set"
+		return
 	files = os.listdir(folder)[1:]
 	files = sorted(files, key=lambda k: os.stat(folder + k).st_ctime)
-	for n in range(len(files)):
-		moveVid(getVideoKey(n + 1), folder + files[n], dest)
-
-def replayMatch(folder, dest, filePath):
-	moveVid()
+	fileToDelete = files[-1]
+	print folder + fileToDelete
+	os.remove(folder + fileToDelete)	
 
 def moveVid(key, filePath, dest):
 	shutil.copy(filePath, dest + key + ".mov")
-	
 
 try:
 	videoFolder = sys.argv[1]
@@ -47,7 +55,7 @@ except:
 	videoFolder = ""
 	destFolder = ""
 startFromNum = False
-print "Video system 2017. Run setdest and setvid to set the correct folders"
+print "Video system 2017. Type help for details."
 while True:
 	numberToStartFrom = 1
 	cmd = raw_input(">>> ").split()
@@ -55,18 +63,21 @@ while True:
 	try:
 		if cmd[0] == "setdest":
 			destFolder = cmd[1]
-		elif cmd[0] == "setvid":
-			videoFolder = cmd[1]
-		elif cmd[0] == "replay":
-			numberToReplay = cmd[1]
-		elif cmd[0] == "start":
-			numberToStartFrom = cmd[1]
-			startFromNum = True
+	except:
+		print "Error: Must supply more arguments"
+	try:
+		if cmd[0] == "setvid":
+			cmdWithSpaces = map(lambda n: n + " ", cmd)
+			new = "".join(cmdWithSpaces[1:])[:]
 	except:
 		"Error: Must supply more arguments"
+	if cmd[0] == "replay":
+		replayLastMatch(videoFolder)
 	if cmd[0] == "done":
-		if startFromNum:
-			moveVids(videoFolder, destFolder)
-		else:
-			moveVids(videoFolder, destFolder, startnum=numberToStartFrom)
+		moveVids(videoFolder, destFolder)
+	elif cmd[0] == "help":
+		print "setdest [FILEPATH] - Reset the file path to which you want to videos to be moved"
+		print "setvid [FILEPATH] - Reset the file path at which the unnamed videos will be stored"
+		print "replay - Deletes last recording (RUN THIS BEFORE YOU RECORD ANYTHING ELSE)"
+		print "done - Run the video mover and organize all of the video files by match (run at the end of the day)"
 	
