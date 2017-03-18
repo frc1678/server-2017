@@ -20,7 +20,7 @@ def moveVids(folder, dest, startnum = 1):
 		print("Error: Folders not set")
 		return
 	files = os.listdir(folder)
-	print len(files)
+	print(len(files))
 	destFiles = os.listdir(dest)[1:]
 	if destFiles:
 		matchToStartFrom = len(destFiles)
@@ -39,7 +39,7 @@ def replayLastMatch(folder):
 	files = os.listdir(folder)[1:]
 	files = sorted(files, key = lambda k: os.stat(folder + k).st_ctime)
 	fileToDelete = files[-1]
-	print folder + fileToDelete
+	print(folder + fileToDelete)
 	os.remove(folder + fileToDelete)	
 
 def moveVid(key, filePath, dest):
