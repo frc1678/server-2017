@@ -176,7 +176,7 @@ class ScoutPrecision(object):
 		#It is reversed so the scouts with lower spr are later, causing them to be repeated more
 		rankedScouts.reverse()
 		#Lower sprs, so higher number list index scouts are repeated more frequently, but less if there are more scouts
-		func = lambda s: [s] * (rankedScouts.index(s) + 1) * ((100/(len(rankedScouts) + 1)) + 1)
+		func = lambda s: [s] * (rankedScouts.index(s) + 1) * ((100 / (len(rankedScouts) + 1)) + 1)
 		return utils.extendList(map(func, available))
 
 	def organizeScouts(self, available, currentTeams, scoutSpots):

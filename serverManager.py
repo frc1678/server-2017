@@ -23,5 +23,5 @@ while(True):
 		except Exception as e:
 			print traceback.format_exc()
 	elif cmd[0] == "hi":
-		pass #Is there supposed to be a break statement here or is it supposed to keep looping after?
+		pass
 	time.sleep(1)				

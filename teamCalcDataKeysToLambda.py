@@ -53,7 +53,7 @@ def secondCalculationDict(team, calc):
         cd.actualNumRPs = calc.getTeamRPsFromTBA(team)
         cd.actualSeed = calc.getTeamSeed(team)
     except Exception as e:
-        print e
+        print(e)
         if team in calc.cachedComp.teamsWithMatchesCompleted:
             cd.actualSeed = calc.cachedComp.actualSeedings.index(team) + 1
             cd.actualNumRPs = calc.actualNumberOfRPs(team)

@@ -51,8 +51,8 @@ class Calculator(object):
     def getMissingDataString(self):
         superKeys = ["rankSpeed", "rankAgility", "rankDefense", "rankBallControl", "rankGearControl"]
         playedTIMDs = self.su.getCompletedTIMDsInCompetition()
-        incompleteScoutData = filter(lambda t: not all([v != None for k,v in t.__dict__.items() if k != "calculatedData" and k not in superKeys]), playedTIMDs)
-        incompleteSuperData = filter(lambda t: not all([v != None for k,v in t.__dict__.items() if k in superKeys]), playedTIMDs)
+        incompleteScoutData = filter(lambda t: not all([v != None for k, v in t.__dict__.items() if k != "calculatedData" and k not in superKeys]), playedTIMDs)
+        incompleteSuperData = filter(lambda t: not all([v != None for k, v in t.__dict__.items() if k in superKeys]), playedTIMDs)
         incompleteScoutTIMDs = dict(zip(["Scout"] * len(incompleteScoutData), incompleteScoutData))
         incompleteSuperTIMDs = dict(zip(["Super"] * len(incompleteSuperData), incompleteSuperData))
         return incompleteSuperTIMDs.update(incompleteScoutTIMDs)
@@ -89,7 +89,7 @@ class Calculator(object):
         #Calculates probability of reaching a threshold (x) based on the mean(mu) and the standard deviation(sigma)
         if sigma == 0.0:
             return int(x <= mu)
-        if None not in [x,mu,sigma]:
+        if None not in [x, mu, sigma]:
             #Integrate bell curve from -infinity to x and get complement
             return 1.0 - stats.norm.cdf(x, mu, sigma)
 
@@ -443,7 +443,7 @@ class Calculator(object):
         return RPs if not math.isnan(RPs) else None
 
     def teamsSortedByRetrievalFunctions(self, retrievalFunctions):
-        return sorted(self.cachedComp.teamsWithMatchesCompleted, key=lambda t: (retrievalFunctions[0](t) or 0, retrievalFunctions[1](t) or 0, retrievalFunctions[2](t) or 0), reverse=True)
+        return sorted(self.cachedComp.teamsWithMatchesCompleted, key = lambda t: (retrievalFunctions[0](t) or 0, retrievalFunctions[1](t) or 0, retrievalFunctions[2](t) or 0), reverse=True)
 
     def getTeamSeed(self, team):
         return int(filter(lambda x: int(x[1]) == team.number, self.cachedComp.actualSeedings)[0][0])
@@ -472,7 +472,7 @@ class Calculator(object):
         try:
             self.cachedComp.actualSeedings = self.TBAC.makeEventRankingsRequest()
         except Exception as e:
-            print e
+            print(e)
             self.cachedComp.actualSeedings = self.teamsSortedByRetrievalFunctions(self.getSeedingFunctions())
         self.cachedComp.TBAMatches = self.TBAC.makeEventMatchesRequest()
         self.cachedComp.zGearProbabilities = self.getAllGearProbabilitiesForTeams(lambda tm: self.totalGearsPlacedForTIMD(tm))
@@ -557,6 +557,10 @@ class Calculator(object):
             self.cacheFirstTeamData()
             self.doFirstTeamCalculations()
             self.cacheSecondTeamData()
+<<<<<<< HEAD
+=======
+            print(len(self.cachedComp.teamsWithMatchesCompleted))
+>>>>>>> 07120984ccae3a38e81c9d8972f896495adad534
             self.doMatchesCalculations()
             self.doSecondTeamCalculations()
             PBC.addCalculatedTIMDatasToFirebase(self.su.getCompletedTIMDsInCompetition())

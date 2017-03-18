@@ -2,6 +2,7 @@ from firebase import firebase as fb
 import random
 import time
 import DataModel
+
 class CalculatedTeamInMatchData(object):
 	"""docstring for CalculatedTeamInMatchData"""
 	def __init__(self, **args):
@@ -132,6 +133,7 @@ testScouts = "a b c d e f g h i j k l m n o p q r".split()
 testScouts = zip(testScouts, range(len(testScouts)))
 firebase = fb.FirebaseApplication(url, auth)
 cm = 1
+
 while(True):
 	match = firebase.get('/Matches', cm)
 	m = Match(number = cm, redAllianceTeamNumbers = match['redAllianceTeamNumbers'], blueAllianceTeamNumbers = match['blueAllianceTeamNumbers'], calculatedData = CalculatedMatchData().__dict__)
