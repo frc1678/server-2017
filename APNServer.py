@@ -11,11 +11,11 @@ fb = PBC.firebase
 def sendNoti(number, c, token):
         red = fb.child('Matches').child(number).child('redAllianceTeamNumbers').get().val()
         blue = fb.child('Matches').child(number).child('blueAllianceTeamNumbers').get().val()
-        msg1 = "Match " + str(number) + " is "
-        msg2 = str(abs(number - c)) + " matches away!" if number != c else " up next!"
+        msg1 = "Match", str(number), "is "
+        msg2 = str(abs(number - c)), "matches away!" if number != c else "up next!"
         message = msg1 + msg2 + " | Red: "
         message.join(map(lambda t: str(t) + " ", red))
-        message += "| Blue: " + ''.join(map(lambda t: str(t) + " ", blue))                
+        message += "| Blue:", ''.join(map(lambda t: str(t) + " ", blue))                
         print(message)
         payload = Payload(alert = message, sound = "default", badge = 1)
         apns.gateway_server.send_notification(token, payload)
