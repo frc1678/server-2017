@@ -20,7 +20,7 @@ while(True):
 			elif cmd[1] == "min":
 				CSVExportMini(comp)
 		except Exception as e:
-			print e
+			print(e)
 	elif cmd[0] == "hi":
-		pass #Is there supposed to be a break statement here or is it supposed to keep looping after?
+		pass
 	time.sleep(1)				
