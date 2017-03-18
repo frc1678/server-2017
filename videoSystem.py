@@ -5,47 +5,52 @@ import TBACommunicator
 
 def getSchedule():
 	tbac = TBACommunicator.TBACommunicator()
-	print tbac.makeEventRankingsRequest()
-	return filter(lambda v: v['comp_level'] == 'qf', tbac.makeEventMatchesRequest())
+	return filter(lambda v: v['comp_level'] == 'qm', tbac.makeEventMatchesRequest())
 
 print "Downloading schedule..."
 matches = getSchedule()
 
 def getVideoKey(number):
-	match = matches[number]
+	match = filter(lambda m: m['match_number'] == number + 1, matches)[0]
+	print matches[number]['match_number']
 	key = list('Q' + str(match['match_number']) + '_')
 	teams = match['alliances']['red']['teams'] + match['alliances']['blue']['teams']
 	[key.append(str(number) + "_") for number in teams]
 	return "".join(key)
 
-def moveVids(folder, dest, startnum=1):
+def moveVids(folder, dest):
 	if not folder or not dest:
 		print "Error: Folders not set"
 		return
 	files = os.listdir(folder)
-	print len(files)
 	destFiles = os.listdir(dest)[1:]
+	files = sorted(files, key=lambda k: os.stat(folder + k).st_ctime)
 	if destFiles:
 		matchToStartFrom = len(destFiles)
 		files = files[matchToStartFrom:]
-		files = sorted(files, key=lambda k: os.stat(folder + k).st_ctime)
-		matchesToFiles = dict(zip(range(matchToStartFrom, len(files) + matchToStartFrom), files))
-		[moveVid(getVideoKey(k), folder + fileName, dest) for k, fileName in matchesToFiles.items()]
+		matchesToFiles = zip(range(matchToStartFrom, len(files) + matchToStartFrom), files)
+		print matchesToFiles
+		[moveVid(getVideoKey(k), folder + fileName, dest) for k, fileName in matchesToFiles]
 		return
-	files = sorted(files, key=lambda k: os.stat(folder + k).st_ctime)
-	map(lambda n: moveVid(getVideoKey(n), folder + files[n], dest), range(len(files)))
+	else:
+		print files
+		map(lambda n: moveVid(getVideoKey(n), folder + files[n], dest), range(len(files)))
 
 def replayLastMatch(folder):
 	if not folder:
 		print "ERROR: Folders not set"
 		return
-	files = os.listdir(folder)[1:]
+	if not len(os.listdir(folder)):
+		print "ERROR: No match to replay"
+	files = os.listdir(folder)
 	files = sorted(files, key=lambda k: os.stat(folder + k).st_ctime)
 	fileToDelete = files[-1]
 	print folder + fileToDelete
 	os.remove(folder + fileToDelete)	
 
 def moveVid(key, filePath, dest):
+	print key
+	print filePath
 	shutil.copy(filePath, dest + key + ".mov")
 
 try:
@@ -65,11 +70,6 @@ while True:
 			destFolder = cmd[1]
 	except:
 		print "Error: Must supply more arguments"
-	try:
-		if cmd[0] == "setvid":
-			cmdWithSpaces = map(lambda n: n + " ", cmd)
-			new = "".join(cmdWithSpaces[1:])[:]
-	except:
 		"Error: Must supply more arguments"
 	if cmd[0] == "replay":
 		replayLastMatch(videoFolder)

@@ -16,5 +16,6 @@ class CachedCompetitionData(object):
 		self.drivingAbilityZScores = {-1 : 0}
 		self.predictedSeedings = []
 		self.actualSeedings = []
+		self.shotOPRs = {}
 		self.TBAMatches = {}
 		self.zGearProbabilities = {}

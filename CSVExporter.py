@@ -3,6 +3,7 @@ import utils
 from collections import OrderedDict
 import csv
 from DataModel import Team
+from Math import Calculator
 
 def CSVExportScoutZScores(zscores):
 	with open('./sprExport.csv', 'w') as f:
@@ -12,6 +13,7 @@ def CSVExportScoutZScores(zscores):
 			writer.writerow({'name' : k, 'spr' : zscores[k][1], 'Z-Score' : zscores[k][0]})
 
 def CSVExport(comp, name, keys = []):
+	calculator = Calculator(comp)
 	excluded = ['calculatedData', 'name', 'imageKeys']
 	with open('./CSVExport-' + name + '.csv', 'w') as f:
 		defaultKeys = [k for k in Team().__dict__.keys() if k not in excluded and k in keys]
@@ -20,9 +22,10 @@ def CSVExport(comp, name, keys = []):
 		writer = csv.DictWriter(f, fieldnames = defaultKeys)
 		writer.writeheader()
 		for team in comp.teams:
+			team.numMatchesPlayed = len(calculator.su.getCompletedMatchesForTeam(team))
 			tDict = team.__dict__
 			tDict.update(team.calculatedData.__dict__)
-			keys = sorted(defaultKeys,key = lambda k: (k != "number", k.lower()))
+			keys = sorted(defaultKeys, key = lambda k: (k != "number", k.lower()))
 			writer.writerow({k : tDict[k] for k in keys})
 
 def CSVExportMini(comp, name):

@@ -91,10 +91,10 @@ class Team(object):
 		self.name = None
 		self.number = None
 		self.calculatedData = CalculatedTeamData()
+		self.numMatchesPlayed = None
 		self.pitSelectedImageName = None
 		self.pitAllImageURLs = {}
 		self.pitAvailableWeight = None
-		self.pitNotes = None
 		self.pitOrganization = None
 		self.pitDriveTrain = None
 		self.pitCheesecake = None

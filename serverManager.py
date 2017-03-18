@@ -3,6 +3,7 @@ import DataModel
 import firebaseCommunicator
 import os
 import time
+import traceback
 
 PBC = firebaseCommunicator.PyrebaseCommunicator()
 PBC.initializeFirebase()
@@ -20,7 +21,7 @@ while(True):
 			elif cmd[1] == "min":
 				CSVExportMini(comp)
 		except Exception as e:
-			print e
+			print traceback.format_exc()
 	elif cmd[0] == "hi":
 		pass #Is there supposed to be a break statement here or is it supposed to keep looping after?
 	time.sleep(1)				

@@ -44,30 +44,37 @@ class PyrebaseCommunicator(object):
 		self.firebase.child("TeamInMatchDatas").child(str(timd.teamNumber) + "Q" + str(timd.matchNumber)).set(timdDict)
 
 	def addCalculatedTeamDataToFirebase(self, team):
-		print("Writing team " + str(team.number) + " to Firebase...")
 		calculatedTeamDataDict = utils.makeDictFromCalculatedData(team.calculatedData)
-		try:
-			self.firebase.child("Teams").child(team.number).child("calculatedData").set(calculatedTeamDataDict)
-		except:
-			pass
+		FBLocation = str(team.number) + '/calculatedData/'
+		return {FBLocation : calculatedTeamDataDict}
 
 	def addCalculatedTIMDataToFirebase(self, timd):
-		print("Writing team " + str(timd.teamNumber) + " in match " + str(timd.matchNumber) + " to Firebase...")
 		calculatedTIMDataDict = utils.makeDictFromCalculatedData(timd.calculatedData)
-		key = str(timd.teamNumber) + "Q" + str(timd.matchNumber)
-		try:
-			self.firebase.child("TeamInMatchDatas").child(key).child("calculatedData").set(calculatedTIMDataDict)
-		except:
-			pass
+		FBLocation = str(timd.teamNumber) + "Q" + str(timd.matchNumber) + '/calculatedData/'
+		return {FBLocation : calculatedTIMDataDict}
 
 	def addCalculatedMatchDataToFirebase(self, match):
-		print("Writing match " + str(match.number) + " to Firebase...")
 		calculatedMatchDataDict = utils.makeDictFromCalculatedData(match.calculatedData)
-		FBLocation = "/Matches/" + str(match.number)
-		try:
-			self.firebase.child("Matches").child(match.number).child("calculatedData").set(calculatedMatchDataDict)
-		except:
-			pass
+		FBLocation = str(match.number) + '/calculatedData/'
+		return {FBLocation : calculatedMatchDataDict}
+
+	def addCalculatedTeamDatasToFirebase(self, teams):
+		firebaseDict = {}
+		[firebaseDict.update(self.addCalculatedTeamDataToFirebase(team)) for team in teams]
+		print "Uploading Teams to Firebase..."
+		self.firebase.child('Teams').update(firebaseDict)		
+
+	def addCalculatedMatchDatasToFirebase(self, matches):
+		firebaseDict = {}
+		[firebaseDict.update(self.addCalculatedMatchDataToFirebase(match)) for match in matches]
+		print "Uploading Matches to Firebase..."
+		self.firebase.child('Matches').update(firebaseDict)
+
+	def addCalculatedTIMDatasToFirebase(self, timds):
+		firebaseDict = {}
+		[firebaseDict.update(self.addCalculatedTIMDataToFirebase(timd)) for timd in timds]
+		print "Uploading TIMDs to Firebase..."
+		self.firebase.child('TeamInMatchDatas').update(firebaseDict)
 
 	def addTeamsToFirebase(self):
 		print("\nDoing Teams...")
