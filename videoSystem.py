@@ -29,12 +29,6 @@ def moveVids(folder, dest):
 		matchesToFiles = zip(range(matchToStartFrom, len(files) + matchToStartFrom), files)
 		[moveVid(getVideoKey(k), folder + fileName, dest) for k, fileName in matchesToFiles]
 		return
-	else:
-		print files
-		files = sorted(files, key = lambda k: os.stat(folder + k).st_ctime)
-		matchesToFiles = dict(zip(range(matchToStartFrom, len(files) + matchToStartFrom), files))
-		[moveVid(getVideoKey(k), folder + fileName, dest) for k, fileName in matchesToFiles.items()]
-		return
 	map(lambda n: moveVid(getVideoKey(n), folder + files[n], dest), range(len(files)))
 
 def replayLastMatch(folder):
