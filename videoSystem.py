@@ -71,10 +71,10 @@ while(True):
 			cmdWithSpaces = map(lambda n: n + " ", cmd)
 			new = "".join(cmdWithSpaces[1:])[:]
 	except:
-		"Error: Must supply more arguments"
+		print("Error: Must supply more arguments")
 	if cmd[0] == "replay":
 		replayLastMatch(videoFolder)
-	if cmd[0] == "done":
+	elif cmd[0] == "done":
 		moveVids(videoFolder, destFolder)
 	elif cmd[0] == "help":
 		print("setdest [FILEPATH] - Reset the file path to which you want to videos to be moved")
