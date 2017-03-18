@@ -19,7 +19,7 @@ def convertFirebaseBoolean(fbBool):
 
 def rms(values):
 	if len(values) == 0: return
-	return math.sqrt(np.mean(map(lambda x: x**2, values)))
+	return math.sqrt(np.mean(map(lambda x: x ** 2, values)))
 
 def convertNoneToIdentity(x, identity):
 	return identity if x == None else x
@@ -46,7 +46,7 @@ def dictPercentage(dict1, dict2):
 
 def dictDivideConstant(d, constant):
 	returnDict = {}
-	[setDictionaryValue(returnDict, k, (float(v)/constant)) for k, v in d.iteritems()]
+	[setDictionaryValue(returnDict, k, (float(v) / constant)) for k, v in d.iteritems()]
 	return returnDict
 
 def stdDictSum(dict1, dict2):
@@ -62,7 +62,7 @@ def makeMatchFromDict(d):
 	return match
 
 def makeTeamFromDict(d):
-	if type(d) != dict: print d
+	if type(d) != dict: print(d)
 	team = DataModel.Team(**d)
 	if 'calculatedData' in d.keys():
 		team.calculatedData = DataModel.CalculatedTeamData(**d['calculatedData'])
@@ -82,7 +82,7 @@ def makeMatchesFromDicts(dicts):
 
 def makeDictFromObject(o):
 	if isinstance(o, dict):
-		[setDictionaryValue(o,k,v) for k,v in o.iteritems() if v.__class__ in [DataModel.CalculatedTeamData, DataModel.CalculatedMatchData, DataModel.CalculatedTeamInMatchData]]
+		[setDictionaryValue(o, k, v) for k,v in o.iteritems() if v.__class__ in [DataModel.CalculatedTeamData, DataModel.CalculatedMatchData, DataModel.CalculatedTeamInMatchData]]
 		return o
 	return dict((key, value) for key, value in o.__dict__.iteritems() if not callable(value) and not key.startswith('__'))
 
@@ -131,7 +131,7 @@ def setDataForTeam(team):
 	return t
 
 def printWarningForSeconds(numSeconds):
-	print (str(numSeconds) + ' SECONDS UNTIL FIREBASE WIPES')
+	print(str(numSeconds) + ' SECONDS UNTIL FIREBASE WIPES')
 	time.sleep(1)
 
 def extendList(lis):
