@@ -2,6 +2,7 @@ from firebase import firebase as fb
 import random
 import time
 import DataModel
+
 class CalculatedTeamInMatchData(object):
 	"""docstring for CalculatedTeamInMatchData"""
 	def __init__(self, **args):
