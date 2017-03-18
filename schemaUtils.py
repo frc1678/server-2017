@@ -11,7 +11,7 @@ class SchemaUtils(object):
     def getTeamForNumber(self, teamNumber):
         try: return [team for team in self.comp.teams if team.number == teamNumber][0]
         except:
-            print (str(teamNumber) + " doesn't exist.")
+            print(str(teamNumber) + " doesn't exist.")
             return
 
     def getMatchesForTeam(self, team):
@@ -34,7 +34,7 @@ class SchemaUtils(object):
 
     #Match utility functions
     def getMatchForNumber(self, matchNumber):
-        if not len([match for match in self.comp.matches if match.number == matchNumber]): print ("Match " + str(matchNumber) + " doesn't exist.")
+        if not len([match for match in self.comp.matches if match.number == matchNumber]): print("Match " + str(matchNumber) + " doesn't exist.")
         return [match for match in self.comp.matches if match.number == matchNumber][0]
 
     def teamsInMatch(self, match):
