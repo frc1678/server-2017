@@ -56,7 +56,6 @@ while(True):
 			break
 		except Exception as e:
 			print(e)
-			pass
 	checkForMissingData()
 	try:
 		calculator.doCalculations(PBC)
