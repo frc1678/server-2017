@@ -82,7 +82,7 @@ def makeMatchesFromDicts(dicts):
 
 def makeDictFromObject(o):
 	if isinstance(o, dict):
-		[setDictionaryValue(o, k, v) for k,v in o.iteritems() if v.__class__ in [DataModel.CalculatedTeamData, DataModel.CalculatedMatchData, DataModel.CalculatedTeamInMatchData]]
+		[setDictionaryValue(o, k, v) for k, v in o.iteritems() if v.__class__ in [DataModel.CalculatedTeamData, DataModel.CalculatedMatchData, DataModel.CalculatedTeamInMatchData]]
 		return o
 	return dict((key, value) for key, value in o.__dict__.iteritems() if not callable(value) and not key.startswith('__'))
 
