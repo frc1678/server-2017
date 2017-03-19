@@ -10,7 +10,7 @@ def getSchedule():
 
 def getVideoKey(number):
 	match = filter(lambda m: m['match_number'] == number + 1, matches)[0]
-	print matches[number]['match_number']
+	print(matches[number]['match_number'])
 	key = list('Q' + str(match['match_number']) + '_')
 	teams = match['alliances']['red']['teams'] + match['alliances']['blue']['teams']
 	[key.append(str(number) + "_") for number in teams]
@@ -36,7 +36,7 @@ def replayLastMatch(folder):
 		print("ERROR: Folders not set")
 		return
 	if not len(os.listdir(folder)):
-		print "ERROR: No match to replay"
+		print("ERROR: No match to replay")
 		return
 	files = os.listdir(folder)
 	files = sorted(files, key=lambda k: os.stat(folder + k).st_ctime)
@@ -45,8 +45,8 @@ def replayLastMatch(folder):
 	os.remove(folder + fileToDelete)	
 
 def moveVid(key, filePath, dest):
-	print key
-	print filePath
+	print(key)
+	print(filePath)
 	shutil.copy(filePath, dest + key + ".mov")
 
 print("Downloading schedule...")
@@ -60,7 +60,6 @@ except:
 	destFolder = ""
 startFromNum = False
 print("Video system 2017. Type help for details.")
-
 while(True):
 	numberToStartFrom = 1
 	cmd = raw_input(">>> ").split()
