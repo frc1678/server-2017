@@ -266,7 +266,7 @@ class Calculator(object):
         # kpa = self.get40KilopascalChanceForAlliance([ourTeam, team]) * 20
         # rotors = self.getAllRotorsTurningChanceForAlliance([ourTeam, team]) * 100
         gears = self.getGearContribution(team)
-        return gears + bReached + shots + gears# + kpa + rotors
+        return gears + bReached + shots + gears # + kpa + rotors
 
     def firstPickAllRotorsChance(self, team):
         ourTeam = self.su.getTeamForNumber(self.ourTeamNum) or self.averageTeam
@@ -509,11 +509,11 @@ class Calculator(object):
     def doSecondCalculationsForTeam(self, team):
         if len(self.su.getCompletedTIMDsForTeam(team)):
             secondCalculationDict(team, self)
-            print("Completed second calculations for team " + str(team.number))
+            print("Completed second calculations for team", str(team.number))
 
     def doFirstCalculationsForMatch(self, match): #This entire thing being looped is what takes a while
         matchDict(match, self)
-        print("Completed calculations for match " + str(match.number))
+        print("Completed calculations for match", str(match.number))
 
     def doFirstTeamCalculations(self):
         map(self.doFirstCalculationsForTeam, self.comp.teams)
@@ -532,7 +532,7 @@ class Calculator(object):
 
     def writeCalculationDiagnostic(self, time):
         with open('./diagnostics.txt', 'a') as file:
-            file.write('Time: ' + str(time) + '    TIMDs: ' + str(len(self.su.getCompletedTIMDsInCompetition())) + '\n')
+            file.write('Time:', str(time), '   TIMDs:', str(len(self.su.getCompletedTIMDsInCompetition())), '\n')
             file.close()
 
     def doCalculations(self, PBC):
