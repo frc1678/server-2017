@@ -350,7 +350,7 @@ class Calculator(object):
     def getAllRotorsTurningChanceForAlliance(self, alliance):
         alliance = map(self.su.replaceWithAverageIfNecessary, alliance)
         three = (len(alliance) == 3)
-        return sum(map(lambda w: sum(map(lambda z: (self.totalZProbTeam(alliance[2], z) if three else 1) * sum(map(lambda y: self.totalZProbTeam(alliance[0], w-y-z) * self.totalZProbTeam(alliance[1], y), range(13))), range(13 if three else 1))), range(12,len(alliance) * 12 + 1)))
+        return sum(map(lambda w: sum(map(lambda z: (self.totalZProbTeam(alliance[2], z) if three else 1) * sum(map(lambda y: self.totalZProbTeam(alliance[0], w - y - z) * self.totalZProbTeam(alliance[1], y), range(13))), range(13 if three else 1))), range(12, len(alliance) * 12 + 1)))
 
     def getAllRotorsTurningChanceForTwoRobotAlliance(self, alliance):
         alliance = map(self.su.replaceWithAverageIfNecessary, alliance)
@@ -358,7 +358,7 @@ class Calculator(object):
 
     def probabilityForGearsPlacedForNumberForTeam(self, team, number, gearFunc):
         gearTimds = map(gearFunc, self.su.getCompletedTIMDsForTeam(team))
-        return (gearTimds.count(number)/float(len(gearTimds))) or 0
+        return (gearTimds.count(number) / float(len(gearTimds))) or 0
 
     def getAllRotorsTurningChanceForAllianceWithNumbers(self, allianceNumbers):
         return self.getAllRotorsTurningChanceForAlliance(self.su.teamsForTeamNumbersOnAlliance(allianceNumbers))
@@ -443,7 +443,7 @@ class Calculator(object):
         return RPs if not math.isnan(RPs) else None
 
     def teamsSortedByRetrievalFunctions(self, retrievalFunctions):
-        return sorted(self.cachedComp.teamsWithMatchesCompleted, key = lambda t: (retrievalFunctions[0](t) or 0, retrievalFunctions[1](t) or 0, retrievalFunctions[2](t) or 0), reverse=True)
+        return sorted(self.cachedComp.teamsWithMatchesCompleted, key = lambda t: (retrievalFunctions[0](t) or 0, retrievalFunctions[1](t) or 0, retrievalFunctions[2](t) or 0), reverse = True)
 
     def getTeamSeed(self, team):
         return int(filter(lambda x: int(x[1]) == team.number, self.cachedComp.actualSeedings)[0][0])
@@ -504,7 +504,7 @@ class Calculator(object):
                 team.calculatedData = DataModel.CalculatedTeamData()
             t = team.calculatedData
             firstCalculationDict(team, self)
-            print("Completed first calcs for " + str(team.number))
+            print("Completed first calcs for", str(team.number))
 
     def doSecondCalculationsForTeam(self, team):
         if len(self.su.getCompletedTIMDsForTeam(team)):
@@ -557,10 +557,7 @@ class Calculator(object):
             self.cacheFirstTeamData()
             self.doFirstTeamCalculations()
             self.cacheSecondTeamData()
-<<<<<<< HEAD
-=======
             print(len(self.cachedComp.teamsWithMatchesCompleted))
->>>>>>> 07120984ccae3a38e81c9d8972f896495adad534
             self.doMatchesCalculations()
             self.doSecondTeamCalculations()
             PBC.addCalculatedTIMDatasToFirebase(self.su.getCompletedTIMDsInCompetition())
