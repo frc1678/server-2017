@@ -13,6 +13,7 @@ fb = PBC.firebase
 #testScouts = "calvin ethan nathan wentao janet carter kenny ryan nate astha astha gemma livy ben".split()
 scouts = "aidan alex calvin carter evan gemma jack janet jesse jon justin jishnu katie kyle mingyo mx rachel sage sam sophia wesley westley zoe".split()
 SPR = SPR.ScoutPrecision()
+global oldMatchNum
 oldMatchNum = 0
 
 #Creates list of availability values in firebase for each scout
