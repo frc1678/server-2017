@@ -7,9 +7,11 @@ class SchemaUtils(object):
         super(SchemaUtils, self).__init__()
         self.comp = comp
         self.calc = calc
+    
      #Team utility functions
     def getTeamForNumber(self, teamNumber):
-        try: return [team for team in self.comp.teams if team.number == teamNumber][0]
+        try:
+            return [team for team in self.comp.teams if team.number == teamNumber][0]
         except:
             print(str(teamNumber) + " doesn't exist.")
             return
