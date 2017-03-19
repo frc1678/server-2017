@@ -7,7 +7,6 @@ def getSchedule():
 	tbac = TBACommunicator.TBACommunicator()
 	return filter(lambda v: v['comp_level'] == 'qm', tbac.makeEventMatchesRequest())
 
-
 def getVideoKey(number):
 	match = filter(lambda m: m['match_number'] == number + 1, matches)[0]
 	print(matches[number]['match_number'])
@@ -22,7 +21,7 @@ def moveVids(folder, dest):
 		return
 	files = os.listdir(folder)
 	destFiles = os.listdir(dest)[1:]
-	files = sorted(files, key=lambda k: os.stat(folder + k).st_ctime)
+	files = sorted(files, key = lambda k: os.stat(folder + k).st_ctime)
 	if destFiles:
 		matchToStartFrom = len(destFiles)
 		files = files[matchToStartFrom:]
@@ -39,7 +38,7 @@ def replayLastMatch(folder):
 		print("ERROR: No match to replay")
 		return
 	files = os.listdir(folder)
-	files = sorted(files, key=lambda k: os.stat(folder + k).st_ctime)
+	files = sorted(files, key = lambda k: os.stat(folder + k).st_ctime)
 	fileToDelete = files[-1]
 	print(folder + fileToDelete)
 	os.remove(folder + fileToDelete)	
@@ -51,7 +50,6 @@ def moveVid(key, filePath, dest):
 
 print("Downloading schedule...")
 matches = getSchedule()
-
 try:
 	videoFolder = sys.argv[1]
 	destFolder = sys.argv[2]
@@ -78,4 +76,3 @@ while(True):
 		print("setvid [FILEPATH] - Reset the file path at which the unnamed videos will be stored")
 		print("replay - Deletes last recording (RUN THIS BEFORE YOU RECORD ANYTHING ELSE)")
 		print("done - Run the video mover and organize all of the video files by match (run at the end of the day)")
-	
