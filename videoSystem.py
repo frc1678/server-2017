@@ -58,6 +58,7 @@ except:
 	destFolder = ""
 startFromNum = False
 print("Video system 2017. Type help for details.")
+
 while(True):
 	numberToStartFrom = 1
 	cmd = raw_input(">>> ").split()
