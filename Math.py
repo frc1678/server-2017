@@ -94,8 +94,11 @@ class Calculator(object):
             return 1.0 - stats.norm.cdf(x, mu, sigma)
 
     def welchsTest(self, mean1, mean2, std1, std2, sampleSize1, sampleSize2):
-        t = stats.ttest_ind_from_stats(mean1, std1, sampleSize1, mean2, std2, sampleSize2, False).statistic #False means the variances are unequal
-        return t if t != np.nan else mean1 > mean2
+        try:
+            t = stats.ttest_ind_from_stats(mean1, std1, sampleSize1, mean2, std2, sampleSize2, False).statistic #False means the variances are unequal
+            return t if t != np.nan else mean1 > mean2
+        except ZeroDivisionError:
+            return 0.0
 
     def getAverageForDataFunctionForTIMDValues(self, timds, dataFunction):
         values = [dataFunction(timd) for timd in timds]
@@ -222,16 +225,27 @@ class Calculator(object):
         for i in range(len(self.cachedComp.teamsWithMatchesCompleted)):
             d[self.cachedComp.teamsWithMatchesCompleted[i].number] = zscores[i]
 
-    def drivingAbility(self, timd):
-        gCWeight = 0.0
+    def drivingAbilityForTeam(self, team):
+        gCWeight = 0.22
         bCWeight = 0.0
-        spWeight = 0.4
-        agWeight = 0.4
+        spWeight = 0.28
+        agWeight = 0.50
+        dfWeight = 0.0
+        data = [team.calculatedData.RScoreSpeed, team.calculatedData.RScoreGearControl, team.calculatedData.RScoreBallControl, team.calculatedData.RScoreAgility]
+        if None in data:
+            return
+        return team.calculatedData.RScoreSpeed * spWeight + team.calculatedData.RScoreGearControl * gCWeight + team.calculatedData.RScoreAgility * agWeight
+
+    def drivingAbility(self, timd):
+        gCWeight = 0.22
+        bCWeight = 0.0
+        spWeight = 0.28
+        agWeight = 0.50
         dfWeight = 0.0
         data = [timd.rankSpeed, timd.rankGearControl, timd.rankBallControl, timd.rankDefense, timd.rankAgility]
         if None in data:
             return
-        return timd.rankSpeed * spWeight + timd.rankGearControl * gCWeight + timd.rankBallControl * bCWeight + timd.rankAgility * agWeight + timd.rankDefense * dfWeight
+        return timd.rankSpeed * spWeight + timd.rankGearControl * gCWeight + timd.rankBallControl * bCWeight + timd.rankAgility * agWeight + (timd.rankDefense or 0) * dfWeight
 
     def predictedScoreForAllianceWithNumbers(self, allianceNumbers):
         return self.predictedScoreForAlliance(self.su.teamsForTeamNumbersOnAlliance(allianceNumbers))
@@ -263,8 +277,6 @@ class Calculator(object):
         ourTeam = self.su.replaceWithAverageIfNecessary(self.su.getTeamForNumber(self.ourTeamNum)) or self.averageTeam
         shots = self.getTotalAverageShotPointsForTeam(team)
         bReached = (team.calculatedData.baselineReachedPercentage or 0) * 5
-        # kpa = self.get40KilopascalChanceForAlliance([ourTeam, team]) * 20
-        # rotors = self.getAllRotorsTurningChanceForAlliance([ourTeam, team]) * 100
         gears = self.getGearContribution(team)
         return gears + bReached + shots + gears# + kpa + rotors
 
@@ -273,13 +285,13 @@ class Calculator(object):
         return self.getAllRotorsTurningChanceForTwoRobotAlliance([ourTeam, team])
 
     def overallSecondPickAbility(self, team):
-        defense = (team.calculatedData.RScoreDefense or 0) * 1.0
-        speed = (team.calculatedData.RScoreSpeed or 0) * 2.4
-        agility = (team.calculatedData.RScoreAgility or 0) * 1.2
+        gearControl = (team.calculatedData.RScoreGearControl or 0) * 0.22 
+        speed = (team.calculatedData.RScoreSpeed or 0) * 0.28
+        agility = (team.calculatedData.RScoreAgility or 0) * 0.50
         functionalPercentage = (1 - team.calculatedData.disfunctionalPercentage)
-        freqLiftOurTeam = self.getMostFrequentLift(self.su.getTeamForNumber(self.ourTeamNum))
+        freqLiftOurTeam = self.getMostFrequentLift(self.su.replaceWithAverageIfNecessary(self.su.getTeamForNumber(self.ourTeamNum)))
         gA = self.gearPlacementAbilityExcludeLift(team, freqLiftOurTeam) * 0.14 
-        return functionalPercentage * (gA + defense + team.calculatedData.liftoffAbility + agility + speed)
+        return functionalPercentage * (gA + gearControl + agility + speed)
 
     def predictedScoreForMatchForAlliance(self, match, allianceIsRed):
         return match.calculatedData.predictedRedScore if allianceIsRed else match.calculatedData.predictedBlueScore
@@ -453,6 +465,7 @@ class Calculator(object):
 
     #CACHING
     def cacheFirstTeamData(self):
+        print "Caching First Team Data..."
         for team in self.comp.teams:
             self.doCachingForTeam(team)
         self.doCachingForTeam(self.averageTeam)
@@ -463,10 +476,10 @@ class Calculator(object):
                      (lambda t: t.calculatedData.avgAgility, self.cachedComp.agilityZScores),
                      (lambda t: t.calculatedData.avgBallControl, self.cachedComp.ballControlZScores),
                      (lambda t: t.calculatedData.avgGearControl, self.cachedComp.gearControlZScores),
-                     (lambda t: t.calculatedData.avgDefense or 0, self.cachedComp.defenseZScores),
-                     (lambda t: t.calculatedData.avgDrivingAbility, self.cachedComp.drivingAbilityZScores)]
+                     (lambda t: t.calculatedData.avgDefense or 0, self.cachedComp.defenseZScores)]
 
     def cacheSecondTeamData(self):
+        print "Caching Second Team Data..."
         [self.rValuesForAverageFunctionForDict(func, dictionary) for (func, dictionary) in self.rScoreParams()]
         map(self.doSecondCachingForTeam, self.comp.teams)
         try:
@@ -477,7 +490,8 @@ class Calculator(object):
         self.cachedComp.TBAMatches = self.TBAC.makeEventMatchesRequest()
         self.cachedComp.zGearProbabilities = self.getAllGearProbabilitiesForTeams(lambda tm: self.totalGearsPlacedForTIMD(tm))
         self.cachedComp.predictedSeedings = self.teamsSortedByRetrievalFunctions(self.getPredictedSeedingFunctions())
-        # [self.shotOPRForKey(key) for key in self.shotKeys]
+        map(lambda t: Rscorecalcs(t, self), self.cachedComp.teamsWithMatchesCompleted)
+        self.rValuesForAverageFunctionForDict(lambda t: t.calculatedData.avgDrivingAbility, self.cachedComp.drivingAbilityZScores)
 
     def doCachingForTeam(self, team):
         try:
@@ -557,10 +571,6 @@ class Calculator(object):
             self.cacheFirstTeamData()
             self.doFirstTeamCalculations()
             self.cacheSecondTeamData()
-<<<<<<< HEAD
-=======
-            print(len(self.cachedComp.teamsWithMatchesCompleted))
->>>>>>> 07120984ccae3a38e81c9d8972f896495adad534
             self.doMatchesCalculations()
             self.doSecondTeamCalculations()
             PBC.addCalculatedTIMDatasToFirebase(self.su.getCompletedTIMDsInCompetition())

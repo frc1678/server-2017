@@ -11,9 +11,9 @@ def update(data):
 		fb.child('currentMatchNum').set(1)
 		return
 	matches = fb.child('Matches').get().val()
-	incomplete = filter(lambda k: None in [matches[k].get('redScore'), matches[k].get('blueScore')], range(1, len(matches)))
+	incomplete = filter(lambda k: not matches[k].get('redScore') and not matches[k].get('blueScore'), range(1, len(matches)))
 	if incomplete:
-		fb.child('currentMatchNum').set(min(cm))
+		fb.child('currentMatchNum').set(min(incomplete))
 	else:
 		sys.exit(0)
 

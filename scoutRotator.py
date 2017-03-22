@@ -10,8 +10,7 @@ PBC = firebaseCommunicator.PyrebaseCommunicator()
 PBC.initializeFirebase()
 fb = PBC.firebase
 
-#testScouts = "calvin ethan nathan wentao janet carter kenny ryan nate astha astha gemma livy ben".split()
-scouts = "aidan alex calvin carter evan gemma jack janet jesse jon justin jishnu katie kyle mingyo mx rachel sage sam sophia wesley westley zoe".split()
+scouts = "aidan alex calvin carter evan gemma jack janet jesse jon justin jishnu katie kyle mingyo mx rachel sage sam wesley westley zoe".split()
 SPR = SPR.ScoutPrecision()
 oldMatchNum = 0
 
@@ -79,3 +78,5 @@ def startAtNewMatch(newMatchNum):
 #Also useful for unexpected changes in availability
 def simpleStream():
 	fb.child("currentMatchNum").stream(doSPRsAndAssignments)
+
+simpleStream()

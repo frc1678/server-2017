@@ -29,8 +29,7 @@ def firstCalculationDict(team, calc):
         avgGearsPlacedTele = lambda tm: tm.calculatedData.numGearsPlacedTele,
         avgHoppersOpenedAuto = lambda tm: tm.numHoppersOpenedAuto, 
         avgHoppersOpenedTele = lambda tm: tm.numHoppersOpenedTele, avgGearsEjectedTele = lambda tm: tm.numGearsEjectedTele, 
-        avgGearsFumbledTele = lambda tm: tm.numGearsFumbledTele,
-        avgDrivingAbility = lambda tm: tm.calculatedData.drivingAbility)
+        avgGearsFumbledTele = lambda tm: tm.numGearsFumbledTele)
     mapFuncForCalcAvgsForTeam(team, lambda f: calc.getStandardDeviationForDataFunctionForTeam(team, f), 
         sdLiftoffAbility = lambda tm: tm.calculatedData.liftoffAbility,
         sdHighShotsAuto = lambda tm: tm.calculatedData.numHighShotsAuto,
@@ -45,6 +44,16 @@ def firstCalculationDict(team, calc):
     calc.getAvgFuncForKeys(team, cd.avgGearsPlacedByLiftTele, lambda tm: tm.gearsPlacedByLiftTele)
     cd.gearScoringPositionsAuto = calc.getGearScoringPositionsAuto(team)
 
+def Rscorecalcs(team, calc):
+    cd = team.calculatedData
+    cd.RScoreDefense = calc.cachedComp.defenseZScores[team.number]
+    cd.RScoreBallControl = calc.cachedComp.ballControlZScores[team.number]
+    cd.RScoreGearControl = calc.cachedComp.gearControlZScores[team.number]
+    cd.RScoreSpeed = calc.cachedComp.speedZScores[team.number]
+    cd.RScoreAgility = calc.cachedComp.agilityZScores[team.number]
+    cd.avgDrivingAbility = calc.drivingAbilityForTeam(team)
+    print cd.avgDrivingAbility
+
 def secondCalculationDict(team, calc):
     cd = team.calculatedData
     cd.predictedNumRPs = calc.predictedNumberOfRPs(team)
@@ -53,16 +62,10 @@ def secondCalculationDict(team, calc):
         cd.actualNumRPs = calc.getTeamRPsFromTBA(team)
         cd.actualSeed = calc.getTeamSeed(team)
     except Exception as e:
-        print(e)
-        if team in calc.cachedComp.teamsWithMatchesCompleted:
+        if team in calc.cachedComp.actualSeedings:
             cd.actualSeed = calc.cachedComp.actualSeedings.index(team) + 1
             cd.actualNumRPs = calc.actualNumberOfRPs(team)
     if team in calc.cachedComp.teamsWithMatchesCompleted:
-        cd.RScoreDefense = calc.cachedComp.defenseZScores[team.number]
-        cd.RScoreBallControl = calc.cachedComp.ballControlZScores[team.number]
-        cd.RScoreGearControl = calc.cachedComp.gearControlZScores[team.number]
-        cd.RScoreSpeed = calc.cachedComp.speedZScores[team.number]
-        cd.RScoreAgility = calc.cachedComp.agilityZScores[team.number]
         cd.RScoreDrivingAbility = calc.cachedComp.drivingAbilityZScores[team.number]
         cd.predictedSeed = calc.cachedComp.predictedSeedings.index(team) + 1
     cd.firstPickAbility = calc.firstPickAbility(team)
