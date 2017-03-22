@@ -61,19 +61,19 @@ class PyrebaseCommunicator(object):
 	def addCalculatedTeamDatasToFirebase(self, teams):
 		firebaseDict = {}
 		[firebaseDict.update(self.addCalculatedTeamDataToFirebase(team)) for team in teams]
-		print "Uploading Teams to Firebase..."
+		print("Uploading Teams to Firebase...")
 		self.firebase.child('Teams').update(firebaseDict)		
 
 	def addCalculatedMatchDatasToFirebase(self, matches):
 		firebaseDict = {}
 		[firebaseDict.update(self.addCalculatedMatchDataToFirebase(match)) for match in matches]
-		print "Uploading Matches to Firebase..."
+		print("Uploading Matches to Firebase...")
 		self.firebase.child('Matches').update(firebaseDict)
 
 	def addCalculatedTIMDatasToFirebase(self, timds):
 		firebaseDict = {}
 		[firebaseDict.update(self.addCalculatedTIMDataToFirebase(timd)) for timd in timds]
-		print "Uploading TIMDs to Firebase..."
+		print("Uploading TIMDs to Firebase...")
 		self.firebase.child('TeamInMatchDatas').update(firebaseDict)
 
 	def addTeamsToFirebase(self):

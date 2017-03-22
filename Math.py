@@ -130,7 +130,7 @@ class Calculator(object):
         scoutedFuelPoints = sum(map(self.fieldsForShots, timds))
         weightage = fuelPts / float(scoutedFuelPoints) if None not in [scoutedFuelPoints, fuelPts] and scoutedFuelPoints != 0 else None
         # if fuelPts < 0:
-           # reportOverestimate("Data overestimate in " + str(timd.teamNumber) + "Q" + str(timd.matchNumber))
+           # reportOverestimate("Data overestimate in", str(timd.teamNumber) + "Q" + str(timd.matchNumber))
         return sum(map(lambda v: (v.get('numShots') or 0), boilerPoint)) * weightage if weightage != None and weightage > 0 else 0
 
     def getShotPointsForMatchForAlliance(self, timds, allianceIsRed, match):
@@ -278,7 +278,7 @@ class Calculator(object):
         shots = self.getTotalAverageShotPointsForTeam(team)
         bReached = (team.calculatedData.baselineReachedPercentage or 0) * 5
         gears = self.getGearContribution(team)
-        return gears + bReached + shots + gears# + kpa + rotors
+        return gears + bReached + shots + gears # + kpa + rotors
 
     def firstPickAllRotorsChance(self, team):
         ourTeam = self.su.getTeamForNumber(self.ourTeamNum) or self.averageTeam
@@ -362,7 +362,7 @@ class Calculator(object):
     def getAllRotorsTurningChanceForAlliance(self, alliance):
         alliance = map(self.su.replaceWithAverageIfNecessary, alliance)
         three = (len(alliance) == 3)
-        return sum(map(lambda w: sum(map(lambda z: (self.totalZProbTeam(alliance[2], z) if three else 1) * sum(map(lambda y: self.totalZProbTeam(alliance[0], w-y-z) * self.totalZProbTeam(alliance[1], y), range(13))), range(13 if three else 1))), range(12,len(alliance) * 12 + 1)))
+        return sum(map(lambda w: sum(map(lambda z: (self.totalZProbTeam(alliance[2], z) if three else 1) * sum(map(lambda y: self.totalZProbTeam(alliance[0], w - y - z) * self.totalZProbTeam(alliance[1], y), range(13))), range(13 if three else 1))), range(12, len(alliance) * 12 + 1)))
 
     def getAllRotorsTurningChanceForTwoRobotAlliance(self, alliance):
         alliance = map(self.su.replaceWithAverageIfNecessary, alliance)
@@ -370,7 +370,7 @@ class Calculator(object):
 
     def probabilityForGearsPlacedForNumberForTeam(self, team, number, gearFunc):
         gearTimds = map(gearFunc, self.su.getCompletedTIMDsForTeam(team))
-        return (gearTimds.count(number)/float(len(gearTimds))) or 0
+        return (gearTimds.count(number) / float(len(gearTimds))) or 0
 
     def getAllRotorsTurningChanceForAllianceWithNumbers(self, allianceNumbers):
         return self.getAllRotorsTurningChanceForAlliance(self.su.teamsForTeamNumbersOnAlliance(allianceNumbers))
@@ -447,7 +447,7 @@ class Calculator(object):
         return numRPs + ourFields[1] + gears
 
     def predictedRPsForAllianceForMatch(self, allianceIsRed, match):
-        alliance = map(self.su.replaceWithAverageIfNecessary, self.su.getAllianceForMatch(match, allianceIsRed)) #Get the correct alliance, either red or blue based on the boolean
+        alliance = map(self.su.replaceWithAverageIfNecessary, self.su.getAllianceForMatch(match, allianceIsRed)) #Gets the correct alliance, either red or blue based on the boolean
         scoreRPs = 2 * (self.getWinChanceForMatchForAllianceIsRed(match, allianceIsRed) or 0)
         boilerRPs = self.get40KilopascalChanceForAlliance(alliance)
         rotorRPs = self.getAllRotorsTurningChanceForAlliance(alliance)
@@ -455,7 +455,7 @@ class Calculator(object):
         return RPs if not math.isnan(RPs) else None
 
     def teamsSortedByRetrievalFunctions(self, retrievalFunctions):
-        return sorted(self.cachedComp.teamsWithMatchesCompleted, key = lambda t: (retrievalFunctions[0](t) or 0, retrievalFunctions[1](t) or 0, retrievalFunctions[2](t) or 0), reverse=True)
+        return sorted(self.cachedComp.teamsWithMatchesCompleted, key = lambda t: (retrievalFunctions[0](t) or 0, retrievalFunctions[1](t) or 0, retrievalFunctions[2](t) or 0), reverse = True)
 
     def getTeamSeed(self, team):
         return int(filter(lambda x: int(x[1]) == team.number, self.cachedComp.actualSeedings)[0][0])
@@ -518,16 +518,16 @@ class Calculator(object):
                 team.calculatedData = DataModel.CalculatedTeamData()
             t = team.calculatedData
             firstCalculationDict(team, self)
-            print("Completed first calcs for " + str(team.number))
+            print("Completed first calcs for", str(team.number))
 
     def doSecondCalculationsForTeam(self, team):
         if len(self.su.getCompletedTIMDsForTeam(team)):
             secondCalculationDict(team, self)
-            print("Completed second calculations for team " + str(team.number))
+            print("Completed second calculations for team", str(team.number))
 
     def doFirstCalculationsForMatch(self, match): #This entire thing being looped is what takes a while
         matchDict(match, self)
-        print("Completed calculations for match " + str(match.number))
+        print("Completed calculations for match", str(match.number))
 
     def doFirstTeamCalculations(self):
         map(self.doFirstCalculationsForTeam, self.comp.teams)
@@ -546,7 +546,7 @@ class Calculator(object):
 
     def writeCalculationDiagnostic(self, time):
         with open('./diagnostics.txt', 'a') as file:
-            file.write('Time: ' + str(time) + '    TIMDs: ' + str(len(self.su.getCompletedTIMDsInCompetition())) + '\n')
+            file.write('Time:', str(time), '   TIMDs:', str(len(self.su.getCompletedTIMDsInCompetition())), '\n')
             file.close()
 
     def doCalculations(self, PBC):
@@ -560,7 +560,7 @@ class Calculator(object):
             calculatedTIMDs = manager.list()
             for timd in self.comp.TIMDs:
                 #Does TIMD calculations to each TIMD in the competition, and puts the process into a list
-                #The calculation results get put into
+                #the calculation results get put into
                 thread = FirstTIMDProcess(timd, calculatedTIMDs, self)
                 threads.append(thread)
                 thread.start()

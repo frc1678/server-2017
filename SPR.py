@@ -146,7 +146,7 @@ class ScoutPrecision(object):
 			'''Divides values for scouts by number of TIMDs the scout has participated in
 			If a scout is in more matches, they will likely have more disagreements, but the same number per match if they are equally accurate
 			If someone has no tempTIMDs (but still an SPR key somehow), their SPR score is set to -1 (changed in the next section)'''
-			self.sprs = {k:((v/float(self.getTotalTIMDsForScoutName(k, temp))) or -1) for (k,v) in self.sprs.items()}
+			self.sprs = {k:((v / float(self.getTotalTIMDsForScoutName(k, temp))) or -1) for (k, v) in self.sprs.items()}
 			#Changes all sprs of -1 (someone who somehow has an spr key but no matches) to average or 1
 			for a in self.sprs.keys():
 				if self.sprs[a] == -1:

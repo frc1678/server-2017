@@ -21,7 +21,7 @@ while(True):
 			elif cmd[1] == "min":
 				CSVExportMini(comp)
 		except Exception as e:
-			print traceback.format_exc()
+			print(traceback.format_exc())
 	elif cmd[0] == "hi":
 		pass
 	time.sleep(1)				
