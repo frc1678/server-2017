@@ -127,7 +127,7 @@ class Calculator(object):
         scoutedFuelPoints = sum(map(self.fieldsForShots, timds))
         weightage = fuelPts / float(scoutedFuelPoints) if None not in [scoutedFuelPoints, fuelPts] and scoutedFuelPoints != 0 else None
         # if fuelPts < 0:
-           # reportOverestimate("Data overestimate in " + str(timd.teamNumber) + "Q" + str(timd.matchNumber))
+           # reportOverestimate("Data overestimate in", str(timd.teamNumber) + "Q" + str(timd.matchNumber))
         return sum(map(lambda v: (v.get('numShots') or 0), boilerPoint)) * weightage if weightage != None and weightage > 0 else 0
 
     def getShotPointsForMatchForAlliance(self, timds, allianceIsRed, match):
@@ -435,7 +435,7 @@ class Calculator(object):
         return numRPs + ourFields[1] + gears
 
     def predictedRPsForAllianceForMatch(self, allianceIsRed, match):
-        alliance = map(self.su.replaceWithAverageIfNecessary, self.su.getAllianceForMatch(match, allianceIsRed)) #Get the correct alliance, either red or blue based on the boolean
+        alliance = map(self.su.replaceWithAverageIfNecessary, self.su.getAllianceForMatch(match, allianceIsRed)) #Gets the correct alliance, either red or blue based on the boolean
         scoreRPs = 2 * (self.getWinChanceForMatchForAllianceIsRed(match, allianceIsRed) or 0)
         boilerRPs = self.get40KilopascalChanceForAlliance(alliance)
         rotorRPs = self.getAllRotorsTurningChanceForAlliance(alliance)
@@ -546,7 +546,7 @@ class Calculator(object):
             calculatedTIMDs = manager.list()
             for timd in self.comp.TIMDs:
                 #Does TIMD calculations to each TIMD in the competition, and puts the process into a list
-                #The calculation results get put into
+                #the calculation results get put into
                 thread = FirstTIMDProcess(timd, calculatedTIMDs, self)
                 threads.append(thread)
                 thread.start()
