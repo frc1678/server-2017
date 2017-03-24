@@ -76,6 +76,7 @@ class ScoutPrecision(object):
 			#Makes a list of the differences from the common value multiplied by weight, for relative importance of data points
 			differenceFromCommonValue = map(lambda v: abs(v - commonValue) * weight, values)
 			#Adds the difference from this tempTIMD for this key to each scout's previous differences (spr score)
+			print scouts
 			self.sprs.update({scouts[c] : (self.sprs.get(scouts[c]) or 0) + differenceFromCommonValue[c] for c in range(len(differenceFromCommonValue))})
 
 	def findOddScoutForDict(self, tempTIMDs, key):
@@ -146,7 +147,7 @@ class ScoutPrecision(object):
 			'''Divides values for scouts by number of TIMDs the scout has participated in
 			If a scout is in more matches, they will likely have more disagreements, but the same number per match if they are equally accurate
 			If someone has no tempTIMDs (but still an SPR key somehow), their SPR score is set to -1 (changed in the next section)'''
-			self.sprs = {k:((v / float(self.getTotalTIMDsForScoutName(k, temp))) or -1) for (k, v) in self.sprs.items()}
+			self.sprs = {k:((v/float(self.getTotalTIMDsForScoutName(k, temp))) or -1) for (k,v) in self.sprs.items()}
 			#Changes all sprs of -1 (someone who somehow has an spr key but no matches) to average or 1
 			for a in self.sprs.keys():
 				if self.sprs[a] == -1:
@@ -176,7 +177,7 @@ class ScoutPrecision(object):
 		#It is reversed so the scouts with lower spr are later, causing them to be repeated more
 		rankedScouts.reverse()
 		#Lower sprs, so higher number list index scouts are repeated more frequently, but less if there are more scouts
-		func = lambda s: [s] * (rankedScouts.index(s) + 1) * ((100 / (len(rankedScouts) + 1)) + 1)
+		func = lambda s: [s] * (rankedScouts.index(s) + 1) * ((100/(len(rankedScouts) + 1)) + 1)
 		return utils.extendList(map(func, available))
 
 	def organizeScouts(self, available, currentTeams, scoutSpots):

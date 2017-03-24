@@ -35,6 +35,8 @@ class Calculator(object):
         self.surrogateTIMDs = []
         self.teleGearIncrements = [0, 2, 6, 12]
         self.autoGearIncrements = [1, 3, 7, 13]
+        self.weightsPerMatch9 = [.40, .49, .59, .72, .88, 1.07, 1.31, 1.6, 1.95]
+        self.weightsPerMatch8 = [.45, .55, .67, .82, 1, 1.22, 1.48, 1.81]
         self.lifts = ['lift1', 'lift2', 'lift3']
         self.shotKeys = {
             'autoFuelLow' : 'avgLowShotsAuto',
@@ -212,7 +214,9 @@ class Calculator(object):
 
     #OVERALL DATA
     def liftoffAbilityForTIMD(self, timd):
-        return 50 * timd.didLiftoff
+        team = self.su.getTeamForNumber(timd.teamNumber)
+        index = sorted(self.su.getTIMDsForTeam(team), key=lambda t: t.matchNumber).index(timd)
+        return 50 * timd.didLiftoff * (self.weightsPerMatch9[index] if index < len(self.weightsPerMatch9) else 1.0)
 
     def rValuesForAverageFunctionForDict(self, averageFunction, d): #Gets Z-score for each super data point for all teams
         values = map(averageFunction, self.cachedComp.teamsWithMatchesCompleted)
@@ -285,9 +289,9 @@ class Calculator(object):
         return self.getAllRotorsTurningChanceForTwoRobotAlliance([ourTeam, team])
 
     def overallSecondPickAbility(self, team):
-        gearControl = (team.calculatedData.RScoreGearControl or 0) * 0.22 
-        speed = (team.calculatedData.RScoreSpeed or 0) * 0.28
-        agility = (team.calculatedData.RScoreAgility or 0) * 0.50
+        gearControl = (team.calculatedData.RScoreGearControl or 0) * 20
+        speed = (team.calculatedData.RScoreSpeed or 0) * 25
+        agility = (team.calculatedData.RScoreAgility or 0) * 45
         functionalPercentage = (1 - team.calculatedData.disfunctionalPercentage)
         freqLiftOurTeam = self.getMostFrequentLift(self.su.replaceWithAverageIfNecessary(self.su.getTeamForNumber(self.ourTeamNum)))
         gA = self.gearPlacementAbilityExcludeLift(team, freqLiftOurTeam) * 0.14 
@@ -546,7 +550,7 @@ class Calculator(object):
 
     def writeCalculationDiagnostic(self, time):
         with open('./diagnostics.txt', 'a') as file:
-            file.write('Time:', str(time), '   TIMDs:', str(len(self.su.getCompletedTIMDsInCompetition())), '\n')
+            file.write('Time:' + str(time) + '   TIMDs:' + str(len(self.su.getCompletedTIMDsInCompetition())) + '\n')
             file.close()
 
     def doCalculations(self, PBC):
