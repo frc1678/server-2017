@@ -35,8 +35,11 @@ class Calculator(object):
         self.surrogateTIMDs = []
         self.teleGearIncrements = [0, 2, 6, 12]
         self.autoGearIncrements = [1, 3, 7, 13]
+        self.gearsPerRotor = [1, 2, 4, 6]
         self.weightsPerMatch9 = [.40, .49, .59, .72, .88, 1.07, 1.31, 1.6, 1.95]
         self.weightsPerMatch8 = [.45, .55, .67, .82, 1, 1.22, 1.48, 1.81]
+        self.gearRangesAuto = [range(1,3), range(3,7), range(7,14)]
+        self.gearRangesTele = [range(2), range(2,6), range(6,12)]
         self.lifts = ['lift1', 'lift2', 'lift3']
         self.shotKeys = {
             'autoFuelLow' : 'avgLowShotsAuto',
@@ -52,12 +55,13 @@ class Calculator(object):
 
     def getMissingDataString(self):
         superKeys = ["rankSpeed", "rankAgility", "rankDefense", "rankBallControl", "rankGearControl"]
+        excluded = ['liftoffTime', 'superNotes']
         playedTIMDs = self.su.getCompletedTIMDsInCompetition()
-        incompleteScoutData = filter(lambda t: not all([v != None for k, v in t.__dict__.items() if k != "calculatedData" and k not in superKeys]), playedTIMDs)
-        incompleteSuperData = filter(lambda t: not all([v != None for k, v in t.__dict__.items() if k in superKeys]), playedTIMDs)
-        incompleteScoutTIMDs = dict(zip(["Scout"] * len(incompleteScoutData), incompleteScoutData))
-        incompleteSuperTIMDs = dict(zip(["Super"] * len(incompleteSuperData), incompleteSuperData))
-        return incompleteSuperTIMDs.update(incompleteScoutTIMDs)
+        incompleteScoutData = {str(t.teamNumber) + "Q" + str(t.matchNumber) : [k for k, v in t.__dict__.items() if k != "calculatedData" and k not in superKeys and k not in excluded and v == None] for t in playedTIMDs}
+        incompleteData = {str(t.teamNumber) + "Q" + str(t.matchNumber) : [k for k, v in t.__dict__.items() if k in superKeys and k not in excluded and v == None] for t in playedTIMDs}
+        incompleteData.update(incompleteScoutData)
+        missing = {k : v for k,v in incompleteData.items() if v}
+        return missing if missing else None
 
     #Calculated Team Data
     #Hardcore Math
@@ -102,10 +106,6 @@ class Calculator(object):
         except ZeroDivisionError:
             return 0.0
 
-    def getAverageForDataFunctionForTIMDValues(self, timds, dataFunction):
-        values = [dataFunction(timd) for timd in timds]
-        return np.mean(values) if values else None
-
     def getDF(self, s1, s2, n1, n2):
         #Degrees of freedom to determine shape of Student t-distribution
         if np.nan in [s1, s2, n1, n2] or 0.0 in [n1, n2]:
@@ -131,8 +131,6 @@ class Calculator(object):
         fuelPts = self.getShotPointsForMatchForAlliance(timds, timd.teamNumber in match.redAllianceTeamNumbers, match)
         scoutedFuelPoints = sum(map(self.fieldsForShots, timds))
         weightage = fuelPts / float(scoutedFuelPoints) if None not in [scoutedFuelPoints, fuelPts] and scoutedFuelPoints != 0 else None
-        # if fuelPts < 0:
-           # reportOverestimate("Data overestimate in", str(timd.teamNumber) + "Q" + str(timd.matchNumber))
         return sum(map(lambda v: (v.get('numShots') or 0), boilerPoint)) * weightage if weightage != None and weightage > 0 else 0
 
     def getShotPointsForMatchForAlliance(self, timds, allianceIsRed, match):
@@ -189,8 +187,8 @@ class Calculator(object):
     def getRotorsTurningForDatasForGearFunc(self, datas, gearFuncTele, gearFuncAuto):
         totalAutoGears = sum(map(gearFuncAuto, datas))
         totalTeleGears = sum(map(gearFuncTele, datas))
-        rotorsAuto = self.getRotorForGearsForIncrement(totalAutoGears, self.autoGearIncrements)
-        rotorsTele = self.getRotorForGearsForIncrement(totalAutoGears + totalTeleGears, self.teleGearIncrements[rotorsAuto:])
+        rotorsAuto = self.getRotorForGearsForIncrement(totalAutoGears, self.gearRangesAuto)
+        rotorsTele = self.getRotorForGearsForIncrement(totalAutoGears + totalTeleGears, self.gearRangesTele[rotorsAuto:])
         return 60 * rotorsAuto + 40 * rotorsTele
 
     def getGearScoringPositionsAuto(self, team):
@@ -212,6 +210,37 @@ class Calculator(object):
     def totalGearsPlacedForTIMD(self, timd):
         return timd.calculatedData.numGearsPlacedAuto + timd.calculatedData.numGearsPlacedTele
 
+    def gearPointsForGearsPlacedForIncrement(self, gears, rotorIndex, inc, rVal, startInd=0):
+        gearVals = self.gearsPerRotor[startInd]
+        left = gears - inc[rotorIndex] if rotorIndex >= 0 else gears
+        gearValue = rVal / self.gearsPerRotor[rotorIndex + 1]
+        leftPts = gearValue * left if rotorIndex < (len(self.gearsPerRotor) - 1) else 0
+        return (rVal * (rotorIndex + 1) if left >= 0 else 0) + leftPts
+
+    def predictedGearPointsForAlliance(self, alliance):
+        alliance = map(self.replaceWithAverageIfNecessary, alliance)
+        auto = sum(map(lambda t: t.calculatedData.avgGearsPlacedAuto, alliance))
+        tele = sum(map(lambda t: t.calculatedData.avgGearsPlacedTele, alliance))
+        teleGears = min([tele + auto, 13])
+        autoInd = self.getRotorIndexForGearsForIncrement(auto, self.gearRangesAuto)
+        teleInd = self.getRotorIndexForGearsForIncrement(teleGears, self.gearRangesTele[autoInd + 1])
+        return self.gearPointsForGearsPlacedForIncrement(auto, autoInd, self.autoGearIncrements, 60) + self.gearPointsForGearsPlacedForIncrement(teleGears, teleInd, self.teleGearIncrements[autoInd + 1], 40.0, startInd=autoInd+1)
+    
+    def getRotorForGearsForIncrement(self, gears, inc):
+        ranges = filter(lambda k: gears in k, inc)
+        return inc.index(ranges[-1]) + 1 if ranges else 0
+
+    def getRotorIndexForGearsForIncrement(self, gears, inc):
+        ranges = filter(lambda k: gears in k, inc)
+        return inc.index(ranges[-1]) if ranges else -1
+
+    def getStdDevGearPointsForAlliance(self, alliance):
+        sdGearsAuto = self.standardDeviationForRetrievalFunctionForAlliance(lambda t: t.calculatedData.sdGearsPlacedAuto, alliance)
+        sdGearsTele = self.standardDeviationForRetrievalFunctionForAlliance(lambda t: t.calculatedData.sdGearsPlacedTele, alliance)
+        autoR = 60 * self.getRotorForGearsForIncrement(sdGearsAuto, self.gearRangesAuto)
+        teleR = 40 * self.getRotorForGearsForIncrement(sdGearsTele, self.gearRangesTele)
+        return autoR + teleR
+
     #OVERALL DATA
     def liftoffAbilityForTIMD(self, timd):
         team = self.su.getTeamForNumber(timd.teamNumber)
@@ -220,14 +249,13 @@ class Calculator(object):
 
     def rValuesForAverageFunctionForDict(self, averageFunction, d): #Gets Z-score for each super data point for all teams
         values = map(averageFunction, self.cachedComp.teamsWithMatchesCompleted)
-        if len(values) == 0:
+        if not values:
             return
         if not np.std(values):
             zscores = [0.0 for v in values] #Don't calculate z-score if the standard deviation is 0
         else:
             zscores = stats.zscore(values)
-        for i in range(len(self.cachedComp.teamsWithMatchesCompleted)):
-            d[self.cachedComp.teamsWithMatchesCompleted[i].number] = zscores[i]
+        [utils.setDictionaryValue(d, self.cachedComp.teamsWithMatchesCompleted[i].number, zscores[i]) for i in range(len(self.cachedComp.teamsWithMatchesCompleted))]
 
     def drivingAbilityForTeam(self, team):
         gCWeight = 0.22
@@ -239,17 +267,6 @@ class Calculator(object):
         if None in data:
             return
         return team.calculatedData.RScoreSpeed * spWeight + team.calculatedData.RScoreGearControl * gCWeight + team.calculatedData.RScoreAgility * agWeight
-
-    def drivingAbility(self, timd):
-        gCWeight = 0.22
-        bCWeight = 0.0
-        spWeight = 0.28
-        agWeight = 0.50
-        dfWeight = 0.0
-        data = [timd.rankSpeed, timd.rankGearControl, timd.rankBallControl, timd.rankDefense, timd.rankAgility]
-        if None in data:
-            return
-        return timd.rankSpeed * spWeight + timd.rankGearControl * gCWeight + timd.rankBallControl * bCWeight + timd.rankAgility * agWeight + (timd.rankDefense or 0) * dfWeight
 
     def predictedScoreForAllianceWithNumbers(self, allianceNumbers):
         return self.predictedScoreForAlliance(self.su.teamsForTeamNumbersOnAlliance(allianceNumbers))
@@ -282,7 +299,15 @@ class Calculator(object):
         shots = self.getTotalAverageShotPointsForTeam(team)
         bReached = (team.calculatedData.baselineReachedPercentage or 0) * 5
         gears = self.getGearContribution(team)
-        return gears + bReached + shots + gears # + kpa + rotors
+        return gears + bReached + shots
+
+    def getGearContribution(self, team):
+        ourTeam = self.su.replaceWithAverageIfNecessary(self.su.getTeamForNumber(self.ourTeamNum))
+        teamGears = team.calculatedData.avgGearsPlacedAuto + team.calculatedData.avgGearsPlacedTele
+        totalGears = teamGears + ourTeam.calculatedData.avgGearsPlacedAuto + ourTeam.calculatedData.avgGearsPlacedTele 
+        gearFrac = teamGears / totalGears if totalGears != 0 else 0
+        gearPts = self.getRotorsTurningForDatasForGearFunc([ourTeam, team], lambda t: t.calculatedData.avgGearsPlacedTele or 0, lambda t: t.calculatedData.avgGearsPlacedAuto or 0)
+        return gearPts * gearFrac
 
     def firstPickAllRotorsChance(self, team):
         ourTeam = self.su.getTeamForNumber(self.ourTeamNum) or self.averageTeam
@@ -293,9 +318,7 @@ class Calculator(object):
         speed = (team.calculatedData.RScoreSpeed or 0) * 25
         agility = (team.calculatedData.RScoreAgility or 0) * 45
         functionalPercentage = (1 - team.calculatedData.disfunctionalPercentage)
-        freqLiftOurTeam = self.getMostFrequentLift(self.su.replaceWithAverageIfNecessary(self.su.getTeamForNumber(self.ourTeamNum)))
-        gA = self.gearPlacementAbilityExcludeLift(team, freqLiftOurTeam) * 0.14 
-        return functionalPercentage * (gA + gearControl + agility + speed)
+        return functionalPercentage * (gearControl + agility + speed)
 
     def predictedScoreForMatchForAlliance(self, match, allianceIsRed):
         return match.calculatedData.predictedRedScore if allianceIsRed else match.calculatedData.predictedBlueScore
@@ -312,23 +335,29 @@ class Calculator(object):
     def sampleSizeForMatchForAlliance(self, alliance):
         return self.getAvgNumCompletedTIMDsForAlliance(alliance)
 
-    def getStdDevGearPointsForAlliance(self, alliance):
-        sdGearsAuto = self.standardDeviationForRetrievalFunctionForAlliance(lambda t: t.calculatedData.sdGearsPlacedAuto, alliance)
-        sdGearsTele = self.standardDeviationForRetrievalFunctionForAlliance(lambda t: t.calculatedData.sdGearsPlacedTele, alliance)
-        autoR = 60 * self.getRotorForGearsForIncrement(sdGearsAuto, self.autoGearIncrements)
-        teleR = 40 * self.getRotorForGearsForIncrement(sdGearsTele, self.teleGearIncrements)
-        return autoR + teleR
+    def getAverageRotorPointsPerGearForTeam(self, team):
+        matches = self.su.getCompletedMatchesForTeam(team)
+        tbam = [match for match in self.cachedComp.TBAMatches if match['match_number'] in map(lambda m: m.number, matches)]
+        rotorFunc = lambda m, a: sum(map(lambda n: m['score_breakdown'][a]['rotor' + str(n) + 'Engaged'], range(1,5))) * 40
+        gearFunc = lambda t: t.calculatedData.numGearsPlacedAuto + t.calculatedData.numGearsPlacedTele
+        gears = sum([sum(map(gearFunc, self.su.getCompletedTIMDsForMatchForAllianceIsRed(match, team in match.redAllianceTeamNumbers))) for match in matches])
+        rotors = sum([rotorFunc(m, 'red' if 'frc' + str(team.number) in m['alliances']['red']['teams'] else 'blue') for m in tbam])
+        return float(rotors) / gears
 
-    def getRotorForGearsForIncrement(self, gears, inc):
-        incrementsReached = filter(lambda g: gears >= g, inc)
-        return inc.index(max(incrementsReached)) + 1 if incrementsReached else 0
-
-    def getGearContribution(self, team):
-        ourTeam = self.su.replaceWithAverageIfNecessary(self.su.getTeamForNumber(self.ourTeamNum))
-        gearFrac = team.calculatedData.avgGearsPlacedAuto + team.calculatedData.avgGearsPlacedTele
-        gearFrac /= (gearFrac + ourTeam.calculatedData.avgGearsPlacedAuto + ourTeam.calculatedData.avgGearsPlacedTele)
-        gearPts = self.getRotorsTurningForDatasForGearFunc([ourTeam, team], lambda t: t.calculatedData.avgGearsPlacedTele or 0, lambda t: t.calculatedData.avgGearsPlacedAuto or 0)
-        return gearPts * gearFrac
+    def rotorPointsPerGearForTeams(self):
+        rotorsToGears = np.matrix(map(self.getAverageRotorPointsPerGearForTeam, self.cachedComp.teamsWithMatchesCompleted)).reshape(len(self.cachedComp.teamsWithMatchesCompleted), 1)
+        teams = self.cachedComp.teamsWithMatchesCompleted
+        teamsTogetherFunc = lambda t, t1: sum(map(lambda m: self.su.teamsAreOnSameAllianceInMatch(t, t1, m), self.su.getMatchesForTeam(t)))
+        getTeamRowFunc = lambda t: map(lambda t1: teamsTogetherFunc(t, t1), teams)
+        matrix = np.matrix(map(getTeamRowFunc, self.cachedComp.teamsWithMatchesCompleted))
+        try:
+            inverse = np.linalg.inv(matrix)
+        except:
+            return
+        newMatrix = np.dot(inverse, rotorsToGears)
+        oprs = [newMatrix.item(teams.index(team), 0) for team in teams]
+        avgGearsPerTeam = [team.calculatedData.avgGearsPlacedAuto + team.calculatedData.avgGearsPlacedTele for team in teams]
+        return stats.linregress(avgGearsPerTeam, oprs)
 
     #PROBABILITIES
     def winChanceForMatchForAllianceIsRed(self, match, allianceIsRed):
@@ -380,7 +409,7 @@ class Calculator(object):
         return self.getAllRotorsTurningChanceForAlliance(self.su.teamsForTeamNumbersOnAlliance(allianceNumbers))
 
     def shotOPRForKey(self, key):
-        TBAMatches = filter(lambda m: m['comp_level'] == 'qf', self.TBAC.makeEventMatchesRequest())
+        TBAMatches = filter(lambda m: m['comp_level'] == 'qm', self.TBAC.makeEventMatchesRequest())
         teams = self.cachedComp.teamsWithMatchesCompleted
         teamsTogetherFunc = lambda t, t1: sum(map(lambda m: self.su.teamsAreOnSameAllianceInMatch(t, t1, m), self.su.getMatchesForTeam(t)))
         getTeamRowFunc = lambda t: map(lambda t1: teamsTogetherFunc(t, t1), teams)
@@ -391,7 +420,9 @@ class Calculator(object):
             return
         shots = np.matrix([self.getTBAShotsForTeamForKey(t, key) for t in teams]).reshape(len(teams), 1)
         newMatrix = np.dot(inverse, shots)
-        for team in teams: team.calculatedData.__dict__[self.shotKeys[key]] = newMatrix.item(teams.index(team), 0)
+        for team in teams: 
+            shots = newMatrix.item(teams.index(team), 0) if newMatrix.item(teams.index(team), 0) >= 0 else 0
+            team.calculatedData.__dict__[self.shotKeys[key]] = shots
 
     #Seeding
     def autoPointsForAlliance(self, team, match):
@@ -489,13 +520,13 @@ class Calculator(object):
         try:
             self.cachedComp.actualSeedings = self.TBAC.makeEventRankingsRequest()
         except Exception as e:
-            print(e)
             self.cachedComp.actualSeedings = self.teamsSortedByRetrievalFunctions(self.getSeedingFunctions())
         self.cachedComp.TBAMatches = self.TBAC.makeEventMatchesRequest()
         self.cachedComp.zGearProbabilities = self.getAllGearProbabilitiesForTeams(lambda tm: self.totalGearsPlacedForTIMD(tm))
         self.cachedComp.predictedSeedings = self.teamsSortedByRetrievalFunctions(self.getPredictedSeedingFunctions())
         map(lambda t: Rscorecalcs(t, self), self.cachedComp.teamsWithMatchesCompleted)
         self.rValuesForAverageFunctionForDict(lambda t: t.calculatedData.avgDrivingAbility, self.cachedComp.drivingAbilityZScores)
+        map(self.shotOPRForKey, self.shotKeys.keys())
 
     def doCachingForTeam(self, team):
         try:
@@ -581,6 +612,7 @@ class Calculator(object):
             PBC.addCalculatedTeamDatasToFirebase(self.cachedComp.teamsWithMatchesCompleted)
             PBC.addCalculatedMatchDatasToFirebase(self.comp.matches)
             PBC.addCompInfoToFirebase()
+            pdb.set_trace()
             endTime = time.time()
             self.writeCalculationDiagnostic(endTime - startTime)
         else:

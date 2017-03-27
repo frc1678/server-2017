@@ -53,6 +53,7 @@ class CalculatedTeamData(object):
 		}
 		self.avgHoppersOpenedAuto = None
 		self.avgHoppersOpenedTele = None
+		self.avgLiftoffTime = None
 		self.sdGearsPlacedTele = None
 		self.sdGearsPlacedAuto = None
 		self.sdHighShotsAuto = None
@@ -160,6 +161,7 @@ class TeamInMatchData(object):
 		self.didReachBaselineAuto = None
 		self.numHoppersOpenedAuto = None
 		self.didLiftoff = None
+		self.liftoffTime = None
 		self.didStartDisabled = None
 		self.didBecomeIncapacitated = None
 		self.rankSpeed = None

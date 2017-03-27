@@ -6,10 +6,10 @@ import traceback
 def firstCalculationDict(team, calc):
     cd = team.calculatedData
     mapFuncForCalcAvgsForTeam(team, lambda f: calc.getAverageForDataFunctionForTeam(team, f), 
-        avgHighShotsTele = lambda tm: tm.calculatedData.numHighShotsTele, 
-        avgHighShotsAuto = lambda tm: tm.calculatedData.numHighShotsAuto,
-        avgLowShotsAuto = lambda tm: tm.calculatedData.numLowShotsAuto, 
-        avgLowShotsTele = lambda tm: tm.calculatedData.numLowShotsTele, 
+        # avgHighShotsTele = lambda tm: tm.calculatedData.numHighShotsTele, 
+        # avgHighShotsAuto = lambda tm: tm.calculatedData.numHighShotsAuto,
+        # avgLowShotsAuto = lambda tm: tm.calculatedData.numLowShotsAuto, 
+        # avgLowShotsTele = lambda tm: tm.calculatedData.numLowShotsTele, 
         incapacitatedPercentage = lambda tm: tm.didBecomeIncapacitated,
         disabledPercentage = lambda tm: tm.didStartDisabled,
         liftoffPercentage = lambda tm: tm.didLiftoff, 
@@ -28,7 +28,9 @@ def firstCalculationDict(team, calc):
         avgGearsPlacedAuto = lambda tm: tm.calculatedData.numGearsPlacedAuto, 
         avgGearsPlacedTele = lambda tm: tm.calculatedData.numGearsPlacedTele,
         avgHoppersOpenedAuto = lambda tm: tm.numHoppersOpenedAuto, 
-        avgHoppersOpenedTele = lambda tm: tm.numHoppersOpenedTele, avgGearsEjectedTele = lambda tm: tm.numGearsEjectedTele, 
+        avgHoppersOpenedTele = lambda tm: tm.numHoppersOpenedTele, 
+        avgGearsEjectedTele = lambda tm: tm.numGearsEjectedTele,
+        avgLiftoffTime = lambda tm: tm.liftoffTime, 
         avgGearsFumbledTele = lambda tm: tm.numGearsFumbledTele)
     mapFuncForCalcAvgsForTeam(team, lambda f: calc.getStandardDeviationForDataFunctionForTeam(team, f), 
         sdLiftoffAbility = lambda tm: tm.calculatedData.liftoffAbility,
@@ -52,7 +54,6 @@ def Rscorecalcs(team, calc):
     cd.RScoreSpeed = calc.cachedComp.speedZScores[team.number]
     cd.RScoreAgility = calc.cachedComp.agilityZScores[team.number]
     cd.avgDrivingAbility = calc.drivingAbilityForTeam(team)
-    print cd.avgDrivingAbility
 
 def secondCalculationDict(team, calc):
     cd = team.calculatedData
@@ -86,7 +87,6 @@ def TIMDCalcDict(timd, calc):
     c.numLowShotsTele = calc.weightFuelShotsForDataPoint(timd, match, timd.lowShotTimesForBoilerTele)
     c.numLowShotsAuto = calc.weightFuelShotsForDataPoint(timd, match, timd.lowShotTimesForBoilerAuto)
     c.liftoffAbility = calc.liftoffAbilityForTIMD(timd)
-    c.drivingAbility = calc.drivingAbility(timd)
     c.wasDisfunctional = utils.convertFirebaseBoolean(timd.didStartDisabled + utils.convertFirebaseBoolean(timd.didBecomeIncapacitated))
     c.numRPs = calc.RPsGainedFromMatchForAlliance(team.number in match.redAllianceTeamNumbers, match)
 

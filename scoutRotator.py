@@ -83,4 +83,3 @@ def startAtNewMatch(newMatchNum):
 def simpleStream():
 	fb.child("currentMatchNum").stream(doSPRsAndAssignments)
 
-tabletHandoutStream()

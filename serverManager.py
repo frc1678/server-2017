@@ -17,7 +17,7 @@ while(True):
 		try:
 			if cmd[1] == "all":
 				CSVExporter.CSVExportAll(comp)
-				comp.PBC.sendExport('CSVExport-ALL.csv')
+				comp.PBC.sendExport('DATAEXPORT-ALL.csv')
 			elif cmd[1] == "min":
 				CSVExportMini(comp)
 		except Exception as e:

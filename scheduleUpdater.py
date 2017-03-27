@@ -16,7 +16,6 @@ def update(data):
 	if incomplete:
 		fb.child('currentMatchNum').set(min(incomplete))
 	else:
-		print "incmopl"
 		sys.exit(0)
 
 def updateSchedule():

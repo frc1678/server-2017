@@ -165,7 +165,7 @@ def sum_to_n(n, size, limit = None):
 
 def makeASCIIFromJSON(input):
     if isinstance(input, dict):
-        return dict((makeASCIIFromJSON(k), makeASCIIFromJSON(v)) for (k, v) in input.iteritems())
+        return dict((makeASCIIFromJSON(k), makeASCIIFromJSON(v)) for k, v in input.items())
     elif isinstance(input, list):
         return map(lambda i: makeASCIIFromJSON(i), input)
     elif isinstance(input, unicode):
