@@ -8,14 +8,16 @@ import time
 #These are the keys that have lists of dicts
 #Lists may have different numbers of dicts, but the keys in the dicts should be the same
 listKeys = ["highShotTimesForBoilerTele", "highShotTimesForBoilerAuto", "lowShotTimesForBoilerAuto", "lowShotTimesForBoilerTele"]
+
 #These ought to be the same across all tempTIMDs for the same TIMD
-#(TIMD -> TeamInMatchData, so for a specific team in a specific match)
 constants = ['matchNumber', 'teamNumber']
+
 #These are the keys within each dict from the listKeys
 boilerKeys = ['time', 'numShots', 'position']
+
 #These are the keys that have dicts with consistent keys
 standardDictKeys = ['gearsPlacedByLiftAuto', 'gearsPlacedByLiftTele']
-boolKeys = ['didReachBaselineAuto', 'didLiftoff', 'didStartDisabled', 'didBecomeIncapacitated']
+
 PBC = firebaseCommunicator.PyrebaseCommunicator()
 PBC.initializeFirebase()
 firebase = PBC.firebase
@@ -72,42 +74,42 @@ class DataChecker(multiprocessing.Process):
 		#(e.g. if there is disagreement over how many shots a robot took in a particular match)
 		if lis:
 			largestListLength = max(map(len, lis))
-		else:
-			largestListLength = 0
-		#If someone missed a dict (for a shot, that is, they did not include one that another scout did, this makes one with no values)
-		for aScout in lis:
-			if len(aScout) < largestListLength:
-				aScout += [{'numShots': 0, 'position': 'Other  ', 'time': 0}] * (largestListLength - len(aScout))
-		returnList = []
-		for num in range(largestListLength):
-			returnList += [{}]
-			#Finds dicts that should be the same (e.g. each shot time dict for the same shot) within the tempTIMDs
-			#This means comparisons such as the first shot in teleop by a given robot, as recorded by multiple scouts
-			dicts = [scout[num] for scout in lis]
-			consolidationDict = {}
-			#Combines dicts that should be the same into a consolidation dict
-			for key in dicts[0].keys():
-				consolidationDict[key] = []
-				for aDict in dicts:
-					consolidationDict[key] += [aDict[key]]
-				#The time and number of shots can be compared to get a common value
-				if key != 'position':
-					returnList[num].update({key: self.commonValue('ignore', consolidationDict[key])})
-			#If there is only one scout, their statement about position is accepted as right
-			if len(consolidationDict['position']) == 1:
-				returnList[num].update({'position': consolidationDict['position'][0]})
-			#If there are 2 scouts, pick position that isn't the key unless they are both in agreement
-			elif len(consolidationDict['position']) % 2 == 0:
-				if consolidationDict['position'][0].lower() != 'key':
+			#If someone missed a dict (for a shot, that is, they did not include one that another scout did, this makes one with no values)
+			for aScout in lis:
+				if len(aScout) < largestListLength:
+					aScout += [{'numShots': 0, 'position': 'Other  ', 'time': 0}] * (largestListLength - len(aScout))
+			returnList = []
+			for num in range(largestListLength):
+				returnList += [{}]
+				#Finds dicts that should be the same (e.g. each shot time dict for the same shot) within the tempTIMDs
+				#This means comparisons such as the first shot in teleop by a given robot, as recorded by multiple scouts
+				dicts = [scout[num] for scout in lis]
+				consolidationDict = {}
+				#Combines dicts that should be the same into a consolidation dict
+				for key in dicts[0].keys():
+					consolidationDict[key] = []
+					for aDict in dicts:
+						consolidationDict[key] += [aDict[key]]
+					#The time and number of shots can be compared to get a common value
+					if key != 'position':
+						returnList[num].update({key: self.commonValue('ignore', consolidationDict[key])})
+				#If there is only one scout, their statement about position is accepted as right
+				if len(consolidationDict['position']) == 1:
 					returnList[num].update({'position': consolidationDict['position'][0]})
+				#If there are 2 scouts, pick position that isn't the key unless they are both in agreement
+				elif len(consolidationDict['position']) % 2 == 0:
+					if consolidationDict['position'][0].lower() != 'key':
+						returnList[num].update({'position': consolidationDict['position'][0]})
+					else:
+						returnList[num].update({'position': consolidationDict['position'][1]})
+				#If there are 3 scouts (or more, but that shouldn't happen), the position value is the most common position value
 				else:
-					returnList[num].update({'position': consolidationDict['position'][1]})
-			#If there are 3 scouts (or more, but that shouldn't happen), the position value is the most common position value
-			else:
-				positionFrequencies = map(consolidationDict['position'].count, consolidationDict['position'])
-				commonPosition = consolidationDict['position'][positionFrequencies.index(max(positionFrequencies))]
-				returnList[num].update({'position': commonPosition})
-		return returnList
+					positionFrequencies = map(consolidationDict['position'].count, consolidationDict['position'])
+					commonPosition = consolidationDict['position'][positionFrequencies.index(max(positionFrequencies))]
+					returnList[num].update({'position': commonPosition})
+			return returnList
+		else:
+			return
 
 	#Combines data from whole TIMDs
 	def joinValues(self, key):

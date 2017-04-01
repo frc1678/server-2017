@@ -56,8 +56,8 @@ class ScoutPrecision(object):
 				consolidationGroups[key] = [v]
 		return consolidationGroups
 
-	'''Note: the next 3 functions compare data in tempTIMDs to find scout accuracy
-	The comparison to determine correct values is done in dataChecker'''
+	#Note: the next 3 functions compare data in tempTIMDs to find scout accuracy
+	#The comparison to determine correct values is done in dataChecker
 
 	#Compares scout performances for individual data points in tempTIMDs
 	def findOddScoutForDataPoint(self, tempTIMDs, key):
@@ -76,7 +76,6 @@ class ScoutPrecision(object):
 			#Makes a list of the differences from the common value multiplied by weight, for relative importance of data points
 			differenceFromCommonValue = map(lambda v: abs(v - commonValue) * weight, values)
 			#Adds the difference from this tempTIMD for this key to each scout's previous differences (spr score)
-			print scouts
 			self.sprs.update({scouts[c] : (self.sprs.get(scouts[c]) or 0) + differenceFromCommonValue[c] for c in range(len(differenceFromCommonValue))})
 
 	def findOddScoutForDict(self, tempTIMDs, key):
@@ -113,9 +112,9 @@ class ScoutPrecision(object):
 				if len(aScout) < largestListLength:
 					aScout += [{'numShots': 0, 'position': 'Other', 'time': 0}] * (largestListLength - len(aScout))
 			for num in range(largestListLength):
-				'''comparing dicts that should be the same (e.g. each shot time dict for the same shot) within the tempTIMDs
-				This means the nth shot by a given robot, as recorded by multiple scouts
-				The comparison itself is the same as the other findOddScout functions'''
+				#Comparing dicts that should be the same (e.g. each shot time dict for the same shot) within the tempTIMDs
+				#This means the nth shot by a given robot in a given match, as recorded by multiple scouts
+				#The comparison itself is the same as the other findOddScout functions
 				dicts = [lis[num] for lis in lists]
 				for key in dicts[0].keys():
 					#Position is a string, so can't be compared, due to the averaging later
