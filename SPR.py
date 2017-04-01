@@ -165,16 +165,12 @@ class ScoutPrecision(object):
 
 	#Scout Assignment
 
-	#Sorts scouts by spr score
-	def rankScouts(self, available):
-		return sorted(self.sprs.keys(), key = lambda k: self.sprs[k])
-
 	#Orders available scouts by spr ranking, then makes a list of how frequently each scout should be selected
 	#Better (lower scoring) scouts appear more frequently
 	def getScoutFrequencies(self, available):
-		rankedScouts = self.rankScouts(available)
+		#Sorts scouts by spr score
 		#It is reversed so the scouts with lower spr are later, causing them to be repeated more
-		rankedScouts.reverse()
+		rankedScouts = sorted(self.sprs.keys(), key = lambda k: self.sprs[k]).reverse()
 		#Lower sprs, so higher number list index scouts are repeated more frequently, but less if there are more scouts
 		func = lambda s: [s] * (rankedScouts.index(s) + 1) * ((100/(len(rankedScouts) + 1)) + 1)
 		return utils.extendList(map(func, available))
@@ -234,7 +230,7 @@ class ScoutPrecision(object):
 		return filter(lambda k: scoutsInRotation[k].get('mostRecentUser') == name, scoutsInRotation.keys())[0]
 
 	#Returns the first scout key that doesn't have a current user
-	def findFirstEmptySpotForScout(self, scoutRotatorDict, available):
+	def findEmptySpotsForScout(self, scoutRotatorDict, available):
 		emptyScouts = filter(lambda k: scoutRotatorDict[k].get('currentUser') == None, scoutRotatorDict.keys())
 		emptyScouts += filter(lambda k: scoutRotatorDict[k].get('currentUser') == "", scoutRotatorDict.keys())
 		emptyScouts += filter(lambda k: scoutRotatorDict[k].get('currentUser') not in available, scoutRotatorDict.keys())
@@ -269,8 +265,8 @@ class ScoutPrecision(object):
 			scoutNum = self.getScoutNumFromName(availableScout, scoutRotatorDict)
 			scoutRotatorDict[scoutNum].update({'team': teams[availableScout], 'currentUser': availableScout, 'scoutStatus': 'requested'})
 		#If they don't, it needs to find an empty scout spot in firebase and put the available scout there (if there is an empty spot, which there always should be)
-		elif self.findFirstEmptySpotForScout(scoutRotatorDict, available):
-			newSpace = self.findFirstEmptySpotForScout(scoutRotatorDict, available)[0]
+		elif self.findEmptySpotsForScout(scoutRotatorDict, available):
+			newSpace = self.findEmptySpotsForScout(scoutRotatorDict, available)[0]
 			scoutRotatorDict[newSpace].update({'team': teams[availableScout], 'currentUser': availableScout, 'scoutStatus': 'requested'})
 		return scoutRotatorDict
 
