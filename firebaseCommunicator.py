@@ -10,12 +10,8 @@ class PyrebaseCommunicator(object):
 		super(PyrebaseCommunicator, self).__init__()
 		self.JSONmatches = []
 		self.JSONteams = []
-		self.firebase = None
-		self.fbStorage = None
 		# self.url = 'scouting-2017-5f51c'
 		self.url = '1678-scouting-2016'
-		
-	def initializeFirebase(self):
 		config = {
 			"apiKey": "mykey",
 			"authDomain": self.url + ".firebaseapp.com",
@@ -25,7 +21,7 @@ class PyrebaseCommunicator(object):
 		app = pyrebase.initialize_app(config)
 		self.firebase = app.database()
 		self.fbStorage = app.storage()
-
+	
 	def updateFirebaseWithTeam(self, team):
 		print(str(team.number) + ",",)
 		teamDict = utils.makeDictFromTeam(team)

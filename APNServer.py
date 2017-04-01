@@ -5,7 +5,6 @@ import firebaseCommunicator
 
 apns = APNs(use_sandbox = True, cert_file = './apn-cert.pem')
 PBC = firebaseCommunicator.PyrebaseCommunicator()
-PBC.initializeFirebase()
 fb = PBC.firebase
 
 def sendNoti(number, c, token):

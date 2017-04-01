@@ -122,7 +122,7 @@ class CalculatedMatchData(object):
 		self.allRotorsTurningChanceBlue = random.random()
 		self.__dict__.update(args)
 
-# (superSecret, url) = ('qVIARBnAD93iykeZSGG8mWOwGegminXUUGF2q0ee', 'https://1678-scouting-2016.firebaseio.com/')
+(superSecret, url) = ('qVIARBnAD93iykeZSGG8mWOwGegminXUUGF2q0ee', 'https://1678-scouting-2016.firebaseio.com/')
 # (superSecret, url) = ('93Ybz7MldpSj6HQHW1zb4ddcGGmpCMlNlOBoI9V3', 'https://scouting-2017-5f51c.firebaseio.com/')
 
 
@@ -140,4 +140,4 @@ while(True):
 			k = str(t) + "Q" + str(cm)
 			firebase.put('/TempTeamInMatchDatas/', k + '-' + str(i), TeamInMatchData(teamNumber = t, matchNumber = cm, scoutName = testScouts[i]).__dict__)
 	cm += 1
-	time.sleep(40)
+	time.sleep(10)

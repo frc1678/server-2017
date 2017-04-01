@@ -5,9 +5,6 @@ import Math
 import pdb
 
 PBC = firebaseCommunicator.PyrebaseCommunicator()
-PBC.initializeFirebase()
-comp = DataModel.Competition(PBC)
-comp.updateTeamsAndMatchesFromFirebase()
-comp.updateTIMDsFromFirebase()
-calculator = Math.Calculator(comp)
-print calculator.cachedComp.teamsWithMatchesCompleted()
+ 
+for k, v in PBC.firebase.child("TeamInMatchDatas").get().val().items():
+	print v.get('superNotes')

@@ -4,6 +4,7 @@ import utils
 import multiprocessing
 import firebaseCommunicator
 import time
+import pdb
 
 #These are the keys that have lists of dicts
 #Lists may have different numbers of dicts, but the keys in the dicts should be the same
@@ -17,7 +18,6 @@ boilerKeys = ['time', 'numShots', 'position']
 standardDictKeys = ['gearsPlacedByLiftAuto', 'gearsPlacedByLiftTele']
 boolKeys = ['didReachBaselineAuto', 'didLiftoff', 'didStartDisabled', 'didBecomeIncapacitated']
 PBC = firebaseCommunicator.PyrebaseCommunicator()
-PBC.initializeFirebase()
 firebase = PBC.firebase
 
 class DataChecker(multiprocessing.Process):
@@ -126,8 +126,8 @@ class DataChecker(multiprocessing.Process):
 				returnDict.update({k: self.avgDict(map(lambda c: (c.get(k) or {}), self.consolidationGroups[key]))})
 			else:
 				#Gets a common value across any kind of list of values and puts it into the combined TIMD
+				listToConsolidate = []
 				for tm in self.consolidationGroups[key]:
-					listToConsolidate = []
 					if tm.get(k) != None:
 						listToConsolidate += [tm.get(k)]
 					else:

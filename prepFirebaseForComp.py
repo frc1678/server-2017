@@ -8,7 +8,6 @@ import utils
 
 TBAC = TBACommunicator.TBACommunicator()
 FBC = firebaseCommunicator.PyrebaseCommunicator()
-FBC.initializeFirebase()
 competition = DataModel.Competition(FBC)
 competition.eventCode = TBAC.code
 competition.PBC.JSONteams = TBAC.makeEventTeamsRequest()

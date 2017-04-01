@@ -5,13 +5,13 @@ from Math import Calculator
 
 
 pbc = PyrebaseCommunicator()
-pbc.initializeFirebase()
+ 
 comp = DataModel.Competition(pbc)
 comp.updateTeamsAndMatchesFromFirebase()
 comp.updateTIMDsFromFirebase()
 calculator = Calculator(comp)
 
-with open('./climbingdata.csv', 'w') as f:
+with open('./climbingdata-SAC.csv', 'w') as f:
 		keys = ['number'] + range(9)
 		writer = csv.DictWriter(f, fieldnames = keys)
 		writer.writeheader()

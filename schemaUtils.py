@@ -71,7 +71,6 @@ class SchemaUtils(object):
         if team.number == -1 or team.number in match.redAllianceTeamNumbers: return True
         if team.number in match.blueAllianceTeamNumbers: return False
         else:
-            pdb.set_trace()
             raise ValueError(str(team.number) not in "Q" + str(match.number))
 
     #TIMD utility function

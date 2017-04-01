@@ -6,7 +6,7 @@ import time
 import traceback
 
 PBC = firebaseCommunicator.PyrebaseCommunicator()
-PBC.initializeFirebase()
+ 
 comp = DataModel.Competition(PBC)
 
 while(True):

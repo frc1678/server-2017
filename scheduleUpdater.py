@@ -3,20 +3,16 @@ import firebaseCommunicator
 import sys
 
 PBC = firebaseCommunicator.PyrebaseCommunicator()
-PBC.initializeFirebase()
 fb = PBC.firebase
-
 def update(data):
-	print data
 	if data['data'] == None:
-		fb.child('currentMatchNum').set(1)
-		return
-	matches = fb.child('Matches').get().val()
-	incomplete = filter(lambda k: matches[k].get('redScore') != None and matches[k].get('blueScore') != None, range(1, len(matches)))
-	if incomplete:
-		fb.child('currentMatchNum').set(min(incomplete))
+		latest = 1
 	else:
-		sys.exit(0)
+		keys = map(lambda k: int(k.split('Q')[1].split('-')[0]), fb.child("TempTeamInMatchDatas").shallow().get().each())
+		latest = sorted(keys, reverse=True)[0] + 1
+		fb.child('currentMatchNum').set(latest)
 
 def updateSchedule():
-	fb.child('Matches').stream(update)
+	fb.child('TempTeamInMatchDatas').stream(update)
+
+# updateSchedule()

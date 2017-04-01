@@ -7,7 +7,7 @@ import traceback
 import CrashReporter
 
 PBC = firebaseCommunicator.PyrebaseCommunicator()
-PBC.initializeFirebase()
+ 
 fb = PBC.firebase
 
 scouts = "aidan alex calvin carter evan gemma jack janet jesse jon justin jishnu katie kyle mingyo mx rachel sage sam wesley westley zoe".split()

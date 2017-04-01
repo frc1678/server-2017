@@ -25,6 +25,7 @@ class CalculatedTeamData(object):
 		super(CalculatedTeamData, self).__init__()
 		self.firstPickAbility = None
 		self.overallSecondPickAbility = None
+		self.thirdPickAbility = None
 		self.disabledPercentage = None
 		self.incapacitatedPercentage = None
 		self.predictedSeed = None
@@ -96,7 +97,6 @@ class Team(object):
 		self.pitSelectedImageName = None
 		self.pitAllImageURLs = {}
 		self.pitAvailableWeight = None
-		self.pitOrganization = None
 		self.pitDriveTrain = None
 		self.pitCheesecake = None
 		self.pitProgrammingLanguage = None
