@@ -25,17 +25,22 @@ shouldSlack = False
 consolidator = dataChecker.DataChecker()
 consolidator.start()
 # APNServer.startNotiStream()
-#Use this if tablets are assigned to scouts by the server, and then given to the correct scouts
+
+
+#Scout assignment streams:
+
+#Use this if tablets need assigned to scouts by the server, and will then be given to the correct scouts
 #This means at the beginning of a competition day
 # scoutRotator.tabletHandoutStream()
 
-#Use this for running the server again (e.g. after a crash) to avoid reassigning scouts
+#Use this for running the server again (e.g. after a crash) to avoid reassigning scouts or tablets
 # scoutRotator.alreadyAssignedStream()
 
 #Use this if you are restarting the server and need to reassign scouts but scouts already have tablets
 #Also useful for unexpected changes in availability
 # scoutRotator.simpleStream()
- 
+
+
 def checkForMissingData():
 	with open('missing_data.txt', 'w') as missingDataFile:
 		missingDatas = calculator.getMissingDataString()
