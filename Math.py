@@ -15,7 +15,7 @@ from FirstTIMDProcess import FirstTIMDProcess
 from FirebaseWriterProcess import FirebaseWriteObjectProcess
 from schemaUtils import SchemaUtils
 from CrashReporter import reportOverestimate
-
+import csv
 class Calculator(object):
     """Does math with scouted data"""
     def __init__(self, competition):
@@ -298,19 +298,11 @@ class Calculator(object):
         ourTeam = self.su.replaceWithAverageIfNecessary(self.su.getTeamForNumber(self.ourTeamNum)) or self.averageTeam
         shots = self.getTotalAverageShotPointsForTeam(team)
         bReached = (team.calculatedData.baselineReachedPercentage or 0) * 5
-        gears = self.predictedGearPointsForAlliance([ourTeam, team])
-        speed = team.calculatedData.RScoreSpeed * 8
-        ag = team.calculatedData.RScoreAgility * 8
-        gearC = team.calculatedData.RScoreGearControl * 4
+        gears = self.predictedGearPointsForAlliance([team])
+        speed = (team.calculatedData.RScoreSpeed or 0) * 8
+        ag = (team.calculatedData.RScoreAgility or 0) * 8
+        gearC = (team.calculatedData.RScoreGearControl or 0) * 4
         return gears + bReached + shots + ag + gearC + speed
-
-    def getGearContribution(self, team):
-        ourTeam = self.su.replaceWithAverageIfNecessary(self.su.getTeamForNumber(self.ourTeamNum))
-        teamGears = team.calculatedData.avgGearsPlacedAuto + team.calculatedData.avgGearsPlacedTele
-        totalGears = teamGears + ourTeam.calculatedData.avgGearsPlacedAuto + ourTeam.calculatedData.avgGearsPlacedTele 
-        gearFrac = teamGears / totalGears if totalGears != 0 else 0
-        gearPts = self.getRotorsTurningForDatasForGearFunc([ourTeam, team], lambda t: t.calculatedData.avgGearsPlacedTele or 0, lambda t: t.calculatedData.avgGearsPlacedAuto or 0)
-        return gearPts * gearFrac
 
     def firstPickAllRotorsChance(self, team):
         ourTeam = self.su.getTeamForNumber(self.ourTeamNum) or self.averageTeam
@@ -358,14 +350,15 @@ class Calculator(object):
         except:
             return
         newMatrix = np.dot(inverse, rotorsToGears)
-        oprs = [newMatrix.item(teams.index(team), 0) for team in teams]
-        avgGearsPerTeam = [team.calculatedData.avgGearsPlacedAuto + team.calculatedData.avgGearsPlacedTele for team in teams]
-        return stats.linregress(avgGearsPerTeam, oprs)
+        oprs = {team.number : newMatrix.item(teams.index(team), 0) for team in teams}
+        avgGearsPerTeam = {team.number : team.calculatedData.avgGearsPlacedAuto + team.calculatedData.avgGearsPlacedTele for team in teams}
+        print stats.linregress(avgGearsPerTeam.values(), oprs.values())
+        return (avgGearsPerTeam, oprs)
 
     def thirdPickAbility(self, team):
-        grs = team.calculatedData.avgGearsPlacedTele + team.calculatedData.avgGearsPlacedAuto
-        spd = team.calculatedData.RScoreSpeed
-        agi = team.calculatedData.RScoreAgility
+        grs = self.predictedGearPointsForAlliance([team])
+        spd = team.calculatedData.RScoreSpeed or 0
+        agi = team.calculatedData.RScoreAgility or 0
         return grs + spd + agi
 
     #PROBABILITIES
@@ -593,6 +586,14 @@ class Calculator(object):
             file.write('Time:' + str(time) + '   TIMDs:' + str(len(self.su.getCompletedTIMDsInCompetition())) + '\n')
             file.close()
 
+    def writeCSVGearRegress(self):
+        with open('./gearRegress.csv', 'w') as f:
+            writer = csv.DictWriter(f, fieldnames = ['number', 'avgTotalGears', 'rotorPts/GearOPR'])
+            stuff = self.rotorPointsPerGearForTeams()
+            writer.writeheader()
+            for team in self.cachedComp.teamsWithMatchesCompleted:
+                writer.writerow({'number' : team.number, 'avgTotalGears': stuff[0][team.number], 'rotorPts/GearOPR' : stuff[1][team.number]})
+
     def doCalculations(self, PBC):
         isData = len(self.su.getCompletedTIMDsInCompetition()) > 0
         if isData:
@@ -622,7 +623,6 @@ class Calculator(object):
             PBC.addCalculatedMatchDatasToFirebase(self.comp.matches)
             PBC.addCompInfoToFirebase()
             endTime = time.time()
-            self.rotorPointsPerGearForTeams()
             self.writeCalculationDiagnostic(endTime - startTime)
         else:
             print("No Data")

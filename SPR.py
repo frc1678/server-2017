@@ -170,7 +170,7 @@ class ScoutPrecision(object):
 	def getScoutFrequencies(self, available):
 		#Sorts scouts by spr score
 		#It is reversed so the scouts with lower spr are later, causing them to be repeated more
-		rankedScouts = sorted(self.sprs.keys(), key = lambda k: self.sprs[k]).reverse()
+		rankedScouts = sorted(self.sprs.keys(), key=lambda k: self.sprs[k])
 		#Lower sprs, so higher number list index scouts are repeated more frequently, but less if there are more scouts
 		func = lambda s: [s] * (rankedScouts.index(s) + 1) * ((100/(len(rankedScouts) + 1)) + 1)
 		return utils.extendList(map(func, available))

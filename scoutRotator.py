@@ -10,7 +10,7 @@ PBC = firebaseCommunicator.PyrebaseCommunicator()
  
 fb = PBC.firebase
 
-scouts = "aidan alex calvin carter evan gemma jack janet jesse jon justin jishnu katie kyle mingyo mx rachel sage sam wesley westley zoe".split()
+scouts = "aidan alex ayush calvin carter evan gemma jack jesse jon justin jishnu katie kyle mingyo mx rachel sage sam vera wesley westley zoe".split()
 SPR = SPR.ScoutPrecision()
 global oldMatchNum
 oldMatchNum = 0
@@ -52,7 +52,7 @@ def doSPRsAndAssignments(data):
 		available = [k for (k, v) in fb.child("availability").get().val().items() if v == 1]
 		#Grades scouts and assigns them to robots
 		SPR.calculateScoutPrecisionScores(fb.child("TempTeamInMatchDatas").get().val(), available)
-		SPR.sprZScores(PBC)
+		# SPR.sprZScores(PBC)
 		newAssignments = SPR.assignScoutsToRobots(available, redTeams + blueTeams, fb.child("scouts").get().val())
 		print newAssignments
 		#and it is put on firebase
@@ -82,4 +82,5 @@ def startAtNewMatch(newMatchNum):
 #Also useful for unexpected changes in availability
 def simpleStream():
 	fb.child("currentMatchNum").stream(doSPRsAndAssignments)
+
 

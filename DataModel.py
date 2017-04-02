@@ -84,6 +84,7 @@ class CalculatedTeamData(object):
 		self.RScoreBallControl = None
 		self.RScoreGearControl = None
 		self.RScoreDrivingAbility = None
+		self.avgPointsPerGear = None
 		self.__dict__.update(args) #DON'T DELETE THIS FOR ANY CLASS
 
 class Team(object):

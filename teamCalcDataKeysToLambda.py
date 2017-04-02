@@ -71,6 +71,7 @@ def secondCalculationDict(team, calc):
         cd.predictedSeed = calc.cachedComp.predictedSeedings.index(team) + 1
     cd.firstPickAbility = calc.firstPickAbility(team)
     cd.overallSecondPickAbility = calc.overallSecondPickAbility(team)
+    cd.thirdPickAbility = calc.thirdPickAbility(team)
 
 def TIMDCalcDict(timd, calc):
     if (not calc.su.TIMCalculatedDataHasValues(timd.calculatedData)):

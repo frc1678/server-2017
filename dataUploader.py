@@ -77,7 +77,7 @@ class TeamInMatchData(object):
 			{
 				'time' : random.randint(0,1),
 				'numShots' : random.randint(0,1),
-				'position' : random.randint(0,1)
+				'position' : 'Key'
 			}
 		]
 
@@ -130,7 +130,7 @@ auth = fb.FirebaseAuthentication(superSecret, "1678programming@gmail.com", True,
 testScouts = "a b c d e f g h i j k l m n o p q r".split()
 firebase = fb.FirebaseApplication(url, auth)
 cm = 1
-
+time.sleep(15)
 while(True):
 	match = firebase.get('/Matches', cm)
 	m = Match(number = cm, redAllianceTeamNumbers = match['redAllianceTeamNumbers'], blueAllianceTeamNumbers = match['blueAllianceTeamNumbers'])
@@ -140,4 +140,4 @@ while(True):
 			k = str(t) + "Q" + str(cm)
 			firebase.put('/TempTeamInMatchDatas/', k + '-' + str(i), TeamInMatchData(teamNumber = t, matchNumber = cm, scoutName = testScouts[i]).__dict__)
 	cm += 1
-	time.sleep(10)
+	time.sleep(20)

@@ -3,8 +3,15 @@ import DataModel
 import firebaseCommunicator
 import Math
 import pdb
+import csv
 
-PBC = firebaseCommunicator.PyrebaseCommunicator()
- 
-for k, v in PBC.firebase.child("TeamInMatchDatas").get().val().items():
-	print v.get('superNotes')
+pbc = firebaseCommunicator.PyrebaseCommunicator()
+comp = DataModel.Competition(pbc)
+comp.updateTeamsAndMatchesFromFirebase()
+comp.updateTIMDsFromFirebase()
+calc = Math.Calculator(comp)
+
+with open('./gearRegress.csv', 'w') as f:
+	writer = csv.DictWriter(f, fieldnames = ['avgTotalGears', 'rotorPts/GearOPR'])
+	print calc.rotorPointsPerGearForTeams()
+
