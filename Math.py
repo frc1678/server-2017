@@ -218,13 +218,7 @@ class Calculator(object):
         return (rVal * (rotorIndex + 1) if left >= 0 else 0) + leftPts
 
     def predictedGearPointsForAlliance(self, alliance):
-        alliance = map(self.su.replaceWithAverageIfNecessary, alliance)
-        auto = sum(map(lambda t: t.calculatedData.avgGearsPlacedAuto or 0, alliance))
-        tele = sum(map(lambda t: t.calculatedData.avgGearsPlacedTele or 0, alliance))
-        teleGears = min([tele + auto, 13])
-        autoInd = self.getRotorIndexForGearsForIncrement(auto, self.gearRangesAuto)
-        teleInd = self.getRotorIndexForGearsForIncrement(teleGears, self.gearRangesTele[autoInd + 1:])
-        return self.gearPointsForGearsPlacedForIncrement(auto, autoInd, self.autoGearIncrements, 60.0) + self.gearPointsForGearsPlacedForIncrement(teleGears, teleInd, self.teleGearIncrements[autoInd + 1:], 40.0, startInd=autoInd+1)
+        return 14.607 * sum(map(lambda t: (t.calculatedData.avgGearsPlacedAuto or 0) + (t.calculatedData.avgGearsPlacedTele or 0), alliance))
     
     def getRotorForGearsForIncrement(self, gears, inc):
         ranges = filter(lambda k: int(gears) in k, inc)
@@ -309,9 +303,10 @@ class Calculator(object):
         return self.getAllRotorsTurningChanceForTwoRobotAlliance([ourTeam, team])
 
     def overallSecondPickAbility(self, team):
-        gearControl = (team.calculatedData.RScoreGearControl or 0) * 20
-        speed = (team.calculatedData.RScoreSpeed or 0) * 25
-        agility = (team.calculatedData.RScoreAgility or 0) * 45
+        gearControl = (team.calculatedData.RScoreGearControl or 0) * 7.48
+        speed = (team.calculatedData.RScoreSpeed or 0) * 9.52
+        agility = (team.calculatedData.RScoreAgility or 0) * 17
+        gearAbility = 3 * ((team.calculatedData.avgGearsPlacedAuto or 0) + (team.calculatedData.avgGearsPlacedTele or 0))
         functionalPercentage = (1 - team.calculatedData.disfunctionalPercentage)
         return functionalPercentage * (gearControl + agility + speed)
 
