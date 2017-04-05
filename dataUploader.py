@@ -129,7 +129,7 @@ class CalculatedMatchData(object):
 auth = fb.FirebaseAuthentication(superSecret, "1678programming@gmail.com", True, True)
 testScouts = "a b c d e f g h i j k l m n o p q r".split()
 firebase = fb.FirebaseApplication(url, auth)
-cm = 1
+cm = 16
 time.sleep(15)
 while(True):
 	match = firebase.get('/Matches', cm)

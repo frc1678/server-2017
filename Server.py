@@ -18,12 +18,11 @@ PBC = firebaseCommunicator.PyrebaseCommunicator()
 comp = DataModel.Competition(PBC)
 comp.updateTeamsAndMatchesFromFirebase()
 comp.updateTIMDsFromFirebase()
-scheduleUpdater.updateSchedule()
 calculator = Math.Calculator(comp)
 cycle = 1
 shouldSlack = False
-consolidator = dataChecker.DataChecker()
-consolidator.start()
+# consolidator = dataChecker.DataChecker()
+# consolidator.start()
 # APNServer.startNotiStream()
 
 
@@ -31,7 +30,7 @@ consolidator.start()
 
 #Use this if tablets need assigned to scouts by the server, and will then be given to the correct scouts
 #This means at the beginning of a competition day
-scoutRotator.tabletHandoutStream()
+# scoutRotator.tabletHandoutStream()
 
 #Use this for running the server again (e.g. after a crash) to avoid reassigning scouts or tablets
 # scoutRotator.alreadyAssignedStream()

@@ -12,7 +12,7 @@ def reportServerCrash(message):
 		"chat.postMessage",
 		channel = "@" + u,
 		text = message
-	), ["bimbunky", "tesseract", "rytonbay", "sam", "peterc"])
+	), ["bimbunky", "tesseract", "peterc"])
 
 def reportOverestimate(message):
 	map(lambda u:
