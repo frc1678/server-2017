@@ -78,13 +78,13 @@ class CalculatedTeamData(object):
 		self.firstPickRotorBonusChance = None
 		self.autoShootingPositions = None
 		self.gearScoringPositionsAuto = None
+		self.gearAbility = None
 		self.RScoreAgility = None
 		self.RScoreDefense = None
 		self.RScoreSpeed = None
 		self.RScoreBallControl = None
 		self.RScoreGearControl = None
 		self.RScoreDrivingAbility = None
-		self.avgPointsPerGear = None
 		self.__dict__.update(args) #DON'T DELETE THIS FOR ANY CLASS
 
 class Team(object):

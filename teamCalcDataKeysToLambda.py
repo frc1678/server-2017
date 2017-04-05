@@ -41,6 +41,7 @@ def firstCalculationDict(team, calc):
         sdGearsPlacedAuto = lambda tm: tm.calculatedData.numGearsPlacedAuto,
         sdGearsPlacedTele = lambda tm: tm.calculatedData.numGearsPlacedTele,
         sdBaselineReachedPercentage = lambda tm: tm.didReachBaselineAuto)
+    cd.gearAbility = calc.gearAbility(team)
     cd.autoShootingPositions = calc.getAutoShootingPositions(team)
     calc.getAvgFuncForKeys(team, cd.avgGearsPlacedByLiftAuto, lambda tm: tm.gearsPlacedByLiftAuto)
     calc.getAvgFuncForKeys(team, cd.avgGearsPlacedByLiftTele, lambda tm: tm.gearsPlacedByLiftTele)
