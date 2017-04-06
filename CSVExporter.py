@@ -28,6 +28,27 @@ def CSVExport(comp, name, keys = []):
 			keys = sorted(defaultKeys, key = lambda k: (k != "number", k.lower()))
 			writer.writerow({k : tDict[k] for k in keys})
 
+def readOPRData():
+	teamsDict = {}
+	wantedKeys = ['auto Fuel High','auto Scored Gears', 'teleop Scored Gears', 'teleop Takeoff Points']
+	with open('./data/LasVegas-Table 1.csv') as csvfile:
+		reader = csv.DictReader(csvfile)
+		first = True
+		keys = []
+		for r in reader:
+			if first:
+				keys = r[None]
+				first = False
+			else:
+				teamsDict[r[None][keys.index('team Number')]] = {}
+				for k in wantedKeys:
+					teamsDict[r[None][keys.index('team Number')]][k] = r[None][keys.index(k)]
+	with open('./filteredLVData.csv', 'w') as f:
+		writer = csv.DictWriter(f, fieldnames = ['team Number'] + wantedKeys)
+		writer.writeheader()
+		for key, value in teamsDict.items():
+			writer.writerow({k : teamsDict[key][k] if k != 'team Number' else key for k in ['team Number'] + wantedKeys})
+
 def CSVExportMini(comp, name):
 	miniKeys = []
 	CSVExport(comp, 'MINI', keys = miniKeys)

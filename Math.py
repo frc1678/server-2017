@@ -184,6 +184,10 @@ class Calculator(object):
         dic[self.averageTeam.number] = {k : np.mean(func(k)) if func(k) else 0 for k in range(13)}
         return dic
 
+    def getTotalAverageGearsForAlliance(self, alliance):
+        gFunc = lambda t: (t.calculatedData.avgGearsPlacedTele or 0) + (t.calculatedData.avgGearsPlacedAuto or 0)
+        return sum(map(gFunc, alliance))
+
     def totalGearsPlacedForTIMD(self, timd):
         return timd.calculatedData.numGearsPlacedAuto + timd.calculatedData.numGearsPlacedTele
 
@@ -203,8 +207,8 @@ class Calculator(object):
     def getStdDevGearPointsForAlliance(self, alliance):
         sdGearsAuto = self.standardDeviationForRetrievalFunctionForAlliance(lambda t: t.calculatedData.sdGearsPlacedAuto, alliance)
         sdGearsTele = self.standardDeviationForRetrievalFunctionForAlliance(lambda t: t.calculatedData.sdGearsPlacedTele, alliance)
-        sdGearFunc = lambda t: ((t.calculatedData.avgGearsPlacedAuto or 0)**2 + (t.calculatedData.avgGearsPlacedTele or 0)**2)**0.5
-        return 14.607 * self.standardDeviationForRetrievalFunctionForAlliance(sdGearFunc, alliance)
+        sdGearFunc = lambda t: utils.sumStdDevs([(t.calculatedData.avgGearsPlacedAuto or 0), (t.calculatedData.avgGearsPlacedTele or 0)])
+        return 20.9536601746 * self.standardDeviationForRetrievalFunctionForAlliance(sdGearFunc, alliance)
 
     #OVERALL DATA
     def liftoffAbilityForTIMD(self, timd):
@@ -252,7 +256,7 @@ class Calculator(object):
         baselinePts = sum(map(lambda t: (t.calculatedData.baselineReachedPercentage or 0) * 5, alliance))
         fuelPts = self.getTotalAverageShotPointsForAlliance(alliance)
         liftoffPoints = sum(map(lambda t: (t.calculatedData.liftoffAbility or 0), alliance))
-        gearPts = self.predictedGearPointsForAlliance(alliance) + 40.0
+        gearPts = 20.9536601746 * self.getTotalAverageGearsForAlliance(alliance)
         return baselinePts + fuelPts + liftoffPoints + gearPts
 
     def predictedPlayoffScoreForAlliance(self, alliance):
@@ -298,7 +302,7 @@ class Calculator(object):
         return self.getAvgNumCompletedTIMDsForAlliance(alliance)
 
     def thirdPickAbility(self, team):
-        grs = team.calculatedData.gearAbility
+        grs = team.calculatedData.gearAbility or 0
         spd = team.calculatedData.RScoreSpeed or 0
         agi = team.calculatedData.RScoreAgility or 0
         return grs + spd + agi
@@ -367,6 +371,14 @@ class Calculator(object):
         for team in teams: 
             shots = newMatrix.item(teams.index(team), 0) if newMatrix.item(teams.index(team), 0) >= 0 else 0
             team.calculatedData.__dict__[self.shotKeys[key]] = shots
+
+    def getAverageRotorPointsPerGear(self):
+        matches = self.su.getCompletedMatchesInCompetition()
+        rotorFunc = lambda m: m['score_breakdown']['red']['autoRotorPoints'] + m['score_breakdown']['blue']['autoRotorPoints'] + m['score_breakdown']['red']['teleopRotorPoints'] + m['score_breakdown']['blue']['teleopRotorPoints']
+        rpts = sum(map(rotorFunc, self.cachedComp.TBAMatches))
+        gFunc = lambda t: (t.calculatedData.numGearsPlacedAuto or 0) + (t.calculatedData.numGearsPlacedTele or 0)
+        gpts = sum(map(gFunc, self.su.getCompletedTIMDsInCompetition()))
+        return rpts / float(gpts)
 
     #Seeding
     def autoPointsForAlliance(self, team, match):
@@ -466,14 +478,10 @@ class Calculator(object):
         except Exception as e:
             self.cachedComp.actualSeedings = self.teamsSortedByRetrievalFunctions(self.getSeedingFunctions())
         self.cachedComp.TBAMatches = filter(lambda m: m['comp_level'] == 'qm', self.TBAC.makeEventMatchesRequest())
-        print "here"
         self.cachedComp.zGearProbabilities = self.getAllGearProbabilitiesForTeams(lambda tm: self.totalGearsPlacedForTIMD(tm))
-        print "here 2"
         self.cachedComp.predictedSeedings = self.teamsSortedByRetrievalFunctions(self.getPredictedSeedingFunctions())
-        print "here 3"
         map(lambda t: Rscorecalcs(t, self), self.cachedComp.teamsWithMatchesCompleted)
         self.rValuesForAverageFunctionForDict(lambda t: t.calculatedData.avgDrivingAbility, self.cachedComp.drivingAbilityZScores)
-        print "here 4"
         map(self.shotOPRForKey, self.shotKeys.keys())
 
     def doCachingForTeam(self, team):
@@ -531,14 +539,6 @@ class Calculator(object):
         with open('./diagnostics.txt', 'a') as file:
             file.write('Time:' + str(time) + '   TIMDs:' + str(len(self.su.getCompletedTIMDsInCompetition())) + '\n')
             file.close()
-
-    def writeCSVGearRegress(self):
-        with open('./gearRegress.csv', 'w') as f:
-            writer = csv.DictWriter(f, fieldnames = ['number', 'avgTotalGears', 'rotorPts/GearOPR'])
-            stuff = self.rotorPointsPerGearForTeams()
-            writer.writeheader()
-            for team in self.cachedComp.teamsWithMatchesCompleted:
-                writer.writerow({'number' : team.number, 'avgTotalGears': stuff[0][team.number], 'rotorPts/GearOPR' : stuff[1][team.number]})
 
     def doCalculations(self, PBC):
         isData = len(self.su.getCompletedTIMDsInCompetition()) > 0
