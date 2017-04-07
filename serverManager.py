@@ -11,7 +11,6 @@ comp = DataModel.Competition(PBC)
 
 while(True):
 	comp.updateTeamsAndMatchesFromFirebase()
-	comp.updateTIMDsFromFirebase()
 	cmd = raw_input(">>> ").split()
 	if cmd[0] == "exp":
 		try:

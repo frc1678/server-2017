@@ -2,7 +2,7 @@
 import utils
 from collections import OrderedDict
 import csv
-from DataModel import Team
+from DataModel import *
 import Math
 
 def CSVExportScoutZScores(zscores):

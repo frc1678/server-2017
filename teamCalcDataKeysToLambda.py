@@ -6,10 +6,10 @@ import traceback
 def firstCalculationDict(team, calc):
     cd = team.calculatedData
     mapFuncForCalcAvgsForTeam(team, lambda f: calc.getAverageForDataFunctionForTeam(team, f), 
-        # avgHighShotsTele = lambda tm: tm.calculatedData.numHighShotsTele, 
-        # avgHighShotsAuto = lambda tm: tm.calculatedData.numHighShotsAuto,
-        # avgLowShotsAuto = lambda tm: tm.calculatedData.numLowShotsAuto, 
-        # avgLowShotsTele = lambda tm: tm.calculatedData.numLowShotsTele, 
+        avgHighShotsTele = lambda tm: tm.calculatedData.numHighShotsTele, 
+        avgHighShotsAuto = lambda tm: tm.calculatedData.numHighShotsAuto,
+        avgLowShotsAuto = lambda tm: tm.calculatedData.numLowShotsAuto, 
+        avgLowShotsTele = lambda tm: tm.calculatedData.numLowShotsTele, 
         incapacitatedPercentage = lambda tm: tm.didBecomeIncapacitated,
         disabledPercentage = lambda tm: tm.didStartDisabled,
         liftoffPercentage = lambda tm: tm.didLiftoff, 
