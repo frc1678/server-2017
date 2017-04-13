@@ -37,6 +37,7 @@ class ScoutPrecision(object):
 			'lowShotTimesForBoilerAuto': 0.1,
 			'lowShotTimesForBoilerTele': 0.1
 		}
+		self.SPRBreakdown = {}
 
 	#SPR
 	#Scout precision rank(ing): checks accuracy of scouts by comparing their past TIMDs to the consensus
@@ -65,7 +66,9 @@ class ScoutPrecision(object):
 		#Finds scout names in tempTIMDs
 		scouts = filter(lambda v: v, map(lambda k: k.get('scoutName'), tempTIMDs))
 		#Finds values (at an inputted key) in tempTIMDs
-		values = filter(lambda v: v, map(lambda t: t[key] if t.get('scoutName') else None, tempTIMDs))
+		values = filter(lambda v: v != None, map(lambda t: t[key] if t.get('scoutName') else None, tempTIMDs))
+		if key == "didLiftoff":
+			print values
 		#Finds the most common value in the list of values, or the average if none of them is the majority
 		valueFrequencies = map(values.count, values)
 		if values:
@@ -76,6 +79,8 @@ class ScoutPrecision(object):
 			#Makes a list of the differences from the common value multiplied by weight, for relative importance of data points
 			differenceFromCommonValue = map(lambda v: abs(v - commonValue) * weight, values)
 			#Adds the difference from this tempTIMD for this key to each scout's previous differences (spr score)
+			for c in range(len(differenceFromCommonValue)):
+				self.SPRBreakdown.update({key: (self.SPRBreakdown.get(key) or []) + [(differenceFromCommonValue[c] / weight)]})
 			self.sprs.update({scouts[c] : (self.sprs.get(scouts[c]) or 0) + differenceFromCommonValue[c] for c in range(len(differenceFromCommonValue))})
 
 	def findOddScoutForDict(self, tempTIMDs, key):
@@ -95,6 +100,8 @@ class ScoutPrecision(object):
 				if values.count(commonValue) <= len(values) / 2:
 					commonValue = np.mean(values)
 				differenceFromCommonValue = map(lambda v: abs(v - commonValue) * weight, values)
+				for c in range(len(differenceFromCommonValue)):
+					self.SPRBreakdown.update({key: (self.SPRBreakdown.get(key) or []) + [(differenceFromCommonValue[c] / weight)]})
 				self.sprs.update({scouts[c] : (self.sprs.get(scouts[c]) or 0) + differenceFromCommonValue[c] for c in range(len(differenceFromCommonValue))})
 
 	def findOddScoutForListOfDicts(self, tempTIMDs, key):
@@ -128,6 +135,8 @@ class ScoutPrecision(object):
 						if values.count(commonValue) <= len(values) / 2:
 							commonValue = np.mean(values)
 						differenceFromCommonValue = map(lambda v: abs(v - commonValue) * weight, values)
+						for c in range(len(differenceFromCommonValue)):
+							self.SPRBreakdown.update({key: (self.SPRBreakdown.get(key) or []) + [(differenceFromCommonValue[c] / weight)]})
 						self.sprs.update({scouts[c] : (self.sprs.get(scouts[c]) or 0) + differenceFromCommonValue[c] for c in range(len(differenceFromCommonValue))})
 
 	def calculateScoutPrecisionScores(self, temp, available):

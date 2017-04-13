@@ -5,9 +5,11 @@ import firebaseCommunicator
 import time
 import traceback
 import CrashReporter
+import numpy as np
+import pprint
 
 PBC = firebaseCommunicator.PyrebaseCommunicator()
- 
+
 fb = PBC.firebase
 
 scouts = "aidan alex ayush calvin carter evan gemma jack jesse jon justin jishnu katie kyle mingyo mx rachel sage sam vera wesley westley zoe".split()
@@ -82,4 +84,15 @@ def startAtNewMatch(newMatchNum):
 #Also useful for unexpected changes in availability
 def simpleStream():
 	fb.child("currentMatchNum").stream(doSPRsAndAssignments)
-simpleStream()
+
+def sprBreakdownExport():
+	available = [k for (k, v) in fb.child("availability").get().val().items() if v == 1]
+	SPR.calculateScoutPrecisionScores(fb.child("TempTeamInMatchDatas").get().val(), available)
+	breakdownData = SPR.SPRBreakdown
+	avgData = {}
+	for key in breakdownData.keys():
+		avgData[key] = np.mean(breakdownData[key])
+	pprint.pprint(avgData)
+
+sprBreakdownExport()
+
