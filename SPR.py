@@ -37,6 +37,7 @@ class ScoutPrecision(object):
 			'lowShotTimesForBoilerAuto': 0.1,
 			'lowShotTimesForBoilerTele': 0.1
 		}
+		self.SPRBreakdown = {}
 
 	#SPR
 	#Scout precision rank(ing): checks accuracy of scouts by comparing their past TIMDs to the consensus
@@ -76,6 +77,8 @@ class ScoutPrecision(object):
 			#Makes a list of the differences from the common value multiplied by weight, for relative importance of data points
 			differenceFromCommonValue = map(lambda v: abs(v - commonValue) * weight, values)
 			#Adds the difference from this tempTIMD for this key to each scout's previous differences (spr score)
+			for c in range(len(differenceFromCommonValue)):
+				self.SPRBreakdown.update({key: (self.SPRBreakdown.get(key) or []) + [(differenceFromCommonValue[c] / weight)]})
 			self.sprs.update({scouts[c] : (self.sprs.get(scouts[c]) or 0) + differenceFromCommonValue[c] for c in range(len(differenceFromCommonValue))})
 
 	def findOddScoutForDict(self, tempTIMDs, key):
@@ -95,6 +98,8 @@ class ScoutPrecision(object):
 				if values.count(commonValue) <= len(values) / 2:
 					commonValue = np.mean(values)
 				differenceFromCommonValue = map(lambda v: abs(v - commonValue) * weight, values)
+				for c in range(len(differenceFromCommonValue)):
+					self.SPRBreakdown.update({key: (self.SPRBreakdown.get(key) or []) + [(differenceFromCommonValue[c] / weight)]})
 				self.sprs.update({scouts[c] : (self.sprs.get(scouts[c]) or 0) + differenceFromCommonValue[c] for c in range(len(differenceFromCommonValue))})
 
 	def findOddScoutForListOfDicts(self, tempTIMDs, key):
@@ -128,6 +133,8 @@ class ScoutPrecision(object):
 						if values.count(commonValue) <= len(values) / 2:
 							commonValue = np.mean(values)
 						differenceFromCommonValue = map(lambda v: abs(v - commonValue) * weight, values)
+						for c in range(len(differenceFromCommonValue)):
+							self.SPRBreakdown.update({key: (self.SPRBreakdown.get(key) or []) + [(differenceFromCommonValue[c] / weight)]})
 						self.sprs.update({scouts[c] : (self.sprs.get(scouts[c]) or 0) + differenceFromCommonValue[c] for c in range(len(differenceFromCommonValue))})
 
 	def calculateScoutPrecisionScores(self, temp, available):
