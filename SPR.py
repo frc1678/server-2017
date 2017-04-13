@@ -66,7 +66,9 @@ class ScoutPrecision(object):
 		#Finds scout names in tempTIMDs
 		scouts = filter(lambda v: v, map(lambda k: k.get('scoutName'), tempTIMDs))
 		#Finds values (at an inputted key) in tempTIMDs
-		values = filter(lambda v: v, map(lambda t: t[key] if t.get('scoutName') else None, tempTIMDs))
+		values = filter(lambda v: v != None, map(lambda t: t[key] if t.get('scoutName') else None, tempTIMDs))
+		if key == "didLiftoff":
+			print values
 		#Finds the most common value in the list of values, or the average if none of them is the majority
 		valueFrequencies = map(values.count, values)
 		if values:
