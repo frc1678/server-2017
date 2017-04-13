@@ -85,6 +85,29 @@ class CalculatedTeamData(object):
 		self.RScoreBallControl = None
 		self.RScoreGearControl = None
 		self.RScoreDrivingAbility = None
+		
+		self.lfmDisabledPercentage = None
+		self.lfmIncapacitatedPercentage = None
+	  	self.lmfAvgGearsPlacedAuto = None
+	  	self.lfmAvgHighShotsAuto = None
+	  	self.lfmAvgLowShotsAuto = None
+	  	self.lfmBaselineReachedPercentage = None
+	  	self.lfmAvgGearsPlacedTele = None
+	  	self.lfmAvgGearLoaderIntakesTele = None
+	  	self.lfmAvgHighShotsTele = None
+	  	self.lfmAvgLowShotsTele = None
+	  	self.lfmAvgKeyShotTime = None
+	  	self.lfmAvgLiftoffTime = None
+	  	self.lfmLiftoffPercentage = None
+	  	self.lfmFirstPickAbility = None
+	  	self.lfmSecondPickAbility = None
+	  	self.lfmThirdPickAbility = None
+	  	self.lfmGearAbility = None
+	  	self.lfmAvgAgility = None
+	  	self.lfmAvgSpeed = None
+	  	self.lfmAvgBallControl = None
+	  	self.lfmAvgGearControl = None
+	  	self.lfmAvgDefense = None
 		self.__dict__.update(args) #DON'T DELETE THIS FOR ANY CLASS
 
 class Team(object):
@@ -226,4 +249,5 @@ class CalculatedTeamInMatchData(object):
 		self.avgKeyShotTime = None
 		self.avgHopperShotTime = None
 		self.drivingAbility = None
+		self.disfunctionalPercentage = None
 		self.__dict__.update(args)

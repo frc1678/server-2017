@@ -116,3 +116,5 @@ class PyrebaseCommunicator(object):
 
 	def addCurrentMatchToFirebase(self):
 		self.firebase.child("currentMatchNum").set(1)
+
+

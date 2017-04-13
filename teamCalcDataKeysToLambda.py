@@ -84,12 +84,13 @@ def TIMDCalcDict(timd, calc):
     c.numGearsPlacedTele = calc.getTotalValueForValueDict(timd.gearsPlacedByLiftTele)
     c.avgKeyShotTime = calc.getAvgKeyShotTimeForTIMD(timd, 'Key')
     c.avgHopperShotTime = calc.getAvgKeyShotTimeForTIMD(timd, 'Hopper')
-    c.numHighShotsTele = calc.weightFuelShotsForDataPoint(timd, match, timd.highShotTimesForBoilerTele)
-    c.numHighShotsAuto = calc.weightFuelShotsForDataPoint(timd, match, timd.highShotTimesForBoilerAuto)
-    c.numLowShotsTele = calc.weightFuelShotsForDataPoint(timd, match, timd.lowShotTimesForBoilerTele)
-    c.numLowShotsAuto = calc.weightFuelShotsForDataPoint(timd, match, timd.lowShotTimesForBoilerAuto)
+    c.numHighShotsTele = calc.weightFuelShotsForDataPoint(timd, match, 'teleopFuelHigh', timd.highShotTimesForBoilerTele)
+    c.numHighShotsAuto = calc.weightFuelShotsForDataPoint(timd, match, 'autoFuelHigh', timd.highShotTimesForBoilerAuto)
+    c.numLowShotsTele = calc.weightFuelShotsForDataPoint(timd, match, 'teleopFuelLow', timd.lowShotTimesForBoilerTele)
+    c.numLowShotsAuto = calc.weightFuelShotsForDataPoint(timd, match, 'autoFuelLow', timd.lowShotTimesForBoilerAuto)
     c.liftoffAbility = calc.liftoffAbilityForTIMD(timd)
     c.wasDisfunctional = utils.convertFirebaseBoolean(timd.didStartDisabled + utils.convertFirebaseBoolean(timd.didBecomeIncapacitated))
+    c.disfunctionalPercentage = utils.convertFirebaseBoolean(timd.didStartDisabled) + 0.5 * utils.convertFirebaseBoolean(timd.didBecomeIncapacitated)
     c.numRPs = calc.RPsGainedFromMatchForAlliance(team.number in match.redAllianceTeamNumbers, match)
 
 def averageTeamDict(calc):

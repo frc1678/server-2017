@@ -54,7 +54,9 @@ class ScoutPrecision(object):
 				consolidationGroups[key].append(v)
 			else:
 				consolidationGroups[key] = [v]
-		return consolidationGroups
+		print len(consolidationGroups.items())
+		print len({k : v for k,v in consolidationGroups.items() if len(v) > 1}.items())
+		return {k : v for k,v in consolidationGroups.items() if len(v) > 1}
 
 	#Note: the next 3 functions compare data in tempTIMDs to find scout accuracy
 	#The comparison to determine correct values is done in dataChecker

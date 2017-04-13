@@ -1,12 +1,13 @@
 #CSV Exporter, by Bryton 2/10/16
 import utils
 from collections import OrderedDict
+from TBACommunicator import TBACommunicator
 import csv
 from DataModel import *
 import Math
 
 def CSVExportScoutZScores(zscores):
-	with open('./sprExport.csv', 'w') as f:
+	with open('./scoutRankExport.csv', 'w') as f:
 		writer = csv.DictWriter(f, fieldnames = ['name', 'spr', 'Z-Score'])
 		writer.writeheader()
 		for k, v in zscores.items():
@@ -30,7 +31,7 @@ def CSVExport(comp, name, keys = []):
 
 def readOPRData():
 	teamsDict = {}
-	wantedKeys = ['auto Fuel High','auto Scored Gears', 'teleop Scored Gears', 'teleop Takeoff Points']
+	wantedKeys = ['auto Fuel High','auto Scored Gears', 'teleop Scored Gears', 'teleop Takeoff Points', 'auto Fuel Low', 'teleop Fuel Low', 'teleop Fuel High', 'auto Mobility Points']
 	with open('./data/LasVegas-Table 1.csv') as csvfile:
 		reader = csv.DictReader(csvfile)
 		first = True
@@ -43,11 +44,32 @@ def readOPRData():
 				teamsDict[r[None][keys.index('team Number')]] = {}
 				for k in wantedKeys:
 					teamsDict[r[None][keys.index('team Number')]][k] = r[None][keys.index(k)]
-	with open('./filteredLVData.csv', 'w') as f:
-		writer = csv.DictWriter(f, fieldnames = ['team Number'] + wantedKeys)
-		writer.writeheader()
-		for key, value in teamsDict.items():
-			writer.writerow({k : teamsDict[key][k] if k != 'team Number' else key for k in ['team Number'] + wantedKeys})
+	return teamsDict
+
+def predict():
+	print 'reading...'
+	teamsDict = readOPRData()
+	# comp.updateTeamsAndMatchesFromFirebase()
+	teamsList = []
+	print 'creating teams...'
+	for team, value in teamsDict.items()[1:]:
+		calcData = CalculatedTeamData(avgHighShotsTele=float(value['teleop Fuel High']), avgHighShotsAuto=float(value['auto Fuel High']), avgLowShotsAuto=float(value['auto Fuel Low']), avgLowShotsTele=float(value['teleop Fuel Low']), liftoffAbility=float(value['teleop Takeoff Points']), avgGearsPlacedAuto=float(value['auto Scored Gears']), avgGearsPlacedTele=float(value['teleop Scored Gears']), baselineReachedPercentage=float(value['auto Mobility Points']))
+	# 	writer = csv.DictWriter(f, fieldnames = ['team Number'] + wantedKeys)
+	# 	writer.writeheader()
+	# 	for key, value in teamsDict.items():
+	# 		writer.writerow({k : teamsDict[key][k] if k != 'team Number' else key for k in ['team Number'] + wantedKeys})'])
+		teamOb = Team(number = int(team), calculatedData=calcData)
+		teamsList.append(teamOb)
+	while True:
+		inp = raw_input('>>> ').split()
+		nums = map(lambda t: filter(lambda n: n.number == int(t), teamsList)[0], inp)
+		r1, r2, r3, b1, b2, b3 = nums[0],nums[1],nums[2],nums[3],nums[4],nums[5]
+		print "liftoff : " + str(sum(map(lambda t: t.calculatedData.liftoffAbility, [r1, r2, r3])))
+		print str((sum(map(lambda t: t.calculatedData.liftoffAbility, [b1, b2, b3]))))
+		print "gears : " + str(sum(map(lambda t: t.calculatedData.avgGearsPlacedAuto + t.calculatedData.avgGearsPlacedTele, [r1, r2, r3])))
+		print str((sum(map(lambda t: t.calculatedData.avgGearsPlacedAuto + t.calculatedData.avgGearsPlacedTele, [b1, b2, b3]))))
+
+#predict()
 
 def CSVExportMini(comp, name):
 	miniKeys = []
