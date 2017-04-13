@@ -8,9 +8,9 @@ import time
 import CSVExporter
 import pdb
 from CrashReporter import reportServerCrash
-import dataChecker
-import scoutRotator
-import scheduleUpdater
+#import dataChecker
+#import scoutRotator
+#import scheduleUpdater
 import APNServer
 
 PBC = firebaseCommunicator.PyrebaseCommunicator()
@@ -20,17 +20,17 @@ comp.updateTeamsAndMatchesFromFirebase()
 comp.updateTIMDsFromFirebase()
 calculator = Math.Calculator(comp)
 cycle = 1
-shouldSlack = False
-consolidator = dataChecker.DataChecker()
-consolidator.start()
-APNServer.startNotiStream()
+shouldSlack = True
+#consolidator = dataChecker.DataChecker()
+#consolidator.start()
+#APNServer.startNotiStream()
 
 
 #Scout assignment streams:
 
 #Use this if tablets need assigned to scouts by the server, and will then be given to the correct scouts
 #This means at the beginning of a competition day
-scoutRotator.tabletHandoutStream()
+#scoutRotator.tabletHandoutStream()
 
 #Use this for running the server again (e.g. after a crash) to avoid reassigning scouts or tablets
 # scoutRotator.alreadyAssignedStream()

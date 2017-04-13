@@ -82,5 +82,4 @@ def startAtNewMatch(newMatchNum):
 #Also useful for unexpected changes in availability
 def simpleStream():
 	fb.child("currentMatchNum").stream(doSPRsAndAssignments)
-
-
+simpleStream()

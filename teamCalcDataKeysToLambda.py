@@ -139,5 +139,5 @@ def matchDict(match, calc):
     match.calculatedData.predictedBlueRPs = calc.predictedRPsForAllianceForMatch(False, match)
     match.calculatedData.predictedRedRPs = calc.predictedRPsForAllianceForMatch(True, match)
 
-def mapFuncForCalcAvgsForTeam(team, func, **calcDatas):
-    [team.calculatedData.__dict__.update({k : func(dataFunc)}) for k, dataFunc in calcDatas.items()]
+def mapFuncForCalcAvgsForTeam(team, func, **calcDatas):		
+	[team.calculatedData.__dict__.update({k : func(dataFunc)}) for k, dataFunc in calcDatas.items()]

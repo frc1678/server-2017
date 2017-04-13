@@ -14,5 +14,5 @@ def update(data):
 		print latest
 	fb.child('currentMatchNum').set(latest)
 
-def updateSchedule():
-	fb.child('TempTeamInMatchDatas').stream(update)
+fb.child('TempTeamInMatchDatas').stream(update)
+#updateSchedule()

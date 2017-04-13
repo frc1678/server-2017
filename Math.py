@@ -12,7 +12,6 @@ from teamCalcDataKeysToLambda import *
 import multiprocessing
 import warnings
 from FirstTIMDProcess import FirstTIMDProcess
-from FirebaseWriterProcess import FirebaseWriteObjectProcess
 from schemaUtils import SchemaUtils
 from CrashReporter import reportOverestimate
 import csv
@@ -33,6 +32,7 @@ class Calculator(object):
         self.reportedTIMDs = []
         self.averageTeam.name = 'Average Team'
         self.surrogateTIMDs = []
+	self.superKeys = ['rankAgility','rankSpeed','rankDefense','rankGearControl','rankBallControl']
         self.teleGearIncrements = [0, 2, 6, 12]
         self.autoGearIncrements = [1, 3, 7, 13]
         self.gearsPerRotor = [1, 2, 4, 6]
@@ -271,23 +271,21 @@ class Calculator(object):
         shots = self.getTotalAverageShotPointsForTeam(team)
         bReached = (team.calculatedData.baselineReachedPercentage or 0) * 5
         gears = team.calculatedData.gearAbility or 0
-        speed = (team.calculatedData.RScoreSpeed or 0) * 8
-        ag = (team.calculatedData.RScoreAgility or 0) * 8
-        gearC = (team.calculatedData.RScoreGearControl or 0) * 4
-        return gears + bReached + shots + ag + gearC + speed
+        autoBonus = (team.calculatedData.avgGearsPlacedAuto or 0) * 20
+	liftoff = team.calculatedData.liftoffAbility or 0
+        return gears + bReached + shots + liftoff + autoBonus
 
     def firstPickAllRotorsChance(self, team):
         ourTeam = self.su.getTeamForNumber(self.ourTeamNum) or self.averageTeam
         return self.getAllRotorsTurningChanceForTwoRobotAlliance([ourTeam, team])
 
     def overallSecondPickAbility(self, team):
-        gearControl = (team.calculatedData.RScoreGearControl or 0) * 7.48
-        speed = (team.calculatedData.RScoreSpeed or 0) * 9.52
-        agility = (team.calculatedData.RScoreAgility or 0) * 17.0
+        driving = ((team.calculatedData.RScoreDrivingAbility or 0) + 2) * 34
         liftoffAbility = team.calculatedData.liftoffAbility or 0
         gearAbility = 3 * ((team.calculatedData.avgGearsPlacedAuto or 0) + (team.calculatedData.avgGearsPlacedTele or 0))
+	autoBonus = (team.calculatedData.avgGearsPlacedAuto or 0) * 20
         functionalPercentage = (1 - team.calculatedData.disfunctionalPercentage)
-        return functionalPercentage * (gearControl + agility + speed + liftoffAbility + gearAbility)
+        return functionalPercentage * (driving + liftoffAbility + gearAbility + autoBonus)
 
     def predictedScoreForMatchForAlliance(self, match, allianceIsRed):
         return match.calculatedData.predictedRedScore if allianceIsRed else match.calculatedData.predictedBlueScore
@@ -305,10 +303,13 @@ class Calculator(object):
         return self.getAvgNumCompletedTIMDsForAlliance(alliance)
 
     def thirdPickAbility(self, team):
-        grs = team.calculatedData.gearAbility or 0
-        spd = team.calculatedData.RScoreSpeed or 0
-        agi = team.calculatedData.RScoreAgility or 0
-        return grs + spd + agi
+    	driving = ((team.calculatedData.RScoreDrivingAbility or 0)+2) * 34
+        liftoffAbility = team.calculatedData.liftoffAbility or 0
+        gearAbility = team.calculatedData.gearAbility or 0
+        autoBonus = (team.calculatedData.avgGearsPlacedAuto) * 20
+        functionalPercentage = (1 - team.calculatedData.disfunctionalPercentage)
+        return functionalPercentage * (driving + liftoffAbility + gearAbility + autoBonus)
+ 
 
     #PROBABILITIES
     def winChanceForMatchForAllianceIsRed(self, match, allianceIsRed):
@@ -487,11 +488,11 @@ class Calculator(object):
         return sum([match["score_breakdown"]["red" if team in self.su.getMatchForNumber(match["match_number"]).redAllianceTeamNumbers else "blue"][key] for match in TBAMatches if self.su.teamInMatch(team, self.su.getMatchForNumber(match["match_number"]))])
 
     def predictedScoreError(self):
-        matches = self.getCompletedMatchesInCompetition()
+        matches = self.su.getCompletedMatchesInCompetition()
         with open('./matchErrors.csv', 'w') as f:
             for m in matches:
-                f.write(abs(m.predictedRedScore - m.redScore))
-                f.write(abs(m.predictedBlueScore - m.blueScore))
+                f.write(str(abs(m.calculatedData.predictedRedScore - m.redScore)))
+                f.write(str(abs(m.calculatedData.predictedBlueScore - m.blueScore)))
 
     #CALCULATIONS
     def getFirstCalculationsForAverageTeam(self):

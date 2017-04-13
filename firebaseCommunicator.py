@@ -11,7 +11,7 @@ class PyrebaseCommunicator(object):
 		self.JSONmatches = []
 		self.JSONteams = []
 		self.url = 'scouting-2017-5f51c'
-		# self.url = '1678-scouting-2016'
+		#self.url = '1678-scouting-2016'
 		config = {
 			"apiKey": "mykey",
 			"authDomain": self.url + ".firebaseapp.com",
