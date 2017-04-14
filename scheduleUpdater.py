@@ -9,9 +9,14 @@ def update(data):
 	if data['data'] == None:
 		latest = 1
 	else:
-		keys = map(lambda k: int(k.split('Q')[1].split('-')[0]), fb.child("TempTeamInMatchDatas").shallow().get().each())
-		latest = sorted(keys, reverse=True)[0] + 1
-	fb.child('currentMatchNum').set(latest)
+		if data['data'] == 1:
+			keys = map(lambda k: int(k.split('Q')[1].split('-')[0]), fb.child("TempTeamInMatchDatas").shallow().get().each())
+			latest = sorted(keys, reverse=True)[0] + 1
+			fb.child('matchFinished').set(0)
+		else:
+			return
+		fb.child('currentMatchNum').set(latest)
 
 def scheduleListener():
-	fb.child('TempTeamInMatchDatas').stream(update)
+	fb.child('matchFinished').stream(update)
+

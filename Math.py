@@ -12,7 +12,6 @@ from teamCalcDataKeysToLambda import *
 import multiprocessing
 import warnings
 from FirstTIMDProcess import FirstTIMDProcess
-from FirebaseWriterProcess import FirebaseWriteObjectProcess
 from schemaUtils import SchemaUtils
 from CrashReporter import reportOverestimate
 import csv
@@ -33,6 +32,7 @@ class Calculator(object):
         self.reportedTIMDs = []
         self.averageTeam.name = 'Average Team'
         self.surrogateTIMDs = []
+        self.writtenMatches = []
         self.teleGearIncrements = [0, 2, 6, 12]
         self.autoGearIncrements = [1, 3, 7, 13]
         self.gearsPerRotor = [1, 2, 4, 6]
@@ -69,6 +69,8 @@ class Calculator(object):
 
     def getRecentAverageForDataFunctionForTeam(self, team, dataFunction):
         validTIMDs = filter(lambda timd: dataFunction(timd) != None, self.su.getCompletedTIMDsForTeam(team))
+        lfm = sorted(validTIMDs, key=lambda t: t.matchNumber)[len(validTIMDs) - 4:]
+        return np.mean(map(dataFunction, lfm)) if validTIMDs else None
 
     def getSumForDataFunctionForTeam(self, team, dataFunction):
         return sum([dataFunction(tm) for tm in self.su.getCompletedTIMDsForTeam(team) if dataFunction(tm) != None])
@@ -139,6 +141,9 @@ class Calculator(object):
     def getTotalAverageShotPointsForTeam(self, team):
         return sum([(team.calculatedData.avgHighShotsTele or 0) / 3.0, (team.calculatedData.avgLowShotsTele or 0) / 9.0, team.calculatedData.avgHighShotsAuto or 0, (team.calculatedData.avgLowShotsAuto or 0) / 3.0])
 
+    def getTotalAverageRecentShotPointsForTeam(self, team):
+        return sum([(team.calculatedData.lfmAvgHighShotsTele or 0) / 3.0, (team.calculatedData.lfmAvgLowShotsTele or 0) / 9.0, team.calculatedData.lfmAvgHighShotsAuto or 0, (team.calculatedData.lfmAvgLowShotsAuto or 0) / 3.0])
+
     def getStandardDevShotPointsForTeam(self, team):
         return utils.sumStdDevs([(team.calculatedData.sdHighShotsTele or 0) / 3.0, (team.calculatedData.sdLowShotsTele or 0) / 9.0, (team.calculatedData.sdHighShotsAuto or 0), (team.calculatedData.sdLowShotsAuto or 0) / 3.0])
 
@@ -199,15 +204,18 @@ class Calculator(object):
         index = filter(lambda g: gears >= g, inc)
         return inc.index(max(index)) + 1 if len(index) else 0
 
-    def gearAbility(self, team):
-        return 18.4206506797 * ((team.calculatedData.avgGearsPlacedAuto or 0) + (team.calculatedData.avgGearsPlacedTele or 0))
+    def gearAbility(self, timd):
+        return 18.4206506797 * (timd.calculatedData.numGearsPlacedAuto) + (timd.calculatedData.numGearsPlacedTele)
 
     def getStdDevGearPointsForAlliance(self, alliance):
+        totalGearsAuto = sum(map(lambda t: t.calculatedData.avgGearsPlacedAuto or 0, alliance))
+        totalGears = self.getTotalAverageGearsForAlliance(alliance)
         sdGearsAuto = self.standardDeviationForRetrievalFunctionForAlliance(lambda t: t.calculatedData.sdGearsPlacedAuto, alliance)
         sdGearsTele = self.standardDeviationForRetrievalFunctionForAlliance(lambda t: t.calculatedData.sdGearsPlacedTele, alliance)
         autoInd = self.getRotorForIncrementForGears(sdGearsAuto, self.autoGearIncrements)
-        teleInd = self.getRotorForIncrementForGears(sdGearsTele, self.teleGearIncrements[autoInd:])
-        return autoInd * 60 + teleInd * 40
+        autoRotors = self.monteCarloForMeanForStDevForValueFunction(totalGearsAuto, sdGearsAuto, lambda g: self.getRotorForIncrementForGears(g, self.autoGearIncrements))
+        teleRotors = self.monteCarloForMeanForStDevForValueFunction(totalGears, utils.sumStdDevs([sdGearsAuto, sdGearsTele]), lambda g: self.getRotorForIncrementForGears(g, self.teleGearIncrements[autoInd:]))
+        return autoRotors * 60 + teleRotors * 40
 
     #OVERALL DATA
     def liftoffAbilityForTIMD(self, timd):
@@ -261,30 +269,28 @@ class Calculator(object):
 
     def predictedPlayoffScoreForAlliance(self, alliance):
         return 20 * self.get40KilopascalChanceForAlliance(alliance) + self.predictedScoreForAlliance(alliance) + 100 * self.getAllRotorsTurningChanceForAlliance(alliance)
-
+    
     def firstPickAbility(self, team):
         team = self.su.replaceWithAverageIfNecessary(team)
         ourTeam = self.su.replaceWithAverageIfNecessary(self.su.getTeamForNumber(self.ourTeamNum)) or self.averageTeam
         shots = self.getTotalAverageShotPointsForTeam(team)
         bReached = (team.calculatedData.baselineReachedPercentage or 0) * 5
         gears = team.calculatedData.gearAbility or 0
-        speed = (team.calculatedData.RScoreSpeed or 0) * 8
-        ag = (team.calculatedData.RScoreAgility or 0) * 8
-        gearC = (team.calculatedData.RScoreGearControl or 0) * 4
-        return gears + bReached + shots + ag + gearC + speed
+        autoBonus = (team.calculatedData.avgGearsPlacedAuto or 0) * 20
+        liftoff = team.calculatedData.liftoffAbility or 0
+        return gears + bReached + shots + liftoff + autoBonus
 
     def firstPickAllRotorsChance(self, team):
         ourTeam = self.su.getTeamForNumber(self.ourTeamNum) or self.averageTeam
         return self.getAllRotorsTurningChanceForTwoRobotAlliance([ourTeam, team])
 
     def overallSecondPickAbility(self, team):
-        gearControl = (team.calculatedData.RScoreGearControl or 0) * 7.48
-        speed = (team.calculatedData.RScoreSpeed or 0) * 9.52
-        agility = (team.calculatedData.RScoreAgility or 0) * 17.0
+        driving = ((team.calculatedData.RScoreDrivingAbility or 0) + 2) * 34
         liftoffAbility = team.calculatedData.liftoffAbility or 0
         gearAbility = 3 * ((team.calculatedData.avgGearsPlacedAuto or 0) + (team.calculatedData.avgGearsPlacedTele or 0))
+        autoBonus = (team.calculatedData.avgGearsPlacedAuto or 0) * 20
         functionalPercentage = (1 - team.calculatedData.disfunctionalPercentage)
-        return functionalPercentage * (gearControl + agility + speed + liftoffAbility + gearAbility)
+        return functionalPercentage * (driving + liftoffAbility + gearAbility + autoBonus)
 
     def predictedScoreForMatchForAlliance(self, match, allianceIsRed):
         return match.calculatedData.predictedRedScore if allianceIsRed else match.calculatedData.predictedBlueScore
@@ -302,10 +308,13 @@ class Calculator(object):
         return self.getAvgNumCompletedTIMDsForAlliance(alliance)
 
     def thirdPickAbility(self, team):
-        grs = team.calculatedData.gearAbility or 0
-        spd = team.calculatedData.RScoreSpeed or 0
-        agi = team.calculatedData.RScoreAgility or 0
-        return grs + spd + agi
+    	driving = ((team.calculatedData.RScoreDrivingAbility or 0)+2) * 17
+        liftoffAbility = 35 * team.calculatedData.liftoffPercentage
+        autoBonus = (team.calculatedData.avgGearsPlacedAuto) * 20
+        teleBonus = (team.calculatedData.avgGearsPlacedTele + team.calculatedData.avgGearsPlacedAuto) * 40
+        functionalPercentage = (1 - team.calculatedData.disfunctionalPercentage)
+        return functionalPercentage * (driving + liftoffAbility + autoBonus + teleBonus)
+ 
 
     #PROBABILITIES
     def winChanceForMatchForAllianceIsRed(self, match, allianceIsRed):
@@ -485,21 +494,8 @@ class Calculator(object):
         return sum([match["score_breakdown"]["red" if team in self.su.getMatchForNumber(match["match_number"]).redAllianceTeamNumbers else "blue"][key] for match in TBAMatches if self.su.teamInMatch(team, self.su.getMatchForNumber(match["match_number"]))])
 
     def predictedScoreError(self):
-        matches = self.su.getCompletedMatchesInCompetition()
-        with open('./matchLogErrors.csv', 'w') as f:
-            writer = csv.DictWriter(f, fieldnames=['number', 'predictedScore', 'actualScore'])
-            writer.writeheader()
-            for m in matches:
-                predictedRedScore = np.log(m.calculatedData.predictedRedScore)
-                predictedBlueScore = np.log(m.calculatedData.predictedBlueScore)
-                writer.writerow({'number' : m.number, 'predictedScore' : predictedBlueScore, 'actualScore' : m.blueScore})
-                writer.writerow({'number' : m.number, 'predictedScore' : predictedRedScore, 'actualScore' : m.redScore})
-        with open('./matchErrors.csv', 'w') as f:
-            writer = csv.DictWriter(f, fieldnames=['number', 'predictedScore', 'actualScore'])
-            writer.writeheader()
-            for m in matches:
-                writer.writerow({'number' : m.number, 'predictedScore' : m.calculatedData.predictedBlueScore, 'actualScore' : m.blueScore})
-                writer.writerow({'number' : m.number, 'predictedScore' : m.calculatedData.predictedRedScore, 'actualScore' : m.redScore})                
+        pass
+
 
     #CALCULATIONS
     def getFirstCalculationsForAverageTeam(self):
@@ -572,8 +568,6 @@ class Calculator(object):
             PBC.addCalculatedMatchDatasToFirebase(self.comp.matches)
             PBC.addCompInfoToFirebase()
             endTime = time.time()
-            self.predictedScoreError()
-            print self.getAverageRotorPointsPerGear()
             self.writeCalculationDiagnostic(endTime - startTime)
         else:
             print("No Data")

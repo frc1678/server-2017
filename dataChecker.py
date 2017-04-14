@@ -155,11 +155,21 @@ class DataChecker(multiprocessing.Process):
 
 	#Retrieves and consolidates tempTIMDs from firebase and combines their data, putting the result back onto firebase as TIMDs
 	def run(self):
-		while(True):
+		while(True):	
 			tempTIMDs = firebase.child("TempTeamInMatchDatas").get().val()
 			if tempTIMDs == None:
 				time.sleep(5)
 				continue
 			self.consolidationGroups = self.getConsolidationGroups(tempTIMDs)
-			map(lambda key: firebase.child("TeamInMatchDatas").child(key).update(self.joinValues(key)), self.consolidationGroups.keys())
+			index = 0
+			while index < len(self.consolidationGroups.keys()):
+				key = self.consolidationGroups.keys()[index]
+				try:
+					firebase.child("TeamInMatchDatas").child(key).update(self.joinValues(key))
+					index += 1
+				except:
+					continue
+							
+				 
 			time.sleep(10)
+DataChecker().start()

@@ -13,7 +13,6 @@ def firstCalculationDict(team, calc):
         incapacitatedPercentage = lambda tm: tm.didBecomeIncapacitated,
         disabledPercentage = lambda tm: tm.didStartDisabled,
         liftoffPercentage = lambda tm: tm.didLiftoff, 
-        baselineReachedPercentage = lambda tm: tm.didReachBaselineAuto,
         avgAgility = lambda tm: tm.rankAgility, 
         avgSpeed = lambda tm: tm.rankSpeed,
         avgGearGroundIntakesTele = lambda tm: tm.numGearGroundIntakesTele, 
@@ -31,7 +30,9 @@ def firstCalculationDict(team, calc):
         avgHoppersOpenedTele = lambda tm: tm.numHoppersOpenedTele, 
         avgGearsEjectedTele = lambda tm: tm.numGearsEjectedTele,
         avgLiftoffTime = lambda tm: tm.liftoffTime, 
-        avgGearsFumbledTele = lambda tm: tm.numGearsFumbledTele)
+        avgGearsFumbledTele = lambda tm: tm.numGearsFumbledTele,
+        gearAbility = lambda tm: tm.calculatedData.gearAbility
+        )
     mapFuncForCalcAvgsForTeam(team, lambda f: calc.getStandardDeviationForDataFunctionForTeam(team, f), 
         sdLiftoffAbility = lambda tm: tm.calculatedData.liftoffAbility,
         sdHighShotsAuto = lambda tm: tm.calculatedData.numHighShotsAuto,
@@ -39,9 +40,26 @@ def firstCalculationDict(team, calc):
         sdLowShotsAuto = lambda tm: tm.calculatedData.numLowShotsAuto,
         sdLowShotsTele = lambda tm: tm.calculatedData.numLowShotsTele,
         sdGearsPlacedAuto = lambda tm: tm.calculatedData.numGearsPlacedAuto,
-        sdGearsPlacedTele = lambda tm: tm.calculatedData.numGearsPlacedTele,
-        sdBaselineReachedPercentage = lambda tm: tm.didReachBaselineAuto)
-    cd.gearAbility = calc.gearAbility(team)
+        sdGearsPlacedTele = lambda tm: tm.calculatedData.numGearsPlacedTele)
+    mapFuncForCalcAvgsForTeam(team, lambda f: calc.getRecentAverageForDataFunctionForTeam(team, f),
+        lfmDisabledPercentage = lambda tm : tm.didStartDisabled,
+        lfmIncapacitatedPercentage = lambda tm : tm.didBecomeIncapacitated,
+        lmfAvgGearsPlacedAuto = lambda tm : tm.calculatedData.numGearsPlacedAuto,
+        lfmAvgHighShotsAuto = lambda tm : tm.calculatedData.numHighShotsAuto,
+        lfmAvgLowShotsAuto = lambda tm : tm.calculatedData.numLowShotsAuto,
+        lfmAvgGearsPlacedTele = lambda tm : tm.calculatedData.numGearsPlacedTele,
+        lfmAvgGearLoaderIntakesTele = lambda tm : tm.numGearLoaderIntakesTele,
+        lfmAvgHighShotsTele = lambda tm : tm.calculatedData.numHighShotsTele,
+        lfmAvgLowShotsTele = lambda tm : tm.calculatedData.numLowShotsTele,
+        lfmAvgKeyShotTime = lambda tm : tm.calculatedData.avgKeyShotTime,
+        lfmAvgLiftoffTime = lambda tm : tm.liftoffTime,
+        lfmLiftoffPercentage = lambda tm : tm.didLiftoff,
+        lfmAvgAgility = lambda tm : tm.rankAgility,
+        lfmAvgSpeed = lambda tm: tm.rankSpeed,
+        lfmAvgBallControl = lambda tm: tm.rankBallControl,
+        lfmAvgGearControl = lambda tm: tm.rankGearControl,
+        lfmAvgDefense = lambda tm: tm.rankDefense if tm.rankDefense else None #add driverAbility
+        )
     cd.autoShootingPositions = calc.getAutoShootingPositions(team)
     calc.getAvgFuncForKeys(team, cd.avgGearsPlacedByLiftAuto, lambda tm: tm.gearsPlacedByLiftAuto)
     calc.getAvgFuncForKeys(team, cd.avgGearsPlacedByLiftTele, lambda tm: tm.gearsPlacedByLiftTele)
@@ -71,8 +89,7 @@ def secondCalculationDict(team, calc):
         cd.RScoreDrivingAbility = calc.cachedComp.drivingAbilityZScores[team.number]
         cd.predictedSeed = calc.cachedComp.predictedSeedings.index(team) + 1
     cd.firstPickAbility = calc.firstPickAbility(team)
-    cd.overallSecondPickAbility = calc.overallSecondPickAbility(team)
-    cd.thirdPickAbility = calc.thirdPickAbility(team)
+    cd.allRotorsAbility = calc.thirdPickAbility(team)
 
 def TIMDCalcDict(timd, calc):
     if (not calc.su.TIMCalculatedDataHasValues(timd.calculatedData)):
@@ -88,6 +105,7 @@ def TIMDCalcDict(timd, calc):
     c.numHighShotsAuto = calc.weightFuelShotsForDataPoint(timd, match, 'autoFuelHigh', timd.highShotTimesForBoilerAuto)
     c.numLowShotsTele = calc.weightFuelShotsForDataPoint(timd, match, 'teleopFuelLow', timd.lowShotTimesForBoilerTele)
     c.numLowShotsAuto = calc.weightFuelShotsForDataPoint(timd, match, 'autoFuelLow', timd.lowShotTimesForBoilerAuto)
+    c.gearAbility = calc.gearAbility(timd)
     c.liftoffAbility = calc.liftoffAbilityForTIMD(timd)
     c.wasDisfunctional = utils.convertFirebaseBoolean(timd.didStartDisabled + utils.convertFirebaseBoolean(timd.didBecomeIncapacitated))
     c.disfunctionalPercentage = utils.convertFirebaseBoolean(timd.didStartDisabled) + 0.5 * utils.convertFirebaseBoolean(timd.didBecomeIncapacitated)
@@ -100,7 +118,6 @@ def averageTeamDict(calc):
         avgHighShotsAuto = lambda t: t.calculatedData.avgHighShotsAuto,
         avgLowShotsAuto = lambda t: t.calculatedData.avgLowShotsAuto,
         avgLowShotsTele = lambda t: t.calculatedData.avgLowShotsTele,
-        baselineReachedPercentage = lambda t: t.calculatedData.baselineReachedPercentage,
         disabledPercentage = lambda t: t.calculatedData.disabledPercentage,
         incapacitatedPercentage = lambda t: t.calculatedData.incapacitatedPercentage,
         liftoffPercentage = lambda t: t.calculatedData.liftoffPercentage,
@@ -114,7 +131,6 @@ def averageTeamDict(calc):
         avgKeyShotTime = lambda t: t.calculatedData.avgKeyShotTime,
         liftoffAbility = lambda t: t.calculatedData.liftoffAbility)
     mapFuncForCalcAvgsForTeam(calc.averageTeam, lambda f: calc.getStandardDeviationOfDataFunctionAcrossCompetition(f),
-        sdBaselineReachedPercentage = lambda t: t.calculatedData.baselineReachedPercentage,
         sdLiftoffAbility = lambda t: t.calculatedData.sdLiftoffAbility,
         sdGearsPlacedTele = lambda t: t.calculatedData.sdGearsPlacedTele,
         sdGearsPlacedAuto = lambda t: t.calculatedData.sdGearsPlacedAuto,
@@ -140,5 +156,5 @@ def matchDict(match, calc):
     match.calculatedData.predictedBlueRPs = calc.predictedRPsForAllianceForMatch(False, match)
     match.calculatedData.predictedRedRPs = calc.predictedRPsForAllianceForMatch(True, match)
 
-def mapFuncForCalcAvgsForTeam(team, func, **calcDatas):
-    [team.calculatedData.__dict__.update({k : func(dataFunc)}) for k, dataFunc in calcDatas.items()]
+def mapFuncForCalcAvgsForTeam(team, func, **calcDatas):		
+	[team.calculatedData.__dict__.update({k : func(dataFunc)}) for k, dataFunc in calcDatas.items()]

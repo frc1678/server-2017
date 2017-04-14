@@ -24,8 +24,6 @@ class CalculatedTeamData(object):
 	def __init__(self, **args):
 		super(CalculatedTeamData, self).__init__()
 		self.firstPickAbility = None
-		self.overallSecondPickAbility = None
-		self.thirdPickAbility = None
 		self.disabledPercentage = None
 		self.incapacitatedPercentage = None
 		self.predictedSeed = None
@@ -61,7 +59,6 @@ class CalculatedTeamData(object):
 		self.sdHighShotsTele = None
 		self.sdLowShotsAuto = None
 		self.sdLowShotsTele = None
-		self.sdBaselineReachedPercentage = None
 		self.avgKeyShotTime = None
 		self.avgHopperShotTime = None
 		self.avgAgility = None
@@ -73,7 +70,6 @@ class CalculatedTeamData(object):
 		self.liftoffAbility = None
 		self.sdLiftoffAbility = None
 		self.liftoffPercentage = None
-		self.baselineReachedPercentage = None
 		self.disfunctionalPercentage = None
 		self.firstPickRotorBonusChance = None
 		self.autoShootingPositions = None
@@ -85,7 +81,7 @@ class CalculatedTeamData(object):
 		self.RScoreBallControl = None
 		self.RScoreGearControl = None
 		self.RScoreDrivingAbility = None
-		
+		self.allRotorsAbility = None
 		self.lfmDisabledPercentage = None
 		self.lfmIncapacitatedPercentage = None
 	  	self.lmfAvgGearsPlacedAuto = None
@@ -182,7 +178,6 @@ class TeamInMatchData(object):
 		self.numGearLoaderIntakesTele = None
 		self.numGearsEjectedTele = None
 		self.numGearsFumbledTele = None
-		self.didReachBaselineAuto = None
 		self.numHoppersOpenedAuto = None
 		self.didLiftoff = None
 		self.liftoffTime = None
@@ -249,5 +244,6 @@ class CalculatedTeamInMatchData(object):
 		self.avgKeyShotTime = None
 		self.avgHopperShotTime = None
 		self.drivingAbility = None
+		self.gearAbility = None
 		self.disfunctionalPercentage = None
 		self.__dict__.update(args)
