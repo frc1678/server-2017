@@ -5,6 +5,7 @@ import random
 import numpy as np
 import scipy.stats as stats
 import CSVExporter
+import pprint
 
 #Scout Performance Analysis
 class ScoutPrecision(object):
@@ -23,7 +24,6 @@ class ScoutPrecision(object):
 			'didLiftoff': 3.0,
 			'didBecomeIncapacitated': 2.0,
 			'didStartDisabled': 2.0,
-			'didReachBaselineAuto': 1.5,
 			'numHoppersOpenedAuto': 1.5,
 			'numHoppersOpenedTele': 1.5
 		}
@@ -38,6 +38,7 @@ class ScoutPrecision(object):
 			'lowShotTimesForBoilerTele': 0.1
 		}
 		self.SPRBreakdown = {}
+		self.disagreementBreakdown = {}
 
 	#SPR
 	#Scout precision rank(ing): checks accuracy of scouts by comparing their past TIMDs to the consensus
@@ -69,8 +70,6 @@ class ScoutPrecision(object):
 		scouts = filter(lambda v: v, map(lambda k: k.get('scoutName'), tempTIMDs))
 		#Finds values (at an inputted key) in tempTIMDs
 		values = filter(lambda v: v != None, map(lambda t: t[key] if t.get('scoutName') else None, tempTIMDs))
-		if key == "didLiftoff":
-			print values
 		#Finds the most common value in the list of values, or the average if none of them is the majority
 		valueFrequencies = map(values.count, values)
 		if values:
@@ -83,6 +82,10 @@ class ScoutPrecision(object):
 			#Adds the difference from this tempTIMD for this key to each scout's previous differences (spr score)
 			for c in range(len(differenceFromCommonValue)):
 				self.SPRBreakdown.update({key: (self.SPRBreakdown.get(key) or []) + [(differenceFromCommonValue[c] / weight)]})
+				if differenceFromCommonValue[c] != 0:
+					self.disagreementBreakdown[scouts[c]].update({key: (self.disagreementBreakdown[scouts[c]].get(key) or 0) + 1})
+				else:
+					self.disagreementBreakdown[scouts[c]].update({key: (self.disagreementBreakdown[scouts[c]].get(key) or 0)})
 			self.sprs.update({scouts[c] : (self.sprs.get(scouts[c]) or 0) + differenceFromCommonValue[c] for c in range(len(differenceFromCommonValue))})
 
 	def findOddScoutForDict(self, tempTIMDs, key):
@@ -104,6 +107,10 @@ class ScoutPrecision(object):
 				differenceFromCommonValue = map(lambda v: abs(v - commonValue) * weight, values)
 				for c in range(len(differenceFromCommonValue)):
 					self.SPRBreakdown.update({key: (self.SPRBreakdown.get(key) or []) + [(differenceFromCommonValue[c] / weight)]})
+					if differenceFromCommonValue[c] != 0:
+						self.disagreementBreakdown[scouts[c]].update({key: (self.disagreementBreakdown[scouts[c]].get(key) or 0) + 1})
+					else:
+						self.disagreementBreakdown[scouts[c]].update({key: (self.disagreementBreakdown[scouts[c]].get(key) or 0)})
 				self.sprs.update({scouts[c] : (self.sprs.get(scouts[c]) or 0) + differenceFromCommonValue[c] for c in range(len(differenceFromCommonValue))})
 
 	def findOddScoutForListOfDicts(self, tempTIMDs, key):
@@ -145,6 +152,13 @@ class ScoutPrecision(object):
 		if temp:
 			#Combines all tempTIMDs for the same match
 			g = self.consolidateTIMDs(temp)
+			priorScouts = []
+			for timd in g.values():
+				for ind in timd:
+					priorScouts += [ind['scoutName']]
+			priorScouts = list(set(priorScouts))
+			for scout in priorScouts:
+				self.disagreementBreakdown.update({scout: {}})
 			#Removes any data from previous calculations from sprs
 			self.sprs = {}
 			'''These three grade each scout for each of the values in the grading keys, dicts, and lists of dicts
@@ -158,6 +172,16 @@ class ScoutPrecision(object):
 			If a scout is in more matches, they will likely have more disagreements, but the same number per match if they are equally accurate
 			If someone has no tempTIMDs (but still an SPR key somehow), their SPR score is set to -1 (changed in the next section)'''
 			self.sprs = {k:((v/float(self.getTotalTIMDsForScoutName(k, temp))) or -1) for (k,v) in self.sprs.items()}
+			avgScout = {}
+			for scout in self.disagreementBreakdown.keys():
+				for key in self.disagreementBreakdown[scout].keys():
+					self.disagreementBreakdown[scout].update({key: float(self.disagreementBreakdown[scout][key])/float(self.getTotalTIMDsForScoutName(scout, temp))})
+			for scout in self.disagreementBreakdown.keys():
+				for key in self.disagreementBreakdown[scout].keys():
+					avgScout.update({key: (avgScout.get(key) or []) + [self.disagreementBreakdown[scout][key]]})
+			for key in avgScout.keys():
+				avgScout[key] = np.mean(avgScout[key])
+			self.disagreementBreakdown.update({'avgScout': avgScout})
 			#Changes all sprs of -1 (someone who somehow has an spr key but no matches) to average or 1
 			for a in self.sprs.keys():
 				if self.sprs[a] == -1:
