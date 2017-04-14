@@ -85,6 +85,7 @@ def startAtNewMatch(newMatchNum):
 def simpleStream():
 	fb.child("currentMatchNum").stream(doSPRsAndAssignments)
 
+#Creates and prints a list of average amounts of inaccuracy by category
 def sprBreakdownExport():
 	available = [k for (k, v) in fb.child("availability").get().val().items() if v == 1]
 	SPR.calculateScoutPrecisionScores(fb.child("TempTeamInMatchDatas").get().val(), available)
@@ -94,9 +95,8 @@ def sprBreakdownExport():
 		avgData[key] = np.mean(breakdownData[key])
 	pprint.pprint(avgData)
 
+#Creates and prints the number of disagreements with consensus per match for each scout, and for an average scout
 def findScoutDisagreements():
 	available = [k for (k, v) in fb.child("availability").get().val().items() if v == 1]
 	SPR.calculateScoutPrecisionScores(fb.child("TempTeamInMatchDatas").get().val(), available)
 	pprint.pprint(SPR.disagreementBreakdown)
-
-findScoutDisagreements()
