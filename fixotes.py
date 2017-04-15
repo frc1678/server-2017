@@ -1,1 +1,1 @@
-from fireaseCommuicator import PyrebaseCommunicator  
+from firebaseCommuicator import PyrebaseCommunicator  

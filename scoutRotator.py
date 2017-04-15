@@ -9,13 +9,10 @@ import numpy as np
 import pprint
 
 PBC = firebaseCommunicator.PyrebaseCommunicator()
-
 fb = PBC.firebase
 
 scouts = "aidan alex ayush calvin carter evan gemma jack jesse jon justin jishnu katie kyle mingyo mx rachel sage sam vera wesley zoe".split()
 SPR = SPR.ScoutPrecision()
-global oldMatchNum
-oldMatchNum = 0
 
 #Creates list of availability values in firebase for each scout
 def resetAvailability():
@@ -48,8 +45,8 @@ def doSPRsAndAssignments(data):
 		print "Setting scouts for match " + str(newMatchNumber)
 		scoutDict = fb.child("scouts").get().val()
 		#Gets the teams we need to scout for in the upcoming match
-		# blueTeams = fb.child("Matches").child(newMatchNumber).get().val()['blueAllianceTeamNumbers']
-		# redTeams = fb.child("Matches").child(newMatchNumber).get().val()['redAllianceTeamNumbers']
+		blueTeams = fb.child("Matches").child(newMatchNumber).get().val()['blueAllianceTeamNumbers']
+		redTeams = fb.child("Matches").child(newMatchNumber).get().val()['redAllianceTeamNumbers']
 		#Finds and assigns available scouts
 		available = [k for (k, v) in fb.child("availability").get().val().items() if v == 1]
 		#Grades scouts and assigns them to robots

@@ -41,7 +41,7 @@ def replayLastMatch(folder):
 	files = sorted(files, key = lambda k: os.stat(folder + k).st_ctime)
 	fileToDelete = files[-1]
 	print(folder + fileToDelete)
-	os.remove(folder + fileToDelete)	
+	os.remove(folder + fileToDelete)
 
 def moveVid(key, filePath, dest):
 	print(key)
@@ -56,16 +56,19 @@ try:
 except:
 	videoFolder = ""
 	destFolder = ""
-startFromNum = False
 print("Video system 2017. Type help for details.")
 
 while(True):
-	numberToStartFrom = 1
 	cmd = raw_input(">>> ").split()
 	if not cmd: continue
 	try:
 		if cmd[0] == "setdest":
 			destFolder = cmd[1]
+	except:
+		print("Error: Must supply more arguments")
+	try:
+		if cmd[0] == "setvid":
+			videoFolder = cmd[1]
 	except:
 		print("Error: Must supply more arguments")
 	if cmd[0] == "replay":
