@@ -95,10 +95,6 @@ class CalculatedTeamData(object):
 	  	self.lfmAvgKeyShotTime = None
 	  	self.lfmAvgLiftoffTime = None
 	  	self.lfmLiftoffPercentage = None
-	  	self.lfmFirstPickAbility = None
-	  	self.lfmSecondPickAbility = None
-	  	self.lfmThirdPickAbility = None
-	  	self.lfmGearAbility = None
 	  	self.lfmAvgAgility = None
 	  	self.lfmAvgSpeed = None
 	  	self.lfmAvgBallControl = None

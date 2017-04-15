@@ -20,9 +20,10 @@ comp.updateTeamsAndMatchesFromFirebase()
 comp.updateTIMDsFromFirebase()
 calculator = Math.Calculator(comp)
 cycle = 1
+scheduleUpdater.scheduleListener()
 shouldSlack = False
 consolidator = dataChecker.DataChecker()
-# consolidator.start()
+consolidator.start()
 # APNServer.startNotiStream()
 
 

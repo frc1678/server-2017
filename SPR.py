@@ -172,16 +172,16 @@ class ScoutPrecision(object):
 			If a scout is in more matches, they will likely have more disagreements, but the same number per match if they are equally accurate
 			If someone has no tempTIMDs (but still an SPR key somehow), their SPR score is set to -1 (changed in the next section)'''
 			self.sprs = {k:((v/float(self.getTotalTIMDsForScoutName(k, temp))) or -1) for (k,v) in self.sprs.items()}
-			avgScout = {}
-			for scout in self.disagreementBreakdown.keys():
-				for key in self.disagreementBreakdown[scout].keys():
-					self.disagreementBreakdown[scout].update({key: float(self.disagreementBreakdown[scout][key])/float(self.getTotalTIMDsForScoutName(scout, temp))})
-			for scout in self.disagreementBreakdown.keys():
-				for key in self.disagreementBreakdown[scout].keys():
-					avgScout.update({key: (avgScout.get(key) or []) + [self.disagreementBreakdown[scout][key]]})
-			for key in avgScout.keys():
-				avgScout[key] = np.mean(avgScout[key])
-			self.disagreementBreakdown.update({'avgScout': avgScout})
+			# avgScout = {}
+			# for scout in self.disagreementBreakdown.keys():
+			# 	for key in self.disagreementBreakdown[scout].keys():
+			# 		self.disagreementBreakdown[scout].update({key: float(self.disagreementBreakdown[scout][key])/float(self.getTotalTIMDsForScoutName(scout, temp))})
+			# for scout in self.disagreementBreakdown.keys():
+			# 	for key in self.disagreementBreakdown[scout].keys():
+			# 		avgScout.update({key: (avgScout.get(key) or []) + [self.disagreementBreakdown[scout][key]]})
+			# for key in avgScout.keys():
+			# 	avgScout[key] = np.mean(avgScout[key])
+			# self.disagreementBreakdown.update({'avgScout': avgScout})
 			#Changes all sprs of -1 (someone who somehow has an spr key but no matches) to average or 1
 			for a in self.sprs.keys():
 				if self.sprs[a] == -1:

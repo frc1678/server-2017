@@ -172,4 +172,3 @@ class DataChecker(multiprocessing.Process):
 							
 				 
 			time.sleep(10)
-DataChecker().start()

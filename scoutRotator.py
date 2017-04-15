@@ -12,7 +12,7 @@ PBC = firebaseCommunicator.PyrebaseCommunicator()
 
 fb = PBC.firebase
 
-scouts = "aidan alex ayush calvin carter evan gemma jack jesse jon justin jishnu katie kyle mingyo mx rachel sage sam vera wesley zoe".split()
+scouts = "aidan alex ayush carter evan gemma jack janet jesse jon justin jishnu katie kyle mingyo mx rachel vera sage sam wesley zoe".split()
 SPR = SPR.ScoutPrecision()
 global oldMatchNum
 oldMatchNum = 0
@@ -31,14 +31,14 @@ def resetScouts():
 def doSPRsAndAssignments(data):
 	#Wait until the availability has been confirmed to be correct
 	print "New number"
-	# while(True):
-	# 	try:
-	# 		availabilityUpdated = fb.child("availabilityUpdated").get().val()
-	# 	except:
-	# 		availabilityUpdated = 0
-	# 	if availabilityUpdated:
-	# 		break
-	# 	time.sleep(2)
+	while(True):
+		try:
+			availabilityUpdated = fb.child("availabilityUpdated").get().val()
+		except:
+			availabilityUpdated = 0
+		if availabilityUpdated:
+			break
+		time.sleep(2)
 	try:
 		fb.child("availabilityUpdated").set(0)
 		if data.get('data') == None:
@@ -48,8 +48,8 @@ def doSPRsAndAssignments(data):
 		print "Setting scouts for match " + str(newMatchNumber)
 		scoutDict = fb.child("scouts").get().val()
 		#Gets the teams we need to scout for in the upcoming match
-		# blueTeams = fb.child("Matches").child(newMatchNumber).get().val()['blueAllianceTeamNumbers']
-		# redTeams = fb.child("Matches").child(newMatchNumber).get().val()['redAllianceTeamNumbers']
+		blueTeams = fb.child("Matches").child(newMatchNumber).get().val()['blueAllianceTeamNumbers']
+		redTeams = fb.child("Matches").child(newMatchNumber).get().val()['redAllianceTeamNumbers']
 		#Finds and assigns available scouts
 		available = [k for (k, v) in fb.child("availability").get().val().items() if v == 1]
 		#Grades scouts and assigns them to robots
@@ -99,4 +99,3 @@ def findScoutDisagreements():
 	SPR.calculateScoutPrecisionScores(fb.child("TempTeamInMatchDatas").get().val(), available)
 	pprint.pprint(SPR.disagreementBreakdown)
 
-findScoutDisagreements()

@@ -73,6 +73,7 @@ def Rscorecalcs(team, calc):
     cd.RScoreSpeed = calc.cachedComp.speedZScores[team.number]
     cd.RScoreAgility = calc.cachedComp.agilityZScores[team.number]
     cd.avgDrivingAbility = calc.drivingAbilityForTeam(team)
+    # cd.lfmAvgDrivingAbility = calc.recentDrivingAbilityForTeam(team)
 
 def secondCalculationDict(team, calc):
     cd = team.calculatedData
@@ -89,7 +90,7 @@ def secondCalculationDict(team, calc):
         cd.RScoreDrivingAbility = calc.cachedComp.drivingAbilityZScores[team.number]
         cd.predictedSeed = calc.cachedComp.predictedSeedings.index(team) + 1
     cd.firstPickAbility = calc.firstPickAbility(team)
-    cd.allRotorsAbility = calc.thirdPickAbility(team)
+    cd.allRotorsAbility = calc.allRotorsAbility(team)
 
 def TIMDCalcDict(timd, calc):
     if (not calc.su.TIMCalculatedDataHasValues(timd.calculatedData)):
