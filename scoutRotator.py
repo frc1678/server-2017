@@ -97,3 +97,12 @@ def findScoutDisagreements():
 	available = [k for (k, v) in fb.child("availability").get().val().items() if v == 1]
 	SPR.calculateScoutPrecisionScores(fb.child("TempTeamInMatchDatas").get().val(), available)
 	pprint.pprint(SPR.disagreementBreakdown)
+
+#Finds total numbers of disagreements per match by scout, and sorts scouts by those totals
+def sortScoutDisagreements():
+	findScoutDisagreements()
+	totalDisagreements = {}
+	for scout in SPR.disagreementBreakdown:
+		totalDisagreements.update({scout: sum(SPR.disagreementBreakdown[scout].values())})
+	pprint.pprint(totalDisagreements)
+	print sorted(totalDisagreements, key = totalDisagreements.get)
