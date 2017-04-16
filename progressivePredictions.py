@@ -51301,9 +51301,13 @@ matchesDict = {}
 with open('./progressiveErrors.csv', 'r') as f:
     wr = csv.DictReader(f)
     for r in wr:
-        matchesDict[int(r['number'])] = abs(float(r['actualScore']) - float(r['predictedScore']))
+        matchesDict[int(r['number'])] = (matchesDict.get(int(r['number'])) or 0) + abs(float(r['actualScore']) - float(r['predictedScore']))
 
-
+with open('./progErrorPoints.csv', 'w') as f:
+    wr = csv.DictWriter(f, fieldnames = ['num', 'number', 'error'])
+    wr.writeheader()
+    for k, v in matchesDict.items():
+        wr.writerow({'num' : k, 'number' : k, 'error' : v})
 
 
 

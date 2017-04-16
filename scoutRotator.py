@@ -9,13 +9,10 @@ import numpy as np
 import pprint
 
 PBC = firebaseCommunicator.PyrebaseCommunicator()
-
 fb = PBC.firebase
 
 scouts = "aidan alex ayush carter evan gemma jack janet jesse jon justin jishnu katie kyle mingyo mx rachel vera sage sam wesley zoe".split()
 SPR = SPR.ScoutPrecision()
-global oldMatchNum
-oldMatchNum = 0
 
 #Creates list of availability values in firebase for each scout
 def resetAvailability():
@@ -85,6 +82,7 @@ def startAtNewMatch(newMatchNum):
 def simpleStream():
 	fb.child("currentMatchNum").stream(doSPRsAndAssignments)
 
+#Creates and prints a list of average amounts of inaccuracy by category
 def sprBreakdownExport():
 	available = [k for (k, v) in fb.child("availability").get().val().items() if v == 1]
 	SPR.calculateScoutPrecisionScores(fb.child("TempTeamInMatchDatas").get().val(), available)
@@ -94,8 +92,17 @@ def sprBreakdownExport():
 		avgData[key] = np.mean(breakdownData[key])
 	pprint.pprint(avgData)
 
+#Creates and prints the number of disagreements with consensus per match for each scout, and for an average scout
 def findScoutDisagreements():
 	available = [k for (k, v) in fb.child("availability").get().val().items() if v == 1]
 	SPR.calculateScoutPrecisionScores(fb.child("TempTeamInMatchDatas").get().val(), available)
 	pprint.pprint(SPR.disagreementBreakdown)
-
+	
+#Finds total numbers of disagreements per match by scout, and sorts scouts by those totals
+def sortScoutDisagreements():
+	findScoutDisagreements()
+	totalDisagreements = {}
+	for scout in SPR.disagreementBreakdown:
+		totalDisagreements.update({scout: sum(SPR.disagreementBreakdown[scout].values())})
+	pprint.pprint(totalDisagreements)
+	print sorted(totalDisagreements, key = totalDisagreements.get)

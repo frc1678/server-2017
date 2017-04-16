@@ -81,7 +81,9 @@ class ScoutPrecision(object):
 			differenceFromCommonValue = map(lambda v: abs(v - commonValue) * weight, values)
 			#Adds the difference from this tempTIMD for this key to each scout's previous differences (spr score)
 			for c in range(len(differenceFromCommonValue)):
+				#Gets inaccuracy by category
 				self.SPRBreakdown.update({key: (self.SPRBreakdown.get(key) or []) + [(differenceFromCommonValue[c] / weight)]})
+				#Gets disagreements by category and scout
 				if differenceFromCommonValue[c] != 0:
 					self.disagreementBreakdown[scouts[c]].update({key: (self.disagreementBreakdown[scouts[c]].get(key) or 0) + 1})
 				else:
@@ -106,7 +108,9 @@ class ScoutPrecision(object):
 					commonValue = np.mean(values)
 				differenceFromCommonValue = map(lambda v: abs(v - commonValue) * weight, values)
 				for c in range(len(differenceFromCommonValue)):
+					#Gets inaccuracy by category
 					self.SPRBreakdown.update({key: (self.SPRBreakdown.get(key) or []) + [(differenceFromCommonValue[c] / weight)]})
+					#Gets disagreements by category and scout
 					if differenceFromCommonValue[c] != 0:
 						self.disagreementBreakdown[scouts[c]].update({key: (self.disagreementBreakdown[scouts[c]].get(key) or 0) + 1})
 					else:
@@ -144,6 +148,7 @@ class ScoutPrecision(object):
 						if values.count(commonValue) <= len(values) / 2:
 							commonValue = np.mean(values)
 						differenceFromCommonValue = map(lambda v: abs(v - commonValue) * weight, values)
+						#Gets inaccuracy by category
 						for c in range(len(differenceFromCommonValue)):
 							self.SPRBreakdown.update({key: (self.SPRBreakdown.get(key) or []) + [(differenceFromCommonValue[c] / weight)]})
 						self.sprs.update({scouts[c] : (self.sprs.get(scouts[c]) or 0) + differenceFromCommonValue[c] for c in range(len(differenceFromCommonValue))})
@@ -152,6 +157,7 @@ class ScoutPrecision(object):
 		if temp:
 			#Combines all tempTIMDs for the same match
 			g = self.consolidateTIMDs(temp)
+			#Makes a list of scouts with data
 			priorScouts = []
 			for timd in g.values():
 				for ind in timd:
@@ -172,16 +178,18 @@ class ScoutPrecision(object):
 			If a scout is in more matches, they will likely have more disagreements, but the same number per match if they are equally accurate
 			If someone has no tempTIMDs (but still an SPR key somehow), their SPR score is set to -1 (changed in the next section)'''
 			self.sprs = {k:((v/float(self.getTotalTIMDsForScoutName(k, temp))) or -1) for (k,v) in self.sprs.items()}
-			# avgScout = {}
-			# for scout in self.disagreementBreakdown.keys():
-			# 	for key in self.disagreementBreakdown[scout].keys():
-			# 		self.disagreementBreakdown[scout].update({key: float(self.disagreementBreakdown[scout][key])/float(self.getTotalTIMDsForScoutName(scout, temp))})
-			# for scout in self.disagreementBreakdown.keys():
-			# 	for key in self.disagreementBreakdown[scout].keys():
-			# 		avgScout.update({key: (avgScout.get(key) or []) + [self.disagreementBreakdown[scout][key]]})
-			# for key in avgScout.keys():
-			# 	avgScout[key] = np.mean(avgScout[key])
-			# self.disagreementBreakdown.update({'avgScout': avgScout})
+			#Makes an average number of disagreements per scout per category
+			avgScout = {}
+			for scout in self.disagreementBreakdown.keys():
+				for key in self.disagreementBreakdown[scout].keys():
+					self.disagreementBreakdown[scout].update({key: float(self.disagreementBreakdown[scout][key])/float(self.getTotalTIMDsForScoutName(scout, temp))})
+			for scout in self.disagreementBreakdown.keys():
+				for key in self.disagreementBreakdown[scout].keys():
+					avgScout.update({key: (avgScout.get(key) or []) + [self.disagreementBreakdown[scout][key]]})
+			for key in avgScout.keys():
+				avgScout[key] = np.mean(avgScout[key])
+			self.disagreementBreakdown.update({'avgScout': avgScout})
+			
 			#Changes all sprs of -1 (someone who somehow has an spr key but no matches) to average or 1
 			for a in self.sprs.keys():
 				if self.sprs[a] == -1:

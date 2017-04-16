@@ -22,7 +22,7 @@ class PyrebaseCommunicator(object):
 		app = pyrebase.initialize_app(config)
 		self.firebase = app.database()
 		self.fbStorage = app.storage()
-	
+
 	def updateFirebaseWithTeam(self, team):
 		print(str(team.number) + ",",)
 		teamDict = utils.makeDictFromTeam(team)
@@ -59,7 +59,7 @@ class PyrebaseCommunicator(object):
 		firebaseDict = {}
 		[firebaseDict.update(self.addCalculatedTeamDataToFirebase(team)) for team in teams]
 		print("Uploading Teams to Firebase...")
-		self.firebase.child('Teams').update(firebaseDict)		
+		self.firebase.child('Teams').update(firebaseDict)
 
 	def addCalculatedMatchDatasToFirebase(self, matches):
 		firebaseDict = {}
@@ -117,5 +117,3 @@ class PyrebaseCommunicator(object):
 
 	def addCurrentMatchToFirebase(self):
 		self.firebase.child("currentMatchNum").set(1)
-
-
