@@ -1,14 +1,23 @@
 from firebaseCommunicator import PyrebaseCommunicator
 import numpy as np
 import csv
+from TBACommunicator import TBACommunicator as tbac
+import json
+    
+with open('SUPERDATAPRESCOUT.json') as f:
+	data = json.load(f)
 
+tba = tbac()
+teamNums = map(lambda t: t['team_number'], tba.makeEventTeamsRequest())
 pbc = PyrebaseCommunicator()
 temptimds = pbc.firebase.child("TeamInMatchDatas").get().val()
-timds = {k : v for k,v in temptimds.items() if int(k.split('Q')[1].split('-')[0]) > 71}
 teamsDict = {}
 teamKeys = set(map(lambda k: int(k.split('Q')[0]), temptimds.keys()))
-keys =  ['incapacitatedPercentage', 'disabledPercentage', 'liftoffPercentage', 'avgAgility', 'avgSpeed', 'avgGearGroundIntakesTele' , 'avgGearLoaderIntakesTele', 'avgBallControl', 'avgGearControl', 'avgDefense', 'avgKeyShotTime', 'avgHopperShotTime', 'disfunctionalPercentage', 'avgGearsPlacedAuto', 'avgGearsPlacedTele', 'avgHoppersOpenedAuto', 'avgHoppersOpenedTele', 'avgGearsEjectedTele', 'avgLiftoffTime', 'avgGearsFumbledTele']
-
+# for k, v in data.items():
+# 	print pbc.firebase.child("TeamInMatchDatas").child(k).update(v)
+teams = [t for t in teamKeys if t in teamNums]
+keys =  ['incapacitatedPercentage', 'disabledPercentage', 'liftoffPercentage', 'avgAgility', 'avgSpeed', 'avgGearGroundIntakesTele' , 'avgGearLoaderIntakesTele', 'avgBallControl', 'avgGearControl', 'avgDefense', 'disfunctionalPercentage', 'avgGearsPlacedAuto', 'avgGearsPlacedTele', 'avgHoppersOpenedAuto', 'avgHoppersOpenedTele', 'avgGearsEjectedTele', 'avgLiftoffTime', 'avgGearsFumbledTele']
+print len(teams)
 def setAverages(dic, timds, **args):
 	for k, v in args.items():
 		vals = [v(t) for t in timds if v(t) != None]
@@ -24,7 +33,7 @@ def getValForKeys(timds, key):
 	gearPlaced = lambda t: sum(t[key].values())
 	return np.mean(map(gearPlaced, values)) if len(values) else None
 
-for team in teamKeys:
+for team in teams:
 	teamsDict[team] = {
 		'number' : team
 	}
@@ -40,9 +49,7 @@ for team in teamKeys:
         avgBallControl = lambda tm: tm.get('rankBallControl'), 
         avgGearControl = lambda tm: tm.get('rankGearControl'),
         avgDefense = lambda tm: tm.get('rankDefense') if tm.get('rankDefense') else None, 
-        # avgKeyShotTime = lambda tm: tm.calculatedData.avgKeyShotTime,
-        # avgHopperShotTime = lambda tm: tm.calculatedData.avgHopperShotTime,
-        disfunctionalPercentage = lambda tm: tm.get('didBecomeIncapacitated') * 0.5 + tm.get('didStartDisabled'),
+        disfunctionalPercentage = lambda tm: (tm.get('didBecomeIncapacitated') * 0.5 + tm.get('didStartDisabled')) if None not in [tm.get('didStartDisabled'), tm.get('didBecomeIncapacitated')] else None,
         avgHoppersOpenedAuto = lambda tm: tm.get('numHoppersOpenedAuto'), 
         avgHoppersOpenedTele = lambda tm: tm.get('numHoppersOpenedTele'), 
         avgGearsEjectedTele = lambda tm: tm.get('numGearsEjectedTele'),
@@ -55,6 +62,7 @@ for team in teamKeys:
 	teamsDict[team]['avgGearsPlacedAuto'] = getValForKeys(timds, 'gearsPlacedByLiftAuto')
 	teamsDict[team]['avgGearsPlacedTele'] = getValForKeys(timds, 'gearsPlacedByLiftTele')
 
+print teamsDict
 with open('./preScoutingWorld.csv', 'w') as f:
 	default = ['number'] + keys
 	w = csv.DictWriter(f, fieldnames = default)

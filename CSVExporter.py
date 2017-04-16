@@ -54,14 +54,6 @@ def predict():
 		for key, value in teamsDict.items():
 			print key
 			writer.writerow({k : teamsDict[key][k] for k in wantedKeys})
-	# while True:
-	# 	inp = raw_input('>>> ').split()
-	# 	nums = map(lambda t: filter(lambda n: n.number == int(t), teamsList)[0], inp)
-	# 	r1, r2, r3, b1, b2, b3 = nums[0],nums[1],nums[2],nums[3],nums[4],nums[5]
-	# 	print "liftoff : " + str(sum(map(lambda t: t.calculatedData.liftoffAbility, [r1, r2, r3])))
-	# 	print str((sum(map(lambda t: t.calculatedData.liftoffAbility, [b1, b2, b3]))))
-	# 	print "gears : " + str(sum(map(lambda t: t.calculatedData.avgGearsPlacedAuto + t.calculatedData.avgGearsPlacedTele, [r1, r2, r3])))
-	# 	print str((sum(map(lambda t: t.calculatedData.avgGearsPlacedAuto + t.calculatedData.avgGearsPlacedTele, [b1, b2, b3]))))
 
 # predict()
 
@@ -82,4 +74,4 @@ def CSVExportCVR(comp):
 
 def CSVExportCMP(comp):
 	keys = []
-	CSVExport(comp, "CHAMPS", keys = keys)
+	CSVExport(comp, "CHAMPS", keys = Team().__dict__.keys() + Team().calculatedData.__dict__.keys())

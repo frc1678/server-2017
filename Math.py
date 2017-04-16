@@ -39,6 +39,7 @@ class Calculator(object):
         self.gearsPerRotor = [1, 2, 4, 6]
         self.gearRangesAuto = [range(1,3), range(3,7), range(7,13), range(13,14)]
         self.gearRangesTele = [range(2), range(2,6), range(6,12), range(12,13)]
+        # self.lifts = ['lift1', 'lift2', 'lift3']
         self.lifts = ['boiler', 'allianceWall', 'hpStation']
         self.shotKeys = {
             'autoFuelLow' : 'avgLowShotsAuto',
@@ -511,9 +512,20 @@ class Calculator(object):
             print traceback.format_exc()
             pass
 
-    def predictedScoreError(self):
-        pass
-
+    def autoGear(self):
+        center = 0
+        none = 0
+        side = 0
+        for team in self.comp.teams:
+            if 'lift1' in team.calculatedData.gearScoringPositionsAuto:
+                center += 1
+            if 'lift2' in team.calculatedData.gearScoringPositionsAuto or 'lift3' in team.calculatedData.gearScoringPositionsAuto:
+                side += 1
+            if len(team.calculatedData.gearScoringPositionsAuto) == 0:
+                none += 1
+        print center / float(center + side + none)
+        print none / float(center + side + none)
+        print side / float(center + side + none)
 
     #CALCULATIONS
     def getFirstCalculationsForAverageTeam(self):
@@ -586,6 +598,7 @@ class Calculator(object):
             PBC.addCalculatedMatchDatasToFirebase(self.comp.matches)
             PBC.addCompInfoToFirebase()
             endTime = time.time()
+            # self.autoGear()
             self.writeCalculationDiagnostic(endTime - startTime)
         else:
             print("No Data")

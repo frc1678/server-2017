@@ -2,7 +2,7 @@ import utils
 import DataModel
 import pdb
 import traceback
-
+#3527 5869
 def firstCalculationDict(team, calc):
     cd = team.calculatedData
     mapFuncForCalcAvgsForTeam(team, lambda f: calc.getAverageForDataFunctionForTeam(team, f), 
@@ -44,9 +44,9 @@ def firstCalculationDict(team, calc):
     mapFuncForCalcAvgsForTeam(team, lambda f: calc.getRecentAverageForDataFunctionForTeam(team, f),
         lfmDisabledPercentage = lambda tm : tm.didStartDisabled,
         lfmIncapacitatedPercentage = lambda tm : tm.didBecomeIncapacitated,
-        lmfAvgGearsPlacedAuto = lambda tm : tm.calculatedData.numGearsPlacedAuto,
         lfmAvgHighShotsAuto = lambda tm : tm.calculatedData.numHighShotsAuto,
         lfmAvgLowShotsAuto = lambda tm : tm.calculatedData.numLowShotsAuto,
+        lmfAvgGearsPlacedAuto = lambda tm: tm.calculatedData.numGearsPlacedAuto,
         lfmAvgGearsPlacedTele = lambda tm : tm.calculatedData.numGearsPlacedTele,
         lfmAvgGearLoaderIntakesTele = lambda tm : tm.numGearLoaderIntakesTele,
         lfmAvgHighShotsTele = lambda tm : tm.calculatedData.numHighShotsTele,

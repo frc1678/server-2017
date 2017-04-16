@@ -169,4 +169,7 @@ class DataChecker(multiprocessing.Process):
 					index += 1
 				except:
 					continue
+			print "consolidated"
 			time.sleep(10)
+
+DataChecker().start()
