@@ -40,7 +40,7 @@ class Calculator(object):
         self.gearRangesAuto = [range(1,3), range(3,7), range(7,13), range(13,14)]
         self.gearRangesTele = [range(2), range(2,6), range(6,12), range(12,13)]
         # self.lifts = ['lift1', 'lift2', 'lift3']
-        self.lifts = ['boiler', 'allianceWall', 'hpStation']
+        self.lifts = ['allianceWall', 'hpStation', 'boiler']
         self.shotKeys = {
             'autoFuelLow' : 'avgLowShotsAuto',
             'autoFuelHigh' : 'avgHighShotsAuto',
@@ -133,6 +133,13 @@ class Calculator(object):
     def fieldsForShot(self, timd, boilerPoint):
         return sum(map(lambda v: (v.get('numShots') or 0), (timd.__dict__.get(self.boilerKeys[boilerPoint]) or [])))
 
+    def fieldsForShots(self, timd):
+        teleHighShots = sum(map(lambda v: (v.get('numShots') or 0), timd.highShotTimesForBoilerTele)) / 3.0
+        autoHighShots = sum(map(lambda v: (v.get('numShots') or 0), timd.highShotTimesForBoilerAuto))
+        teleLowShots = sum(map(lambda v: (v.get('numShots') or 0), timd.lowShotTimesForBoilerTele)) / 9.0
+        autoLowShots = sum(map(lambda v: (v.get('numShots') or 0), timd.lowShotTimesForBoilerAuto)) / 3.0
+        return sum([teleHighShots, autoHighShots, teleLowShots, autoLowShots])
+
     def weightFuelShotsForDataPoint(self, timd, match, boilerPoint, shotKey):
         timds = self.su.getCompletedTIMDsForMatchForAllianceIsRed(match, timd.teamNumber in match.redAllianceTeamNumbers)
         try:
@@ -142,7 +149,7 @@ class Calculator(object):
             scoutedFuel = sum(map(lambda timd: self.fieldsForShot(timd, boilerPoint), timds))
         except:
             actualFuel = self.getShotPointsForMatchForAlliance(timds, timd.teamNumber in match.redAllianceTeamNumbers, match)
-            scoutedFuel = sum(map(lambda b: sum(map(lambda timd: self.fieldsForShot(timd, b), timds)), self.boilerKeys.keys()))
+            scoutedFuel = sum(map(lambda t: self.fieldsForShots(t), timds))
         weightage = float(actualFuel) / scoutedFuel if scoutedFuel > 0 else None
         return sum(map(lambda v: (v.get('numShots') or 0), shotKey)) * weightage if weightage != None and weightage > 0 else 0
 
