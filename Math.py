@@ -47,6 +47,12 @@ class Calculator(object):
             'teleopFuelLow' : 'avgLowShotsTele',
             'teleopFuelHigh' : 'avgHighShotsTele'
         }
+        self.boilerKeys = {
+            'autoFuelLow' : 'lowShotTimesForBoilerAuto',
+            'autoFuelHigh' : 'highShotTimesForBoilerAuto',
+            'teleopFuelLow' : 'lowShotTimesForBoilerTele',
+            'teleopFuelHigh' : 'highShotTimesForBoilerTele'
+        }
         self.cachedTeamDatas = {}
         self.cachedComp = cache.CachedCompetitionData()
         self.cachedTeamDatas[self.averageTeam.number] = cache.CachedTeamData(**{'teamNumber': self.averageTeam.number})
@@ -108,7 +114,7 @@ class Calculator(object):
         try:
             t = stats.ttest_ind_from_stats(mean1, std1, sampleSize1, mean2, std2, sampleSize2, False).statistic #False means the variances are unequal
             return t if t != np.nan else mean1 > mean2
-        except ZeroDivisionError:
+        except:
             return 0.0
 
     def getDF(self, s1, s2, n1, n2):
@@ -124,23 +130,19 @@ class Calculator(object):
         return numerator / denominator if denominator != 0 else 0.0
 
     #SHOTS DATA
-    def fieldsForShots(self, timd):
-        teleHighShots = sum(map(lambda v: (v.get('numShots') or 0), timd.highShotTimesForBoilerTele)) / 3.0
-        autoHighShots = sum(map(lambda v: (v.get('numShots') or 0), timd.highShotTimesForBoilerAuto))
-        teleLowShots = sum(map(lambda v: (v.get('numShots') or 0), timd.lowShotTimesForBoilerTele)) / 9.0
-        autoLowShots = sum(map(lambda v: (v.get('numShots') or 0), timd.lowShotTimesForBoilerAuto)) / 3.0
-        return sum([teleHighShots, autoHighShots, teleLowShots, autoLowShots])
+    def fieldsForShot(self, timd, boilerPoint):
+        return sum(map(lambda v: (v.get('numShots') or 0), (timd.__dict__.get(self.boilerKeys[boilerPoint]) or [])))
 
     def weightFuelShotsForDataPoint(self, timd, match, boilerPoint, shotKey):
         timds = self.su.getCompletedTIMDsForMatchForAllianceIsRed(match, timd.teamNumber in match.redAllianceTeamNumbers)
         try:
             tbam = filter(lambda m: m['match_number'] == match.number, self.cachedComp.TBAMatches)[0]
             alliance = 'red' if timd.teamNumber in match.redAllianceTeamNumbers else 'blue'
-            actualFuel = tbam['score_breakdown'][alliance][boilerPoint]
+            actualFuel = tbam['scorebreakdown'][alliance][boilerPoint]
+            scoutedFuel = sum(map(lambda timd: self.fieldsForShot(timd, boilerPoint), timds))
         except:
-            print traceback.format_exc()
             actualFuel = self.getShotPointsForMatchForAlliance(timds, timd.teamNumber in match.redAllianceTeamNumbers, match)
-        scoutedFuel = sum(map(self.fieldsForShots, timds))
+            scoutedFuel = sum(map(lambda b: sum(map(lambda timd: self.fieldsForShot(timd, b), timds)), self.boilerKeys.keys()))
         weightage = float(actualFuel) / scoutedFuel if scoutedFuel > 0 else None
         return sum(map(lambda v: (v.get('numShots') or 0), shotKey)) * weightage if weightage != None and weightage > 0 else 0
 
@@ -488,7 +490,6 @@ class Calculator(object):
         self.cachedComp.predictedSeedings = self.teamsSortedByRetrievalFunctions(self.getPredictedSeedingFunctions())
         map(lambda t: Rscorecalcs(t, self), self.cachedComp.teamsWithMatchesCompleted)
         self.rValuesForAverageFunctionForDict(lambda t: t.calculatedData.avgDrivingAbility, self.cachedComp.drivingAbilityZScores)
-        # map(self.shotOPRForKey, self.shotKeys.keys())
 
     def doCachingForTeam(self, team):
         try:
