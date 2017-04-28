@@ -21,20 +21,24 @@ def getVideoKey(number):
 
 #Moves all videos from the start folder to destination folder
 def moveVids(folder, dest):
+	#Cannot move without a start folder and a destination folder
 	if not folder or not dest:
 		print("Error: Folders not set")
 		return
 	files = os.listdir(folder)
 	destFiles = os.listdir(dest)[1:]
 	files = sorted(files, key = lambda k: os.stat(folder + k).st_ctime)
+	#Start from the first match number not in destination and move each file
 	if destFiles:
 		matchToStartFrom = len(destFiles)
 		files = files[matchToStartFrom:]
 		matchesToFiles = zip(range(matchToStartFrom, len(files) + matchToStartFrom), files)
 		[moveVid(getVideoKey(k), folder + fileName, dest) for k, fileName in matchesToFiles]
 		return
+	#Otherwise, move all files, starting from match 1
 	map(lambda n: moveVid(getVideoKey(n), folder + files[n], dest), range(len(files)))
 
+#What does skip do?
 def skip(folder, dest, number):
 	files = os.listdir(folder)
 	destFiles = os.listdir(dest)[1:]
@@ -60,6 +64,7 @@ def replayLastMatch(folder):
 	print(folder + fileToDelete)
 	os.remove(folder + fileToDelete)
 
+#Moves a video from the original location to a new location with a new name
 def moveVid(key, filePath, dest):
 	print(key)
 	print(filePath)
@@ -67,14 +72,17 @@ def moveVid(key, filePath, dest):
 
 print("Downloading schedule...")
 matches = getSchedule()
+#If two folder locations were entered when starting, the first is the folder the videos start in and the second is the folder they move to
 try:
 	videoFolder = sys.argv[1]
 	destFolder = sys.argv[2]
+#Otherwise, the folder locations need to be entered later
 except:
 	videoFolder = ""
 	destFolder = ""
 print("Video system 2017. Type help for details.")
 
+#Loop looks for input and runs commands
 while(True):
 	cmd = raw_input(">>> ").split()
 	if not cmd: continue
@@ -102,3 +110,4 @@ while(True):
 		print("setvid [FILEPATH] - Reset the file path at which the unnamed videos will be stored")
 		print("replay - Deletes last recording (RUN THIS BEFORE YOU RECORD ANYTHING ELSE)")
 		print("done - Run the video mover and organize all of the video files by match (run at the end of the day)")
+		#Add a help thing for skip
