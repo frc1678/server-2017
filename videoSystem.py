@@ -2,6 +2,8 @@ import shutil
 import sys
 import os
 import TBACommunicator
+import pdb
+import traceback
 
 #Gets a list of matches to make a list of names
 def getSchedule():
@@ -32,6 +34,17 @@ def moveVids(folder, dest):
 		[moveVid(getVideoKey(k), folder + fileName, dest) for k, fileName in matchesToFiles]
 		return
 	map(lambda n: moveVid(getVideoKey(n), folder + files[n], dest), range(len(files)))
+
+def skip(folder, dest, number):
+	files = os.listdir(folder)
+	destFiles = os.listdir(dest)[1:]
+	files = sorted(files, key = lambda k: os.stat(folder + k).st_ctime)
+	print len(files[:number-1])
+	for f in files[:number - 1]:
+		moveVid(getVideoKey(files.index(f)), folder + f, dest)
+	print files[number-1:]
+	for f in files[number-1:]:
+		moveVid(getVideoKey(files.index(f) + 1), folder + f, dest)
 
 #Deletes the most recent match for a replay
 def replayLastMatch(folder):
@@ -79,6 +92,11 @@ while(True):
 		replayLastMatch(videoFolder)
 	elif cmd[0] == "done":
 		moveVids(videoFolder, destFolder)
+	elif cmd[0] == "skip":
+		try:
+			skip(videoFolder, destFolder, int(cmd[1]))
+		except:
+			print traceback.format_exc()
 	elif cmd[0] == "help":
 		print("setdest [FILEPATH] - Reset the file path to which you want to videos to be moved")
 		print("setvid [FILEPATH] - Reset the file path at which the unnamed videos will be stored")

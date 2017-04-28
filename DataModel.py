@@ -41,14 +41,14 @@ class CalculatedTeamData(object):
 		self.avgGearLoaderIntakesTele = None
 		self.avgGearGroundIntakesTele = None
 		self.avgGearsPlacedByLiftAuto =  {
-			'lift1' : None,
-			'lift2' : None,
-			'lift3' : None
+			'allianceWall' : None,
+			'hpStation' : None,
+			'boiler' : None
 		}
 		self.avgGearsPlacedByLiftTele =  {
-			'lift1' : None,
-			'lift2' : None,
-			'lift3' : None
+			'allianceWall' : None,
+			'hpStation' : None,
+			'boiler' : None
 		}
 		self.avgHoppersOpenedAuto = None
 		self.avgHoppersOpenedTele = None
@@ -95,10 +95,6 @@ class CalculatedTeamData(object):
 	  	self.lfmAvgKeyShotTime = None
 	  	self.lfmAvgLiftoffTime = None
 	  	self.lfmLiftoffPercentage = None
-	  	self.lfmFirstPickAbility = None
-	  	self.lfmSecondPickAbility = None
-	  	self.lfmThirdPickAbility = None
-	  	self.lfmGearAbility = None
 	  	self.lfmAvgAgility = None
 	  	self.lfmAvgSpeed = None
 	  	self.lfmAvgBallControl = None
@@ -189,14 +185,14 @@ class TeamInMatchData(object):
 		self.rankBallControl = None
 		self.rankDefense = None
 		self.gearsPlacedByLiftAuto = {
-			'lift1' : None,
-			'lift2' : None,
-			'lift3' : None
+			'allianceWall' : None,
+			'hpStation' : None,
+			'boiler' : None
 		}
 		self.gearsPlacedByLiftTele = {
-			'lift1' : None,
-			'lift2' : None,
-			'lift3' : None
+			'allianceWall' : None,
+			'hpStation' : None,
+			'boiler' : None
 		}
 		self.highShotTimesForBoilerAuto = [
 			{

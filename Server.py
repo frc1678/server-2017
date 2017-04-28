@@ -20,10 +20,11 @@ comp.updateTeamsAndMatchesFromFirebase()
 comp.updateTIMDsFromFirebase()
 calculator = Math.Calculator(comp)
 cycle = 1
-shouldSlack = False
+scheduleUpdater.scheduleListener()
+shouldSlack = True
 consolidator = dataChecker.DataChecker()
-# consolidator.start()
-# APNServer.startNotiStream()
+consolidator.start()
+APNServer.startNotiStream()
 
 
 
@@ -31,7 +32,7 @@ consolidator = dataChecker.DataChecker()
 
 #Use this if tablets need assigned to scouts by the server, and will then be given to the correct scouts
 #This means at the beginning of a competition day
-# scoutRotator.tabletHandoutStream()
+scoutRotator.tabletHandoutStream()
 
 #Use this for running the server again (e.g. after a crash) to avoid reassigning scouts or tablets
 # scoutRotator.alreadyAssignedStream()

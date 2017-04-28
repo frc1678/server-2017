@@ -12,6 +12,7 @@ def sendNoti(number, c, token):
         msg2 = str(abs(number - c)) + " matches away!" if (abs(number - c)) != 1 else " up next!" if (abs(number - c)) == 0 else "match away!" 
         red = fb.child('Matches').child(number).child('redAllianceTeamNumbers').get().val()
         blue = fb.child('Matches').child(number).child('blueAllianceTeamNumbers').get().val()
+        message = msg1 + msg2
         message += "| Red: " + ''.join(map(lambda t: str(t), red))                
         message += "| Blue: " + ''.join(map(lambda t: str(t), blue))                
         payload = Payload(alert = message, sound = "default", badge = 1)

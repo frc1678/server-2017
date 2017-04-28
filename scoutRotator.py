@@ -11,7 +11,7 @@ import pprint
 PBC = firebaseCommunicator.PyrebaseCommunicator()
 fb = PBC.firebase
 
-scouts = "aidan alex ayush calvin carter evan gemma jack jesse jon justin jishnu katie kyle mingyo mx rachel sage sam vera wesley zoe".split()
+scouts = "aidan alex amandaOrKatie ayush carter evan gemma jack janet jesse jon justin jishnu kyle mingyo mx rachel vera sage sam wesley zoe".split()
 SPR = SPR.ScoutPrecision()
 
 #Creates list of availability values in firebase for each scout
@@ -28,14 +28,14 @@ def resetScouts():
 def doSPRsAndAssignments(data):
 	#Wait until the availability has been confirmed to be correct
 	print "New number"
-	# while(True):
-	# 	try:
-	# 		availabilityUpdated = fb.child("availabilityUpdated").get().val()
-	# 	except:
-	# 		availabilityUpdated = 0
-	# 	if availabilityUpdated:
-	# 		break
-	# 	time.sleep(2)
+	while(True):
+		try:
+			availabilityUpdated = fb.child("availabilityUpdated").get().val()
+		except:
+			availabilityUpdated = 0
+		if availabilityUpdated:
+			break
+		time.sleep(2)
 	try:
 		fb.child("availabilityUpdated").set(0)
 		if data.get('data') == None:
