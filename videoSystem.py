@@ -3,10 +3,12 @@ import sys
 import os
 import TBACommunicator
 
+#Gets a list of matches to make a list of names
 def getSchedule():
 	tbac = TBACommunicator.TBACommunicator()
 	return filter(lambda v: v['comp_level'] == 'qm', tbac.makeEventMatchesRequest())
 
+#Creates a name for a video based on recording order, with the match number and team numbers
 def getVideoKey(number):
 	match = filter(lambda m: m['match_number'] == number + 1, matches)[0]
 	print(matches[number]['match_number'])
@@ -15,6 +17,7 @@ def getVideoKey(number):
 	[key.append(str(number) + "_") for number in teams]
 	return "".join(key)
 
+#Moves all videos from the start folder to destination folder
 def moveVids(folder, dest):
 	if not folder or not dest:
 		print("Error: Folders not set")
@@ -30,6 +33,7 @@ def moveVids(folder, dest):
 		return
 	map(lambda n: moveVid(getVideoKey(n), folder + files[n], dest), range(len(files)))
 
+#Deletes the most recent match for a replay
 def replayLastMatch(folder):
 	if not folder:
 		print("ERROR: Folders not set")

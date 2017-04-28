@@ -105,4 +105,5 @@ def sortScoutDisagreements():
 	for scout in SPR.disagreementBreakdown:
 		totalDisagreements.update({scout: sum(SPR.disagreementBreakdown[scout].values())})
 	pprint.pprint(totalDisagreements)
-	print sorted(totalDisagreements, key = totalDisagreements.get)
+	pprint.pprint(sorted(totalDisagreements.items(), key = lambda scout: scout[1]))
+	pprint.pprint(sorted(SPR.sprs.items(), key = lambda scout: scout[1]))
