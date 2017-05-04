@@ -50,20 +50,23 @@ while(True):
 	if cycle % 5 == 1:
 		PBC.cacheFirebase()
 	while(True):
+		#updates all matches in firebase
 		try:
 			comp.updateTeamsAndMatchesFromFirebase()
 			comp.updateTIMDsFromFirebase()
 			break
 		except Exception as e:
 			print(e)
-	checkForMissingData()
+	checkForMissingData() #opens missing_data.txt and prints all missing data if there is missing data each cycle
 	try:
 		calculator.doCalculations(PBC)
 	except OSError:
 		continue
 	except:
+		#reports error to slack
 		if shouldSlack:
 			reportServerCrash(traceback.format_exc())
+		#prints the error if shouldSlack isn't True
 		else:
 			print(traceback.format_exc())
 		sys.exit(0)
