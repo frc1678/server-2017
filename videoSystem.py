@@ -38,16 +38,16 @@ def moveVids(folder, dest):
 	#Otherwise, move all files, starting from match 1
 	map(lambda n: moveVid(getVideoKey(n), folder + files[n], dest), range(len(files)))
 
-#What does skip do?
+#Skips specific videos from downloading
 def skip(folder, dest, number):
 	files = os.listdir(folder)
 	destFiles = os.listdir(dest)[1:]
 	files = sorted(files, key = lambda k: os.stat(folder + k).st_ctime)
-	print len(files[:number-1])
+	print(len(files[:number - 1]))
 	for f in files[:number - 1]:
 		moveVid(getVideoKey(files.index(f)), folder + f, dest)
-	print files[number-1:]
-	for f in files[number-1:]:
+	print(files[number - 1:])
+	for f in files[number - 1:]:
 		moveVid(getVideoKey(files.index(f) + 1), folder + f, dest)
 
 #Deletes the most recent match for a replay
@@ -106,8 +106,8 @@ while(True):
 		except:
 			print traceback.format_exc()
 	elif cmd[0] == "help":
-		print("setdest [FILEPATH] - Reset the file path to which you want to videos to be moved")
-		print("setvid [FILEPATH] - Reset the file path at which the unnamed videos will be stored")
-		print("replay - Deletes last recording (RUN THIS BEFORE YOU RECORD ANYTHING ELSE)")
-		print("done - Run the video mover and organize all of the video files by match (run at the end of the day)")
-		#Add a help thing for skip
+		print("setdest [FILEPATH] - Reset the file path to which you want videos to be moved")
+		print("setvid [FILEPATH] - Reset the file path to which unnamed videos will be stored")
+		print("replay - Delete last recording (RUN THIS BEFORE RECORDING ANYTHING ELSE)")
+		print("done - Run the video mover and organize all video files by match (run at the end of the day)")
+		print("skip - Skip specific videos from download")
