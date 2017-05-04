@@ -14,7 +14,6 @@ import scheduleUpdater
 import APNServer
 
 PBC = firebaseCommunicator.PyrebaseCommunicator()
- 
 comp = DataModel.Competition(PBC)
 comp.updateTeamsAndMatchesFromFirebase()
 comp.updateTIMDsFromFirebase()
@@ -25,8 +24,6 @@ shouldSlack = True
 consolidator = dataChecker.DataChecker()
 consolidator.start()
 APNServer.startNotiStream()
-
-
 
 #Scout assignment streams:
 
@@ -40,7 +37,6 @@ scoutRotator.tabletHandoutStream()
 #Use this if you are restarting the server and need to reassign scouts but scouts already have tablets
 #Also useful for unexpected changes in availability
 # scoutRotator.simpleStream()
-
 
 def checkForMissingData():
 	with open('missing_data.txt', 'w') as missingDataFile:
