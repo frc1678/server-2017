@@ -47,8 +47,6 @@ class DataChecker(multiprocessing.Process):
 	def attempt(self, vals):
 		if map(type, vals).count(bool) > 0:
 			return self.commonValue(map(bool, vals))
-		else:
-			return
 
 	#Gets the most common bool of a list of inputted bools
 	def joinBools(self, bools):
@@ -63,8 +61,6 @@ class DataChecker(multiprocessing.Process):
 				return mCV if values.count(mCV) > len(values) / 2 else np.mean(values)
 			except:
 				return
-		else:
-			return
 
 	#This is the common value function for lists of dicts
 	#It consolidates the data on shots from scouts, by comparing each shot to other scouts' info on the same shot
@@ -108,8 +104,6 @@ class DataChecker(multiprocessing.Process):
 					commonPosition = consolidationDict['position'][positionFrequencies.index(max(positionFrequencies))]
 					returnList[num].update({'position': commonPosition})
 			return returnList
-		else:
-			return
 
 	#Combines data from whole TIMDs
 	def joinValues(self, key):
@@ -169,7 +163,7 @@ class DataChecker(multiprocessing.Process):
 					index += 1
 				except:
 					continue
-			print "consolidated"
+			print("consolidated")
 			time.sleep(10)
 
 DataChecker().start()
