@@ -1,6 +1,8 @@
 import firebaseCommunicator
 import utils
 
+#Makes classes with keys that correspond to data points collected or calculated by team
+
 class Competition(object):
 	"""docstring for Competition"""
 	def __init__(self, PBC):
@@ -11,11 +13,9 @@ class Competition(object):
 		self.TIMDs = []
 		self.PBC = PBC
 		self.currentMatchNum = 0
-
 	def updateTeamsAndMatchesFromFirebase(self):
 		self.teams = utils.makeTeamsFromDicts(self.PBC.getPythonObjectForFirebaseDataAtLocation("Teams"))
 		self.matches = utils.makeMatchesFromDicts(self.PBC.getPythonObjectForFirebaseDataAtLocation("Matches"))
-
 	def updateTIMDsFromFirebase(self):
 		self.TIMDs = utils.makeTIMDsFromDicts(self.PBC.getPythonObjectForFirebaseDataAtLocation("TeamInMatchDatas"))
 
