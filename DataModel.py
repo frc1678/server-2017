@@ -1,7 +1,7 @@
 import firebaseCommunicator
 import utils
 
-#Makes classes with keys that correspond to data points collected or calculated by team
+#creates classes with keys which correspond to the data points collected and calculated by our scouting
 
 class Competition(object):
 	'''docstring for Competition'''
@@ -25,6 +25,7 @@ class Competition(object):
 class CalculatedTeamData(object):
 	'''c'''
 	def __init__(self, **args):
+		#initializes actual calculated team data
 		super(CalculatedTeamData, self).__init__()
 		self.firstPickAbility = None
 		self.disabledPercentage = None
@@ -108,6 +109,7 @@ class CalculatedTeamData(object):
 class Team(object):
 	'''FRC Team Object'''
 	def __init__(self, **args):
+		#initializes variables for each team
 		super(Team, self).__init__()
 		self.name = None
 		self.number = None
@@ -122,8 +124,9 @@ class Team(object):
 		self.__dict__.update(args)
 
 class CalculatedMatchData(object):
-	''docstring for CalculatedMatchData'''
+	'''docstring for CalculatedMatchData'''
 	def __init__(self, **args):
+		#initializes actual calculated match data
 		super(CalculatedMatchData, self).__init__()
 		self.predictedRedScore = None
 		self.predictedBlueScore = None
@@ -145,6 +148,7 @@ class CalculatedMatchData(object):
 class Match(object):
 	'''An FRC Match Object'''
 	def __init__(self, **args):
+		#initializes match object
 		super(Match, self).__init__()
 		self.number = None
 		self.calculatedData = CalculatedMatchData()
@@ -166,6 +170,7 @@ class Match(object):
 class TeamInMatchData(object):
 	'''An FRC TeamInMatchData Object'''
 	def __init__(self, **args):
+		#initializes actual TIMDs
 		super(TeamInMatchData, self).__init__()
 		self.calculatedData = CalculatedTeamInMatchData()
 		self.teamNumber = None
@@ -230,6 +235,7 @@ class TeamInMatchData(object):
 class CalculatedTeamInMatchData(object):
 	'docstring for CalculatedTeamInMatchData'
 	def __init__(self, **args):
+		#initializes actual CalculatedTIMDs
 		super(CalculatedTeamInMatchData, self).__init__()
 		self.numRPs = None
 		self.liftoffAbility = None
