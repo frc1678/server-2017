@@ -5,7 +5,7 @@ import DataModel
 from firebaseCommunicator import PyrebaseCommunicator as pbc
 
 class CalculatedTeamInMatchData(object):
-	"""docstring for CalculatedTeamInMatchData"""
+	'''docstring for CalculatedTeamInMatchData'''
 	def __init__(self, **args):
 		super(CalculatedTeamInMatchData, self).__init__()
 		self.numRPs = random.randint(0, 4)
@@ -20,7 +20,7 @@ class CalculatedTeamInMatchData(object):
 		self.avgKeyShotTime = random.randint(0, 50)
 
 class TeamInMatchData(object):
-	"""An FRC TeamInMatchData Object"""
+	'''An FRC TeamInMatchData Object'''
 	def __init__(self, **args):
 		super(TeamInMatchData, self).__init__()
 		self.calculatedData = None
@@ -28,66 +28,66 @@ class TeamInMatchData(object):
 		 self.teamNumber = args['teamNumber']
 		 self.matchNumber = args['matchNumber']
 		 self.scoutName = args['scoutName']
-		 self.superNotes = random.randint(0,1)
-		 self.numHoppersOpenedTele = random.randint(0,1)
-		 self.numGearGroundIntakesTele = random.randint(0,1)
-		 self.numGearLoaderIntakesTele = random.randint(0,1)
-		 self.numGearsEjectedTele = random.randint(0,1)
-		 self.numGearsFumbledTele = random.randint(0,1)
-		 self.didReachBaselineAuto = random.randint(0,1)
-		 self.numHoppersOpenedAuto = random.randint(0,1)
-		 self.didLiftoff = bool(random.randint(0,1))
-		 self.didStartDisabled = bool(random.randint(0,1))
-		 self.didBecomeIncapacitated = bool(random.randint(0,1))
+		 self.superNotes = random.randint(0, 1)
+		 self.numHoppersOpenedTele = random.randint(0, 1)
+		 self.numGearGroundIntakesTele = random.randint(0, 1)
+		 self.numGearLoaderIntakesTele = random.randint(0, 1)
+		 self.numGearsEjectedTele = random.randint(0, 1)
+		 self.numGearsFumbledTele = random.randint(0, 1)
+		 self.didReachBaselineAuto = random.randint(0, 1)
+		 self.numHoppersOpenedAuto = random.randint(0, 1)
+		 self.didLiftoff = bool(random.randint(0, 1))
+		 self.didStartDisabled = bool(random.randint(0, 1))
+		 self.didBecomeIncapacitated = bool(random.randint(0, 1))
 		'''
-		self.rankSpeed = random.randint(0,4)
-		self.rankAgility = random.randint(0,4)
-		self.rankGearControl = random.randint(0,4)
-		self.rankBallControl = random.randint(0,4)
-		self.rankDefense = random.randint(0,4)
+		self.rankSpeed = random.randint(0, 4)
+		self.rankAgility = random.randint(0, 4)
+		self.rankGearControl = random.randint(0, 4)
+		self.rankBallControl = random.randint(0, 4)
+		self.rankDefense = random.randint(0, 4)
 		'''
 		 self.gearsPlacedByLiftAuto = {
-		 	'lift1' : random.randint(0,1),
-		 	'lift2' : random.randint(0,1),
-		 	'lift3' : random.randint(0,1)
+		 	'lift1' : random.randint(0, 1),
+		 	'lift2' : random.randint(0, 1),
+		 	'lift3' : random.randint(0, 1)
 		 }
 		 self.gearsPlacedByLiftTele = {
-		 	'lift1' : random.randint(0,1),
-		 	'lift2' : random.randint(0,1),
-		 	'lift3' : random.randint(0,1)
+		 	'lift1' : random.randint(0, 1),
+		 	'lift2' : random.randint(0, 1),
+		 	'lift3' : random.randint(0, 1)
 		 }
 		 self.highShotTimesForBoilerAuto = [
 		 	{
-		 		'time' : random.randint(0,1),
-		 		'numShots' : random.randint(0,1),
+		 		'time' : random.randint(0, 1),
+		 		'numShots' : random.randint(0, 1),
 		 		'position' : 'Hopper'
 		 	}
 		 ]
 		 self.lowShotTimesForBoilerAuto = [
 		 	{
-		 		'time' : random.randint(0,1),
-		 		'numShots' : random.randint(0,1),
+		 		'time' : random.randint(0, 1),
+		 		'numShots' : random.randint(0, 1),
 		 		'position' : 'Hopper'
 		 	}
 		 ]
 		 self.highShotTimesForBoilerTele = [
 		 	{
-		 		'time' : random.randint(0,1),
-		 		'numShots' : random.randint(0,1),
+		 		'time' : random.randint(0, 1),
+		 		'numShots' : random.randint(0, 1),
 		 		'position' : 'Key'
 		 	}
 		 ]
 		 self.lowShotTimesForBoilerTele = [
 		 	{
-		 		'time' : random.randint(0,1),
-		 		'numShots' : random.randint(0,1),
+		 		'time' : random.randint(0, 1),
+		 		'numShots' : random.randint(0, 1),
 		 		'position' : 'Key'
 		 	}
 		 ]
 		'''
 
 class Match(object):
-	"""An FRC Match Object"""
+	'''An FRC Match Object'''
 	def __init__(self, **args):
 		super(Match, self).__init__()
 		self.number = args['number']
@@ -107,7 +107,7 @@ class Match(object):
 		self.foulPointsGainedBlue = random.randint(0, 1)
 
 class CalculatedMatchData(object):
-	"""docstring for CalculatedMatchData"""
+	'''docstring for CalculatedMatchData'''
 	def __init__(self, **args):
 		super(CalculatedMatchData, self).__init__()
 		self.predictedRedScore = random.randint(0, 50)
@@ -131,8 +131,8 @@ class CalculatedMatchData(object):
 
 pyre = pbc()
 
-auth = fb.FirebaseAuthentication(superSecret, "1678programming@gmail.com", True, True)
-testScouts = "a b c d e f g h i j k l m n o p q r".split()
+auth = fb.FirebaseAuthentication(superSecret, '1678programming@gmail.com', True, True)
+testScouts = 'a b c d e f g h i j k l m n o p q r'.split()
 firebase = fb.FirebaseApplication(url, auth)
 cm = 1
 while(True):
@@ -140,8 +140,8 @@ while(True):
 	m = Match(number = cm, redAllianceTeamNumbers = match['redAllianceTeamNumbers'], blueAllianceTeamNumbers = match['blueAllianceTeamNumbers'])
 	# firebase.put('/Matches/', str(cm), m.__dict__)
 	for t in match['redAllianceTeamNumbers'] + match['blueAllianceTeamNumbers']:
-		pyre.firebase.child('TeamInMatchDatas').child(str(t) + "Q" + str(match['number'])).update(TeamInMatchData().__dict__)
+		pyre.firebase.child('TeamInMatchDatas').child(str(t) + 'Q' + str(match['number'])).update(TeamInMatchData().__dict__)
 		time.sleep(4)
-	print("done with match")
+	print('done with match')
 	cm += 1
 	time.sleep(20)

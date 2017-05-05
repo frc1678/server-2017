@@ -4,7 +4,7 @@ import TBACommunicator
 import utils
 
 ############# Getting TBA Data ###################
-#Set to "<your initials>:TBA_communicator:0"
+#Set to '<your initials>:TBA_communicator:0'
 
 TBAC = TBACommunicator.TBACommunicator()
 FBC = firebaseCommunicator.PyrebaseCommunicator()

@@ -10,14 +10,15 @@ with open('SUPERDATAPRESCOUT.json') as f:
 tba = tbac()
 teamNums = map(lambda t: t['team_number'], tba.makeEventTeamsRequest())
 pbc = PyrebaseCommunicator()
-temptimds = pbc.firebase.child("TeamInMatchDatas").get().val()
+temptimds = pbc.firebase.child('TeamInMatchDatas').get().val()
 teamsDict = {}
 teamKeys = set(map(lambda k: int(k.split('Q')[0]), temptimds.keys()))
 # for k, v in data.items():
-# 	print pbc.firebase.child("TeamInMatchDatas").child(k).update(v)
+# 	print pbc.firebase.child('TeamInMatchDatas').child(k).update(v)
 teams = [t for t in teamKeys if t in teamNums]
-keys =  ['incapacitatedPercentage', 'disabledPercentage', 'liftoffPercentage', 'avgAgility', 'avgSpeed', 'avgGearGroundIntakesTele' , 'avgGearLoaderIntakesTele', 'avgBallControl', 'avgGearControl', 'avgDefense', 'disfunctionalPercentage', 'avgGearsPlacedAuto', 'avgGearsPlacedTele', 'avgHoppersOpenedAuto', 'avgHoppersOpenedTele', 'avgGearsEjectedTele', 'avgLiftoffTime', 'avgGearsFumbledTele']
-print len(teams)
+keys = ['incapacitatedPercentage', 'disabledPercentage', 'liftoffPercentage', 'avgAgility', 'avgSpeed', 'avgGearGroundIntakesTele' , 'avgGearLoaderIntakesTele', 'avgBallControl', 'avgGearControl', 'avgDefense', 'disfunctionalPercentage', 'avgGearsPlacedAuto', 'avgGearsPlacedTele', 'avgHoppersOpenedAuto', 'avgHoppersOpenedTele', 'avgGearsEjectedTele', 'avgLiftoffTime', 'avgGearsFumbledTele']
+print(len(teams))
+
 def setAverages(dic, timds, **args):
 	for k, v in args.items():
 		vals = [v(t) for t in timds if v(t) != None]
@@ -37,7 +38,7 @@ for team in teams:
 	teamsDict[team] = {
 		'number' : team
 	}
-	timds = [v for k,v in temptimds.items() if int(k.split('Q')[0]) == team]
+	timds = [v for k, v in temptimds.items() if int(k.split('Q')[0]) == team]
 	setAverages(teamsDict[team], timds,
         incapacitatedPercentage = lambda tm: tm.get('didBecomeIncapacitated'),
         disabledPercentage = lambda tm: tm.get('didStartDisabled'),
@@ -62,21 +63,10 @@ for team in teams:
 	teamsDict[team]['avgGearsPlacedAuto'] = getValForKeys(timds, 'gearsPlacedByLiftAuto')
 	teamsDict[team]['avgGearsPlacedTele'] = getValForKeys(timds, 'gearsPlacedByLiftTele')
 
-print teamsDict
+print(teamsDict)
 with open('./preScoutingWorld.csv', 'w') as f:
 	default = ['number'] + keys
 	w = csv.DictWriter(f, fieldnames = default)
 	w.writeheader()
 	for team, v in teamsDict.items():
 		w.writerow({k : v.get(k) for k in default})
-
-
-
-
-
-
-
-
-
-
-

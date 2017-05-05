@@ -46,7 +46,7 @@ def checkForMissingData():
 		missingDataFile.write(str(missingDatas))
 
 while(True):
-	print("\nCalcs Cycle " + str(cycle) + "...")
+	print('\nCalcs Cycle ' + str(cycle) + '...')
 	if cycle % 5 == 1:
 		PBC.cacheFirebase()
 	while(True):

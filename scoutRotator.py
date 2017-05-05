@@ -11,7 +11,7 @@ import pprint
 PBC = firebaseCommunicator.PyrebaseCommunicator()
 fb = PBC.firebase
 
-scouts = "aidan alex amandaOrKatie ayush carter evan gemma jack janet jesse jon justin jishnu kyle mingyo mx rachel vera sage sam wesley zoe".split()
+scouts = 'aidan alex amandaOrKatie ayush carter evan gemma jack janet jesse jon justin jishnu kyle mingyo mx rachel vera sage sam wesley zoe'.split()
 SPR = SPR.ScoutPrecision()
 
 #Creates list of availability values in firebase for each scout
@@ -27,33 +27,33 @@ def resetScouts():
 #Main function for scout assignment
 def doSPRsAndAssignments(data):
 	#Wait until the availability has been confirmed to be correct
-	print("New number")
+	print('New number')
 	while(True):
 		try:
-			availabilityUpdated = fb.child("availabilityUpdated").get().val()
+			availabilityUpdated = fb.child('availabilityUpdated').get().val()
 		except:
 			availabilityUpdated = 0
 		if availabilityUpdated: break
 		time.sleep(2)
 	try:
-		fb.child("availabilityUpdated").set(0)
+		fb.child('availabilityUpdated').set(0)
 		if data.get('data') == None: return
 		#Gets scouting data from firebase
 		newMatchNumber = str(fb.child('currentMatchNum').get().val())
-		print("Setting scouts for match " + str(newMatchNumber))
-		scoutDict = fb.child("scouts").get().val()
+		print('Setting scouts for match ' + str(newMatchNumber))
+		scoutDict = fb.child('scouts').get().val()
 		#Gets the teams we need to scout for in the upcoming match
-		blueTeams = fb.child("Matches").child(newMatchNumber).get().val()['blueAllianceTeamNumbers']
-		redTeams = fb.child("Matches").child(newMatchNumber).get().val()['redAllianceTeamNumbers']
+		blueTeams = fb.child('Matches').child(newMatchNumber).get().val()['blueAllianceTeamNumbers']
+		redTeams = fb.child('Matches').child(newMatchNumber).get().val()['redAllianceTeamNumbers']
 		#Finds and assigns available scouts
-		available = [k for (k, v) in fb.child("availability").get().val().items() if v == 1]
+		available = [k for (k, v) in fb.child('availability').get().val().items() if v == 1]
 		#Grades scouts and assigns them to robots
-		SPR.calculateScoutPrecisionScores(fb.child("TempTeamInMatchDatas").get().val(), available)
+		SPR.calculateScoutPrecisionScores(fb.child('TempTeamInMatchDatas').get().val(), available)
 		SPR.sprZScores(PBC)
-		newAssignments = SPR.assignScoutsToRobots(available, redTeams + blueTeams, fb.child("scouts").get().val())
+		newAssignments = SPR.assignScoutsToRobots(available, redTeams + blueTeams, fb.child('scouts').get().val())
 		print(newAssignments)
 		#and it is put on firebase
-		fb.child("scouts").update(newAssignments)
+		fb.child('scouts').update(newAssignments)
 	except:
 		print(traceback.format_exc())
 		# CrashReporter.reportServerCrash(traceback.format_exc())
@@ -63,27 +63,27 @@ def doSPRsAndAssignments(data):
 def tabletHandoutStream():
 	resetScouts()
 	resetAvailability()
-	fb.child("currentMatchNum").stream(doSPRsAndAssignments)
+	fb.child('currentMatchNum').stream(doSPRsAndAssignments)
 
 #Use this for running the server again (e.g. after a crash) to avoid assigning scouts to new robots or tablets
 def alreadyAssignedStream():
 	global oldMatchNum
-	oldMatchNum = fb.child("currentMatchNum").get().val()
-	fb.child("currentMatchNum").stream(startAtNewMatch)
+	oldMatchNum = fb.child('currentMatchNum').get().val()
+	fb.child('currentMatchNum').stream(startAtNewMatch)
 
 def startAtNewMatch(newMatchNum):
-	if fb.child("currentMatchNum").get().val() > oldMatchNum:
+	if fb.child('currentMatchNum').get().val() > oldMatchNum:
 		doSPRsAndAssignments(newMatchNum)
 
 #Use this if you are restarting the server and need to reassign scouts but scouts already have tablets
 #Also useful for unexpected changes in availability
 def simpleStream():
-	fb.child("currentMatchNum").stream(doSPRsAndAssignments)
+	fb.child('currentMatchNum').stream(doSPRsAndAssignments)
 
 #Creates and prints a list of average amounts of inaccuracy by category
 def sprBreakdownExport():
-	available = [k for (k, v) in fb.child("availability").get().val().items() if v == 1]
-	SPR.calculateScoutPrecisionScores(fb.child("TempTeamInMatchDatas").get().val(), available)
+	available = [k for (k, v) in fb.child('availability').get().val().items() if v == 1]
+	SPR.calculateScoutPrecisionScores(fb.child('TempTeamInMatchDatas').get().val(), available)
 	breakdownData = SPR.SPRBreakdown
 	avgData = {}
 	for key in breakdownData.keys():
@@ -92,8 +92,8 @@ def sprBreakdownExport():
 
 #Creates and prints the number of disagreements with consensus per match for each scout, and for an average scout
 def findScoutDisagreements():
-	available = [k for (k, v) in fb.child("availability").get().val().items() if v == 1]
-	SPR.calculateScoutPrecisionScores(fb.child("TempTeamInMatchDatas").get().val(), available)
+	available = [k for (k, v) in fb.child('availability').get().val().items() if v == 1]
+	SPR.calculateScoutPrecisionScores(fb.child('TempTeamInMatchDatas').get().val(), available)
 	pprint.pprint(SPR.disagreementBreakdown)
 
 #Finds total numbers of disagreements per match by scout, and sorts scouts by those totals

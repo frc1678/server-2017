@@ -19,14 +19,14 @@ def CSVExport(comp, name, keys = []):
 	with open('./EXPORT-' + name + '.csv', 'w') as f:
 		defaultKeys = [k for k in Team().__dict__.keys() if k not in excluded and k in keys]
 		defaultKeys += [k for k in Team().calculatedData.__dict__.keys() if k in keys]
-		defaultKeys = sorted(defaultKeys, key = lambda k: (k != "number", k.lower()))
+		defaultKeys = sorted(defaultKeys, key = lambda k: (k != 'number', k.lower()))
 		writer = csv.DictWriter(f, fieldnames = defaultKeys)
 		writer.writeheader()
 		for team in comp.teams:
 			team.numMatchesPlayed = len(calculator.su.getCompletedMatchesForTeam(team))
 			tDict = team.__dict__
 			tDict.update(team.calculatedData.__dict__)
-			keys = sorted(defaultKeys, key = lambda k: (k != "number", k.lower()))
+			keys = sorted(defaultKeys, key = lambda k: (k != 'number', k.lower()))
 			writer.writerow({k : tDict[k] for k in keys})
 
 def readOPRData():
@@ -66,7 +66,7 @@ def CSVExportAll(comp):
 
 def CSVExportSAC(comp):
 	keys = []
-	CSVExport(comp, "SAC", keys = keys)
+	CSVExport(comp, 'SAC', keys = keys)
 
 def CSVExportCVR(comp):
 	keys = []
@@ -74,4 +74,4 @@ def CSVExportCVR(comp):
 
 def CSVExportCMP(comp):
 	keys = []
-	CSVExport(comp, "CHAMPS", keys = Team().__dict__.keys() + Team().calculatedData.__dict__.keys())
+	CSVExport(comp, 'CHAMPS', keys = Team().__dict__.keys() + Team().calculatedData.__dict__.keys())

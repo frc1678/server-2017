@@ -101,7 +101,7 @@ def makeDictFromMatch(t):
 
 def makeDictFromTIMD(timd):
 	d = makeDictFromObject(timd)
-	d["calculatedData"] = makeDictFromObject(d['calculatedData'])
+	d['calculatedData'] = makeDictFromObject(d['calculatedData'])
 	return d
 
 def makeDictFromCalculatedData(calculatedData):
@@ -122,12 +122,12 @@ def makeTIMDFromTeamNumberAndMatchNumber(teamNumber, matchNumber):
 
 def setDataForMatch(match):
 	m = DataModel.Match()
-	m.number, m.redAllianceTeamNumbers, m.blueAllianceTeamNumbers = int(match["match_number"]), match["alliances"]["red"]["teams"], match["alliances"]["blue"]["teams"]
+	m.number, m.redAllianceTeamNumbers, m.blueAllianceTeamNumbers = int(match['match_number']), match['alliances']['red']['teams'], match['alliances']['blue']['teams']
 	return m
 
 def setDataForTeam(team):
 	t = DataModel.Team()
-	t.number, t.name, t.teamInMatchDatas = team["team_number"], team["nickname"], []
+	t.number, t.name, t.teamInMatchDatas = team['team_number'], team['nickname'], []
 	return t
 
 def printWarningForSeconds(numSeconds):

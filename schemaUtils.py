@@ -2,7 +2,7 @@ import DataModel
 import pdb
 
 class SchemaUtils(object):
-    """docstring for SchemaUtils"""
+    '''docstring for SchemaUtils'''
     def __init__(self, comp, calc):
         super(SchemaUtils, self).__init__()
         self.comp = comp
@@ -13,7 +13,7 @@ class SchemaUtils(object):
         try:
             return [team for team in self.comp.teams if team.number == teamNumber][0]
         except:
-            print(str(teamNumber) + " doesn't exist.")
+            print(str(teamNumber) +  "doesn't exist.")
             return
 
     def getMatchesForTeam(self, team):
@@ -36,7 +36,7 @@ class SchemaUtils(object):
 
     #Match utility functions
     def getMatchForNumber(self, matchNumber):
-        if not len([match for match in self.comp.matches if match.number == matchNumber]): print("Match " + str(matchNumber) + " doesn't exist.")
+        if not len([match for match in self.comp.matches if match.number == matchNumber]): print('Match ' + str(matchNumber) + "doesn't exist.")
         return [match for match in self.comp.matches if match.number == matchNumber][0]
 
     def teamsInMatch(self, match):
@@ -71,7 +71,7 @@ class SchemaUtils(object):
         if team.number == -1 or team.number in match.redAllianceTeamNumbers: return True
         if team.number in match.blueAllianceTeamNumbers: return False
         else:
-            raise ValueError(str(team.number) not in "Q" + str(match.number))
+            raise ValueError(str(team.number) not in 'Q' + str(match.number))
 
     #TIMD utility function
     def getTIMDsForTeam(self, team):

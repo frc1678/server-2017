@@ -16,14 +16,14 @@ def getVideoKey(number):
 	print(matches[number]['match_number'])
 	key = list('Q' + str(match['match_number']) + '_')
 	teams = match['alliances']['red']['teams'] + match['alliances']['blue']['teams']
-	[key.append(str(number) + "_") for number in teams]
-	return "".join(key)
+	[key.append(str(number) + '_') for number in teams]
+	return ''.join(key)
 
 #Moves all videos from the start folder to destination folder
 def moveVids(folder, dest):
 	#Cannot move without a start folder and a destination folder
 	if not folder or not dest:
-		print("Error: Folders not set")
+		print('Error: Folders not set')
 		return
 	files = os.listdir(folder)
 	destFiles = os.listdir(dest)[1:]
@@ -53,10 +53,10 @@ def skip(folder, dest, number):
 #Deletes the most recent match for a replay
 def replayLastMatch(folder):
 	if not folder:
-		print("ERROR: Folders not set")
+		print('ERROR: Folders not set')
 		return
 	if not len(os.listdir(folder)):
-		print("ERROR: No match to replay")
+		print('ERROR: No match to replay')
 		return
 	files = os.listdir(folder)
 	files = sorted(files, key = lambda k: os.stat(folder + k).st_ctime)
@@ -68,9 +68,9 @@ def replayLastMatch(folder):
 def moveVid(key, filePath, dest):
 	print(key)
 	print(filePath)
-	shutil.copy(filePath, dest + key + ".mov")
+	shutil.copy(filePath, dest + key + '.mov')
 
-print("Downloading schedule...")
+print('Downloading schedule...')
 matches = getSchedule()
 #If two folder locations were entered when starting, the first is the folder the videos start in and the second is the folder they move to
 try:
@@ -78,36 +78,36 @@ try:
 	destFolder = sys.argv[2]
 #Otherwise, the folder locations need to be entered later
 except:
-	videoFolder = ""
-	destFolder = ""
-print("Video system 2017. Type help for details.")
+	videoFolder = ''
+	destFolder = ''
+print('Video system 2017. Type help for details.')
 
 #Loop looks for input and runs commands
 while(True):
-	cmd = raw_input(">>> ").split()
+	cmd = raw_input('>>> ').split()
 	if not cmd: continue
 	try:
-		if cmd[0] == "setdest":
+		if cmd[0] == 'setdest':
 			destFolder = cmd[1]
 	except:
-		print("Error: Must supply more arguments")
+		print('Error: Must supply more arguments')
 	try:
-		if cmd[0] == "setvid":
+		if cmd[0] == 'setvid':
 			videoFolder = cmd[1]
 	except:
-		print("Error: Must supply more arguments")
-	if cmd[0] == "replay":
+		print('Error: Must supply more arguments')
+	if cmd[0] == 'replay':
 		replayLastMatch(videoFolder)
-	elif cmd[0] == "done":
+	elif cmd[0] == 'done':
 		moveVids(videoFolder, destFolder)
-	elif cmd[0] == "skip":
+	elif cmd[0] == 'skip':
 		try:
 			skip(videoFolder, destFolder, int(cmd[1]))
 		except:
 			print traceback.format_exc()
-	elif cmd[0] == "help":
-		print("setdest [FILEPATH] - Reset the file path to which you want videos to be moved")
-		print("setvid [FILEPATH] - Reset the file path to which unnamed videos will be stored")
-		print("replay - Delete last recording (RUN THIS BEFORE RECORDING ANYTHING ELSE)")
-		print("done - Run the video mover and organize all video files by match (run at the end of the day)")
-		print("skip - Skip specific videos from download")
+	elif cmd[0] == 'help':
+		print('setdest [FILEPATH] - Reset the file path to which you want videos to be moved')
+		print('setvid [FILEPATH] - Reset the file path to which unnamed videos will be stored')
+		print('replay - Delete last recording (RUN THIS BEFORE RECORDING ANYTHING ELSE)')
+		print('done - Run the video mover and organize all video files by match (run at the end of the day)')
+		print('skip - Skip specific videos from download')

@@ -17,7 +17,7 @@ from schemaUtils import SchemaUtils
 from CrashReporter import reportOverestimate
 import csv
 class Calculator(object):
-    """Does math with scouted data"""
+    '''Does math with scouted data'''
     def __init__(self, competition):
         super(Calculator, self).__init__()
         warnings.simplefilter('error', RuntimeWarning)
@@ -60,11 +60,11 @@ class Calculator(object):
             self.cachedTeamDatas[t.number] = cache.CachedTeamData(**{'teamNumber': t.number})
 
     def getMissingDataString(self):
-        superKeys = ["rankSpeed", "rankAgility", "rankDefense", "rankBallControl", "rankGearControl"]
+        superKeys = ['rankSpeed', 'rankAgility', 'rankDefense', 'rankBallControl', 'rankGearControl']
         excluded = ['liftoffTime', 'superNotes']
         playedTIMDs = self.su.getCompletedTIMDsInCompetition()
-        incompleteScoutData = {str(t.teamNumber) + "Q" + str(t.matchNumber) : [k for k, v in t.__dict__.items() if k != "calculatedData" and k not in superKeys and k not in excluded and v == None] for t in playedTIMDs}
-        incompleteData = {str(t.teamNumber) + "Q" + str(t.matchNumber) : [k for k, v in t.__dict__.items() if k in superKeys and k not in excluded and v == None] for t in playedTIMDs}
+        incompleteScoutData = {str(t.teamNumber) + 'Q' + str(t.matchNumber) : [k for k, v in t.__dict__.items() if k != 'calculatedData' and k not in superKeys and k not in excluded and v == None] for t in playedTIMDs}
+        incompleteData = {str(t.teamNumber) + 'Q' + str(t.matchNumber) : [k for k, v in t.__dict__.items() if k in superKeys and k not in excluded and v == None] for t in playedTIMDs}
         incompleteData.update(incompleteScoutData)
         missing = {k : v for k, v in incompleteData.items() if v}
         return missing if missing else None
@@ -470,7 +470,7 @@ class Calculator(object):
 
     #CACHING
     def cacheFirstTeamData(self):
-        print("Caching First Team Data...")
+        print('Caching First Team Data...')
         for team in self.comp.teams:
             self.doCachingForTeam(team)
         self.doCachingForTeam(self.averageTeam)
@@ -484,7 +484,7 @@ class Calculator(object):
                      (lambda t: t.calculatedData.avgDefense or 0, self.cachedComp.defenseZScores)]
 
     def cacheSecondTeamData(self):
-        print("Caching Second Team Data...")
+        print('Caching Second Team Data...')
         [self.rValuesForAverageFunctionForDict(func, dictionary) for (func, dictionary) in self.rScoreParams()]
         map(self.doSecondCachingForTeam, self.comp.teams)
         try:
@@ -509,7 +509,7 @@ class Calculator(object):
 
     def getTBAShotsForTeamForKey(self, team, key):
         TBAMatches = self.cachedComp.TBAMatches
-        return sum([match["score_breakdown"]["red" if team in self.su.getMatchForNumber(match["match_number"]).redAllianceTeamNumbers else "blue"][key] for match in TBAMatches if self.su.teamInMatch(team, self.su.getMatchForNumber(match["match_number"]))])
+        return sum([match['score_breakdown']['red' if team in self.su.getMatchForNumber(match['match_number']).redAllianceTeamNumbers else 'blue'][key] for match in TBAMatches if self.su.teamInMatch(team, self.su.getMatchForNumber(match['match_number']))])
 
     def cacheTBAMatches(self):
         try:
@@ -542,16 +542,16 @@ class Calculator(object):
                 team.calculatedData = DataModel.CalculatedTeamData()
             t = team.calculatedData
             firstCalculationDict(team, self)
-            print("Completed first calcs for", str(team.number))
+            print('Completed first calcs for', str(team.number))
 
     def doSecondCalculationsForTeam(self, team):
         if len(self.su.getCompletedMatchesForTeam(team)):
             secondCalculationDict(team, self)
-            print("Completed second calculations for team", str(team.number))
+            print('Completed second calculations for team', str(team.number))
 
     def doFirstCalculationsForMatch(self, match): #This entire thing being looped is what takes a while
         matchDict(match, self)
-        print("Completed calculations for match", str(match.number))
+        print('Completed calculations for match', str(match.number))
 
     def doFirstTeamCalculations(self):
         map(self.doFirstCalculationsForTeam, self.comp.teams)
@@ -604,4 +604,4 @@ class Calculator(object):
             # self.autoGear()
             self.writeCalculationDiagnostic(endTime - startTime)
         else:
-            print("No Data")
+            print('No Data')

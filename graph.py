@@ -13,11 +13,11 @@ with open('./SPRExport.csv') as f:
 dic = {k : float(v) for k, v in dic.items()}
 keys = sorted(dic.keys(), key=lambda k: dic[k])
 for k in keys:
-	print k + " " + str(dic[k])
+	print(k, str(dic[k]))
 mu = np.mean(dic.values())
 sigma = np.std(dic.values())
-print mu
-print sigma
+print(mu)
+print(sigma)
 plt.hist(dic.values(), normed=True)
 x = np.linspace(min(dic.values()), max(dic.values()))
 plt.plot(x, m.normpdf(x, mu, sigma))
