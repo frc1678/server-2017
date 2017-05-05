@@ -11,6 +11,7 @@ comp.updateTeamsAndMatchesFromFirebase()
 comp.updateTIMDsFromFirebase()
 calculator = Math.Calculator(comp)
 
+#where all the juice starts
 dic = {
   "AppTokens" : {
 	"1F1E9751A6164EAAC8AFD7849538C25EF851E521B407B6850DD71F05F38239C0" : {
@@ -51273,29 +51274,29 @@ dic = {
 
 timds = dic['TeamInMatchDatas']
 matches = dic['Matches']
+'''
+ def update(match):
+ 	timdsToUpload = {k : v for k, v in timds.items() if int(k.split('Q')[1]) == match['number']}
+ 	for key, timd in timdsToUpload.items():
+ 		comp.PBC.firebase.child('TeamInMatchDatas').child(key).set(timd)
+ 	match = {k : v for k,v in match.items() if k != 'calculatedData'}
+ 	comp.PBC.firebase.child('Matches').child(match['number']).set(match)
 
-# def update(match):
-# 	timdsToUpload = {k : v for k, v in timds.items() if int(k.split('Q')[1]) == match['number']}
-# 	for key, timd in timdsToUpload.items():
-# 		comp.PBC.firebase.child('TeamInMatchDatas').child(key).set(timd)
-# 	match = {k : v for k,v in match.items() if k != 'calculatedData'}
-# 	comp.PBC.firebase.child('Matches').child(match['number']).set(match)
-
-# with open('./progressiveErrors.csv', 'w') as f:
-# 	writer = csv.DictWriter(f, fieldnames=['number', 'actualScore', 'predictedScore'])
-# 	writer.writeheader()
-# 	for match in matches[1:]:
-# 		time.sleep(2)
-# 		comp.updateTeamsAndMatchesFromFirebase()
-# 		comp.updateTIMDsFromFirebase()
-# 		calculator.doCalculations(comp.PBC)
-# 		red = match['redScore']
-# 		blue = match['blueScore']
-# 		predictedRedScore = calculator.predictedScoreForAlliance(calculator.su.teamsForTeamNumbersOnAlliance(match['redAllianceTeamNumbers']))
-# 		predictedBlueScore = calculator.predictedScoreForAlliance(calculator.su.teamsForTeamNumbersOnAlliance(match['blueAllianceTeamNumbers']))
-# 		writer.writerow({'number' : match['number'], 'actualScore' : red, 'predictedScore' : predictedRedScore})
-# 		writer.writerow({'number' : match['number'], 'actualScore' : blue, 'predictedScore' : predictedBlueScore})
-# 		update(match)
+ with open('./progressiveErrors.csv', 'w') as f:
+ 	writer = csv.DictWriter(f, fieldnames=['number', 'actualScore', 'predictedScore'])
+ 	writer.writeheader()
+ 	for match in matches[1:]:
+ 		time.sleep(2)
+ 		comp.updateTeamsAndMatchesFromFirebase()
+ 		comp.updateTIMDsFromFirebase()
+ 		calculator.doCalculations(comp.PBC)
+ 		red = match['redScore']
+ 		blue = match['blueScore']
+ 		predictedRedScore = calculator.predictedScoreForAlliance(calculator.su.teamsForTeamNumbersOnAlliance(match['redAllianceTeamNumbers']))
+ 		predictedBlueScore = calculator.predictedScoreForAlliance(calculator.su.teamsForTeamNumbersOnAlliance(match['blueAllianceTeamNumbers']))
+ 		writer.writerow({'number' : match['number'], 'actualScore' : red, 'predictedScore' : predictedRedScore})
+ 		writer.writerow({'number' : match['number'], 'actualScore' : blue, 'predictedScore' : predictedBlueScore})
+ 		update(match)
 
 matchesDict = []
 with open('./progressiveErrors.csv', 'r') as f:
@@ -51304,20 +51305,10 @@ with open('./progressiveErrors.csv', 'r') as f:
         matchesDict.append(r)
 
 
-# with open('./progErrorPoints.csv', 'w') as f:
-#     wr = csv.DictWriter(f, fieldnames = ['num', 'number', 'error'])
-#     wr.writeheader()
-#     for k, v in matchesDict.items():
-#         wr.writerow({'num' : k, 'number' : k, 'error' : v / 2.0})
+ with open('./progErrorPoints.csv', 'w') as f:
+     wr = csv.DictWriter(f, fieldnames = ['num', 'number', 'error'])
+     wr.writeheader()
+     for k, v in matchesDict.items():
+         wr.writerow({'num' : k, 'number' : k, 'error' : v / 2.0})'''
 
-
-
-
-
-
-
-
-
-
-
-
+#51314th line

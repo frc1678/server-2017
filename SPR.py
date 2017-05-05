@@ -9,7 +9,7 @@ import pprint
 
 #Scout Performance Analysis
 class ScoutPrecision(object):
-	"""Scores and ranks scouts and assigns them to robots"""
+	'Scores and ranks scouts and assigns them to robots'
 	def __init__(self):
 		super(ScoutPrecision, self).__init__()
 		self.sprs = {}
@@ -168,7 +168,7 @@ class ScoutPrecision(object):
 			#Removes any data from previous calculations from sprs
 			self.sprs = {}
 			'''These three grade each scout for each of the values in the grading keys, dicts, and lists of dicts
-			Each scout gets more "points" if they are further off from the consensus on the actual values
+			Each scout gets more 'points' if they are further off from the consensus on the actual values
 			The grades are stored by scout name in sprs
 			See the findOddScout functions for details on how'''
 			[self.findOddScoutForDataPoint(v, k) for v in g.values() for k in self.gradingKeys.keys()]
@@ -275,7 +275,7 @@ class ScoutPrecision(object):
 	#Returns the first scout key that doesn't have a current user
 	def findEmptySpotsForScout(self, scoutRotatorDict, available):
 		emptyScouts = filter(lambda k: scoutRotatorDict[k].get('currentUser') == None, scoutRotatorDict.keys())
-		emptyScouts += filter(lambda k: scoutRotatorDict[k].get('currentUser') == "", scoutRotatorDict.keys())
+		emptyScouts += filter(lambda k: scoutRotatorDict[k].get('currentUser') == ', scoutRotatorDict.keys())
 		emptyScouts += filter(lambda k: scoutRotatorDict[k].get('currentUser') not in available, scoutRotatorDict.keys())
 		return emptyScouts
 
