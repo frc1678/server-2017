@@ -8,7 +8,7 @@ import pdb
 
 #These are the keys that have lists of dicts
 #Lists may have different numbers of dicts, but the keys in the dicts should be the same
-listKeys = ["highShotTimesForBoilerTele", "highShotTimesForBoilerAuto", "lowShotTimesForBoilerAuto", "lowShotTimesForBoilerTele"]
+listKeys = ['highShotTimesForBoilerTele', 'highShotTimesForBoilerAuto', 'lowShotTimesForBoilerAuto', 'lowShotTimesForBoilerTele']
 
 #These ought to be the same across all tempTIMDs for the same TIMD
 constants = ['matchNumber', 'teamNumber']
@@ -23,7 +23,7 @@ PBC = firebaseCommunicator.PyrebaseCommunicator()
 firebase = PBC.firebase
 
 class DataChecker(multiprocessing.Process):
-	"""Combines data from tempTIMDs into TIMDs..."""
+	'''Combines data from tempTIMDs into TIMDs...'''
 	def __init__(self):
 		super(DataChecker, self).__init__()
 		self.consolidationGroups = {}
@@ -47,8 +47,6 @@ class DataChecker(multiprocessing.Process):
 	def attempt(self, vals):
 		if map(type, vals).count(bool) > 0:
 			return self.commonValue(map(bool, vals))
-		else:
-			return
 
 	#Gets the most common bool of a list of inputted bools
 	def joinBools(self, bools):
@@ -63,8 +61,6 @@ class DataChecker(multiprocessing.Process):
 				return mCV if values.count(mCV) > len(values) / 2 else np.mean(values)
 			except:
 				return
-		else:
-			return
 
 	#This is the common value function for lists of dicts
 	#It consolidates the data on shots from scouts, by comparing each shot to other scouts' info on the same shot
@@ -80,7 +76,7 @@ class DataChecker(multiprocessing.Process):
 					aScout += [{'numShots': 0, 'position': 'Other  ', 'time': 0}] * (largestListLength - len(aScout))
 			returnList = []
 			for num in range(largestListLength):
-				returnList += [{}]
+				returnList += [{}] #adds a list of dictionaries to the returnList for every character (the length) in the largest list
 				#Finds dicts that should be the same (e.g. each shot time dict for the same shot) within the tempTIMDs
 				#This means comparisons such as the first shot in teleop by a given robot, as recorded by multiple scouts
 				dicts = [scout[num] for scout in lis]
@@ -108,8 +104,6 @@ class DataChecker(multiprocessing.Process):
 					commonPosition = consolidationDict['position'][positionFrequencies.index(max(positionFrequencies))]
 					returnList[num].update({'position': commonPosition})
 			return returnList
-		else:
-			return
 
 	#Combines data from whole TIMDs
 	def joinValues(self, key):
@@ -136,8 +130,8 @@ class DataChecker(multiprocessing.Process):
 						listToConsolidate += [0]
 				returnDict.update({k: self.commonValue(listToConsolidate)})
 		return returnDict
-		#The line below is supposed to do the same thing as this 'joinvalues' function, and may or may not work, but is now out of date
-		#return {k : self.findCommonValuesForKeys(map(lambda tm: (tm.get(k) or []), self.consolidationGroups[key])) if k in listKeys else self.consolidationGroups[key][0][k] if k in constants else self.avgDict(map(lambda c: (c.get(k) or {}), self.consolidationGroups[key])) if k in standardDictKeys else self.commonValue(map(lambda tm: tm.get(k) or 0, self.consolidationGroups[key])) for k in self.getAllKeys(map(lambda v: v.keys(), self.consolidationGroups[key]))}
+	#The line below is supposed to do the same thing as this 'joinvalues' function, and may or may not work, but is now out of date
+	# return {k : self.findCommonValuesForKeys(map(lambda tm: (tm.get(k) or []), self.consolidationGroups[key])) if k in listKeys else self.consolidationGroups[key][0][k] if k in constants else self.avgDict(map(lambda c: (c.get(k) or {}), self.consolidationGroups[key])) if k in standardDictKeys else self.commonValue(map(lambda tm: tm.get(k) or 0, self.consolidationGroups[key])) for k in self.getAllKeys(map(lambda v: v.keys(), self.consolidationGroups[key]))}
 
 	#Flattens the list of lists of keys into a list of keys
 	def getAllKeys(self, keyArrays):
@@ -156,7 +150,8 @@ class DataChecker(multiprocessing.Process):
 	#Retrieves and consolidates tempTIMDs from firebase and combines their data, putting the result back onto firebase as TIMDs
 	def run(self):
 		while(True):
-			tempTIMDs = firebase.child("TempTeamInMatchDatas").get().val()
+			tempTIMDs = firebase.child('TempTeamInMatchDatas').get().val()
+			#Keeps on iterating over the tempTIMDs until none exists on firebase
 			if tempTIMDs == None:
 				time.sleep(5)
 				continue
@@ -164,12 +159,13 @@ class DataChecker(multiprocessing.Process):
 			index = 0
 			while index < len(self.consolidationGroups.keys()):
 				key = self.consolidationGroups.keys()[index]
+				#Updates a TIMD on firebase
 				try:
-					firebase.child("TeamInMatchDatas").child(key).update(self.joinValues(key))
+					firebase.child('TeamInMatchDatas').child(key).update(self.joinValues(key))
 					index += 1
 				except:
 					continue
-			print "consolidated"
+			print('consolidated')
 			time.sleep(10)
 
 DataChecker().start()

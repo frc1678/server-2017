@@ -26,64 +26,67 @@ class TeamInMatchData(object):
 	def __init__(self, **args):
 		super(TeamInMatchData, self).__init__()
 		self.calculatedData = None
-		# self.teamNumber = args['teamNumber']
-		# self.matchNumber = args['matchNumber']
-		# self.scoutName = args['scoutName']
-		# self.superNotes = random.randint(0,1)
-		# self.numHoppersOpenedTele = random.randint(0,1)
-		# self.numGearGroundIntakesTele = random.randint(0,1)
-		# self.numGearLoaderIntakesTele = random.randint(0,1)
-		# self.numGearsEjectedTele = random.randint(0,1)
-		# self.numGearsFumbledTele = random.randint(0,1)
-		# self.didReachBaselineAuto = random.randint(0,1)
-		# self.numHoppersOpenedAuto = random.randint(0,1)
-		# self.didLiftoff = bool(random.randint(0,1))
-		# self.didStartDisabled = bool(random.randint(0,1))
-		# self.didBecomeIncapacitated = bool(random.randint(0,1))
+		'''
+		 self.teamNumber = args['teamNumber']
+		 self.matchNumber = args['matchNumber']
+		 self.scoutName = args['scoutName']
+		 self.superNotes = random.randint(0,1)
+		 self.numHoppersOpenedTele = random.randint(0,1)
+		 self.numGearGroundIntakesTele = random.randint(0,1)
+		 self.numGearLoaderIntakesTele = random.randint(0,1)
+		 self.numGearsEjectedTele = random.randint(0,1)
+		 self.numGearsFumbledTele = random.randint(0,1)
+		 self.didReachBaselineAuto = random.randint(0,1)
+		 self.numHoppersOpenedAuto = random.randint(0,1)
+		 self.didLiftoff = bool(random.randint(0,1))
+		 self.didStartDisabled = bool(random.randint(0,1))
+		 self.didBecomeIncapacitated = bool(random.randint(0,1))
+		'''
 		self.rankSpeed = random.randint(0,4)
 		self.rankAgility = random.randint(0,4)
 		self.rankGearControl = random.randint(0,4)
 		self.rankBallControl = random.randint(0,4)
 		self.rankDefense = random.randint(0,4)
-		# self.gearsPlacedByLiftAuto = {
-		# 	'lift1' : random.randint(0,1),
-		# 	'lift2' : random.randint(0,1),
-		# 	'lift3' : random.randint(0,1)
-		# }
-		# self.gearsPlacedByLiftTele = {
-		# 	'lift1' : random.randint(0,1),
-		# 	'lift2' : random.randint(0,1),
-		# 	'lift3' : random.randint(0,1)
-		# }
-		# self.highShotTimesForBoilerAuto = [
-		# 	{
-		# 		'time' : random.randint(0,1),
-		# 		'numShots' : random.randint(0,1),
-		# 		'position' : 'Hopper'
-		# 	}
-		# ]
-		# self.lowShotTimesForBoilerAuto = [
-		# 	{
-		# 		'time' : random.randint(0,1),
-		# 		'numShots' : random.randint(0,1),
-		# 		'position' : 'Hopper'
-		# 	}
-		# ]
-		# self.highShotTimesForBoilerTele = [
-		# 	{
-		# 		'time' : random.randint(0,1),
-		# 		'numShots' : random.randint(0,1),
-		# 		'position' : 'Key'
-		# 	}
-		# ]
-		# self.lowShotTimesForBoilerTele = [
-		# 	{
-		# 		'time' : random.randint(0,1),
-		# 		'numShots' : random.randint(0,1),
-		# 		'position' : 'Key'
-		# 	}
-		# ]
-
+		'''
+		 self.gearsPlacedByLiftAuto = {
+		 	'lift1' : random.randint(0,1),
+		 	'lift2' : random.randint(0,1),
+		 	'lift3' : random.randint(0,1)
+		 }
+		 self.gearsPlacedByLiftTele = {
+		 	'lift1' : random.randint(0,1),
+		 	'lift2' : random.randint(0,1),
+		 	'lift3' : random.randint(0,1)
+		 }
+		 self.highShotTimesForBoilerAuto = [
+		 	{
+		 		'time' : random.randint(0,1),
+		 		'numShots' : random.randint(0,1),
+		 		'position' : 'Hopper'
+		 	}
+		 ]
+		 self.lowShotTimesForBoilerAuto = [
+		 	{
+		 		'time' : random.randint(0,1),
+		 		'numShots' : random.randint(0,1),
+		 		'position' : 'Hopper'
+		 	}
+		 ]
+		 self.highShotTimesForBoilerTele = [
+		 	{
+		 		'time' : random.randint(0,1),
+		 		'numShots' : random.randint(0,1),
+		 		'position' : 'Key'
+		 	}
+		 ]
+		 self.lowShotTimesForBoilerTele = [
+		 	{
+		 		'time' : random.randint(0,1),
+		 		'numShots' : random.randint(0,1),
+		 		'position' : 'Key'
+		 	}
+		 ]
+		'''
 
 class Match(object):
 	"""An FRC Match Object"""
@@ -93,17 +96,17 @@ class Match(object):
 		self.calculatedData = None
 		self.redAllianceTeamNumbers = args['redAllianceTeamNumbers']
 		self.blueAllianceTeamNumbers = args['blueAllianceTeamNumbers']
-		self.numRotorsSpinningRedAuto = random.randint(0,1)
-		self.numRotorsSpinningRedTele = random.randint(0,1)
-		self.numRotorsSpinningBlueAuto = random.randint(0,1)
-		self.numRotorsSpinningBlueTele = random.randint(0,1)
-		self.blueDidStartAllRotors = random.randint(0,1)
-		self.redDidReachFortyKilopascals = random.randint(0,1)
-		self.blueDidReachFortyKilopascals = random.randint(0,1)
-		self.redScore = random.randint(0,1)
-		self.blueScore = random.randint(0,1)
-		self.foulPointsGainedRed = random.randint(0,1)
-		self.foulPointsGainedBlue = random.randint(0,1)
+		self.numRotorsSpinningRedAuto = random.randint(0, 1)
+		self.numRotorsSpinningRedTele = random.randint(0, 1)
+		self.numRotorsSpinningBlueAuto = random.randint(0, 1)
+		self.numRotorsSpinningBlueTele = random.randint(0, 1)
+		self.blueDidStartAllRotors = random.randint(0, 1)
+		self.redDidReachFortyKilopascals = random.randint(0, 1)
+		self.blueDidReachFortyKilopascals = random.randint(0, 1)
+		self.redScore = random.randint(0, 1)
+		self.blueScore = random.randint(0, 1)
+		self.foulPointsGainedRed = random.randint(0, 1)
+		self.foulPointsGainedBlue = random.randint(0, 1)
 
 class CalculatedMatchData(object):
 	"""docstring for CalculatedMatchData"""
@@ -141,6 +144,6 @@ while(True):
 	for t in match['redAllianceTeamNumbers'] + match['blueAllianceTeamNumbers']:
 		pyre.firebase.child('TeamInMatchDatas').child(str(t) + "Q" + str(match['number'])).update(TeamInMatchData().__dict__)
 		time.sleep(4)
-	print "done with match"
+	print("done with match")
 	cm += 1
 	time.sleep(20)

@@ -177,12 +177,12 @@ class ScoutPrecision(object):
 			'''Divides values for scouts by number of TIMDs the scout has participated in
 			If a scout is in more matches, they will likely have more disagreements, but the same number per match if they are equally accurate
 			If someone has no tempTIMDs (but still an SPR key somehow), their SPR score is set to -1 (changed in the next section)'''
-			self.sprs = {k:((v/float(self.getTotalTIMDsForScoutName(k, temp))) or -1) for (k,v) in self.sprs.items()}
+			self.sprs = {k:((v / float(self.getTotalTIMDsForScoutName(k, temp))) or -1) for (k, v) in self.sprs.items()}
 			#Makes an average number of disagreements per scout per category
 			avgScout = {}
 			for scout in self.disagreementBreakdown.keys():
 				for key in self.disagreementBreakdown[scout].keys():
-					self.disagreementBreakdown[scout].update({key: float(self.disagreementBreakdown[scout][key])/float(self.getTotalTIMDsForScoutName(scout, temp))})
+					self.disagreementBreakdown[scout].update({key: float(self.disagreementBreakdown[scout][key]) / float(self.getTotalTIMDsForScoutName(scout, temp))})
 			for scout in self.disagreementBreakdown.keys():
 				for key in self.disagreementBreakdown[scout].keys():
 					avgScout.update({key: (avgScout.get(key) or []) + [self.disagreementBreakdown[scout][key]]})
@@ -213,7 +213,7 @@ class ScoutPrecision(object):
 	def getScoutFrequencies(self, available):
 		#Sorts scouts by spr score
 		#It is reversed so the scouts with lower spr are later, causing them to be repeated more
-		rankedScouts = sorted(self.sprs.keys(), key=lambda k: self.sprs[k])
+		rankedScouts = sorted(self.sprs.keys(), key = lambda k: self.sprs[k])
 		#Lower sprs, so higher number list index scouts are repeated more frequently, but less if there are more scouts
 		func = lambda s: [s] * (rankedScouts.index(s) + 1) * ((100/(len(rankedScouts) + 1)) + 1)
 		return utils.extendList(map(func, available))
@@ -267,7 +267,7 @@ class ScoutPrecision(object):
 		index = random.randint(0, len(freqs) - 1)
 		scout = freqs[index]
 		freqs = filter(lambda name: name != scout, freqs)
-		return (scout, freqs)
+		return(scout, freqs)
 
 	def getScoutNumFromName(self, name, scoutsInRotation):
 		return filter(lambda k: scoutsInRotation[k].get('mostRecentUser') == name, scoutsInRotation.keys())[0]

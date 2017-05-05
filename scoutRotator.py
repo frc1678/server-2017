@@ -21,28 +21,26 @@ def resetAvailability():
 
 #Creates firebase objects for 18 scouts
 def resetScouts():
-	scouts = {'scout' + str(num) : {'currentUser': '', 'scoutStatus': ''} for num in range(1,19)}
+	scouts = {'scout' + str(num) : {'currentUser': '', 'scoutStatus': ''} for num in range(1, 19)}
 	fb.child('scouts').set(scouts)
 
 #Main function for scout assignment
 def doSPRsAndAssignments(data):
 	#Wait until the availability has been confirmed to be correct
-	print "New number"
+	print("New number")
 	while(True):
 		try:
 			availabilityUpdated = fb.child("availabilityUpdated").get().val()
 		except:
 			availabilityUpdated = 0
-		if availabilityUpdated:
-			break
+		if availabilityUpdated: break
 		time.sleep(2)
 	try:
 		fb.child("availabilityUpdated").set(0)
-		if data.get('data') == None:
-			return
+		if data.get('data') == None: return
 		#Gets scouting data from firebase
 		newMatchNumber = str(fb.child('currentMatchNum').get().val())
-		print "Setting scouts for match " + str(newMatchNumber)
+		print("Setting scouts for match " + str(newMatchNumber))
 		scoutDict = fb.child("scouts").get().val()
 		#Gets the teams we need to scout for in the upcoming match
 		blueTeams = fb.child("Matches").child(newMatchNumber).get().val()['blueAllianceTeamNumbers']
@@ -53,11 +51,11 @@ def doSPRsAndAssignments(data):
 		SPR.calculateScoutPrecisionScores(fb.child("TempTeamInMatchDatas").get().val(), available)
 		SPR.sprZScores(PBC)
 		newAssignments = SPR.assignScoutsToRobots(available, redTeams + blueTeams, fb.child("scouts").get().val())
-		print newAssignments
+		print(newAssignments)
 		#and it is put on firebase
 		fb.child("scouts").update(newAssignments)
 	except:
-		print traceback.format_exc()
+		print(traceback.format_exc())
 		# CrashReporter.reportServerCrash(traceback.format_exc())
 
 #Use this to reset scouts and availability before assigning tablets
