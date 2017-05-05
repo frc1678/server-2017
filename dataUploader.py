@@ -9,6 +9,7 @@ from firebaseCommunicator import PyrebaseCommunicator as pbc
 class CalculatedTeamInMatchData(object):
 	'''docstring for CalculatedTeamInMatchData'''
 	def __init__(self, **args):
+		#initializer for random CalculatedTIMDs
 		super(CalculatedTeamInMatchData, self).__init__()
 		self.numRPs = random.randint(0, 4)
 		self.liftoffAbility = random.randint(0, 50)
@@ -24,6 +25,7 @@ class CalculatedTeamInMatchData(object):
 class TeamInMatchData(object):
 	'''An FRC TeamInMatchData Object'''
 	def __init__(self, **args):
+		#initializer for random TIMDs
 		super(TeamInMatchData, self).__init__()
 		self.calculatedData = None
 		'''
@@ -91,6 +93,7 @@ class TeamInMatchData(object):
 class Match(object):
 	'''An FRC Match Object'''
 	def __init__(self, **args):
+		#initializer for random matches
 		super(Match, self).__init__()
 		self.number = args['number']
 		self.calculatedData = None
@@ -111,6 +114,7 @@ class Match(object):
 class CalculatedMatchData(object):
 	'''docstring for CalculatedMatchData'''
 	def __init__(self, **args):
+		#initializer for random match data
 		super(CalculatedMatchData, self).__init__()
 		self.predictedRedScore = random.randint(0, 50)
 		self.predictedBlueScore = random.randint(0, 50)
@@ -132,7 +136,6 @@ class CalculatedMatchData(object):
 (superSecret, url) = ('93Ybz7MldpSj6HQHW1zb4ddcGGmpCMlNlOBoI9V3', 'https://scouting-2017-5f51c.firebaseio.com/')
 
 pyre = pbc()
-
 auth = fb.FirebaseAuthentication(superSecret, '1678programming@gmail.com', True, True)
 testScouts = 'a b c d e f g h i j k l m n o p q r'.split()
 firebase = fb.FirebaseApplication(url, auth)
