@@ -4,6 +4,7 @@ import DataModel
 import utils
 import teamCalcDataKeysToLambda as calcs
 
+#Process for calculating data from individual TIMD
 class FirstTIMDProcess(multiprocessing.Process):
     def __init__(self, timd, calculatedTIMDsList, calculator):
         super(FirstTIMDProcess, self).__init__()
@@ -11,7 +12,7 @@ class FirstTIMDProcess(multiprocessing.Process):
         self.calculatedTIMDsList = calculatedTIMDsList
         self.calculator = calculator
         warnings.simplefilter('error', RuntimeWarning)
-
+    #Does calculations if complete, otherwise doesn't, and adds TIMD to list of used TIMDs
     def run(self):
         if not self.calculator.su.timdIsCompleted(self.timd):
             print('TIMD is not complete for team ' + str(self.timd.teamNumber) + ' in match ' + str(self.timd.matchNumber))

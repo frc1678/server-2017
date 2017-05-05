@@ -6,6 +6,7 @@ import csv
 from DataModel import *
 import Math
 
+#Puts scout z-scores in csv file
 def CSVExportScoutZScores(zscores):
 	with open('./scoutRankExport.csv', 'w') as f:
 		writer = csv.DictWriter(f, fieldnames = ['name', 'spr', 'Z-Score'])
@@ -13,6 +14,7 @@ def CSVExportScoutZScores(zscores):
 		for k, v in zscores.items():
 			writer.writerow({'name' : k, 'spr' : zscores[k][1], 'Z-Score' : zscores[k][0]})
 
+#Puts some scouted and calculated data in csv file
 def CSVExport(comp, name, keys = []):
 	calculator = Math.Calculator(comp)
 	excluded = ['calculatedData', 'name', 'imageKeys', 'pitAllImageURLs', 'pitSelectedImageName']
@@ -29,6 +31,7 @@ def CSVExport(comp, name, keys = []):
 			keys = sorted(defaultKeys, key = lambda k: (k != 'number', k.lower()))
 			writer.writerow({k : tDict[k] for k in keys})
 
+#This function makes no sense
 def readOPRData():
 	teamsDict = {}
 	wantedKeys = ['team Number', 'auto Fuel High','auto Scored Gears', 'teleop Scored Gears', 'teleop Takeoff Points']
@@ -40,6 +43,7 @@ def readOPRData():
 			teamsDict[r['team Number']] = {k : r[k] for k in wantedKeys}
 	return teamsDict
 
+#Gets data from tba and firebase to make csv file
 def predict():
 	wantedKeys = ['team Number', 'auto Fuel High','auto Scored Gears', 'teleop Scored Gears', 'teleop Takeoff Points']
 	teams = TBACommunicator().makeEventTeamsRequest()
@@ -57,6 +61,7 @@ def predict():
 
 # predict()
 
+#These functions are exports for specific competitions
 def CSVExportMini(comp, name):
 	miniKeys = []
 	CSVExport(comp, 'MINI', keys = miniKeys)

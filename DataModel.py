@@ -1,6 +1,8 @@
 import firebaseCommunicator
 import utils
 
+#Makes classes with keys that correspond to data points collected or calculated by team
+
 class Competition(object):
 	'''docstring for Competition'''
 	def __init__(self, PBC):
@@ -11,16 +13,17 @@ class Competition(object):
 		self.TIMDs = []
 		self.PBC = PBC
 		self.currentMatchNum = 0
-
 	def updateTeamsAndMatchesFromFirebase(self):
 		self.teams = utils.makeTeamsFromDicts(self.PBC.getPythonObjectForFirebaseDataAtLocation('Teams'))
 		self.matches = utils.makeMatchesFromDicts(self.PBC.getPythonObjectForFirebaseDataAtLocation('Matches'))
+		self.teams = utils.makeTeamsFromDicts(self.PBC.getPythonObjectForFirebaseDataAtLocation("Teams"))
+		self.matches = utils.makeMatchesFromDicts(self.PBC.getPythonObjectForFirebaseDataAtLocation("Matches"))
 
 	def updateTIMDsFromFirebase(self):
 		self.TIMDs = utils.makeTIMDsFromDicts(self.PBC.getPythonObjectForFirebaseDataAtLocation('TeamInMatchDatas'))
 
 class CalculatedTeamData(object):
-	'c'
+	'''c'''
 	def __init__(self, **args):
 		super(CalculatedTeamData, self).__init__()
 		self.firstPickAbility = None
@@ -103,7 +106,7 @@ class CalculatedTeamData(object):
 		self.__dict__.update(args) #DON'T DELETE THIS FOR ANY CLASS
 
 class Team(object):
-	'FRC Team Object'
+	'''FRC Team Object'''
 	def __init__(self, **args):
 		super(Team, self).__init__()
 		self.name = None
@@ -119,7 +122,7 @@ class Team(object):
 		self.__dict__.update(args)
 
 class CalculatedMatchData(object):
-	'docstring for CalculatedMatchData'
+	''docstring for CalculatedMatchData'''
 	def __init__(self, **args):
 		super(CalculatedMatchData, self).__init__()
 		self.predictedRedScore = None
@@ -140,7 +143,7 @@ class CalculatedMatchData(object):
 
 
 class Match(object):
-	'An FRC Match Object'
+	'''An FRC Match Object'''
 	def __init__(self, **args):
 		super(Match, self).__init__()
 		self.number = None
@@ -161,7 +164,7 @@ class Match(object):
 		self.__dict__.update(args)
 
 class TeamInMatchData(object):
-	'An FRC TeamInMatchData Object'
+	'''An FRC TeamInMatchData Object'''
 	def __init__(self, **args):
 		super(TeamInMatchData, self).__init__()
 		self.calculatedData = CalculatedTeamInMatchData()

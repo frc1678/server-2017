@@ -27,8 +27,9 @@ def moveVids(folder, dest):
 		return
 	files = os.listdir(folder)
 	destFiles = os.listdir(dest)[1:]
+	#Sort files by creation time
 	files = sorted(files, key = lambda k: os.stat(folder + k).st_ctime)
-	#Start from the first match number not in destination and move each file
+	#Start from the first match not in destination and move each subsequent file
 	if destFiles:
 		matchToStartFrom = len(destFiles)
 		files = files[matchToStartFrom:]
@@ -52,6 +53,7 @@ def skip(folder, dest, number):
 
 #Deletes the most recent match for a replay
 def replayLastMatch(folder):
+	#Start folder and recorded match needed for replay
 	if not folder:
 		print('ERROR: Folders not set')
 		return
@@ -59,6 +61,7 @@ def replayLastMatch(folder):
 		print('ERROR: No match to replay')
 		return
 	files = os.listdir(folder)
+	#Delete the most recent video, to make room for the replay
 	files = sorted(files, key = lambda k: os.stat(folder + k).st_ctime)
 	fileToDelete = files[-1]
 	print(folder + fileToDelete)

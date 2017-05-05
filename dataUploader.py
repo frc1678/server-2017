@@ -4,6 +4,8 @@ import time
 import DataModel
 from firebaseCommunicator import PyrebaseCommunicator as pbc
 
+#Makes a lot of random data and puts on firebase for testing other things
+
 class CalculatedTeamInMatchData(object):
 	'''docstring for CalculatedTeamInMatchData'''
 	def __init__(self, **args):
