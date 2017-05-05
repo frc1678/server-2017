@@ -13,16 +13,11 @@ def sendNoti(number, c, token):
         red = fb.child('Matches').child(number).child('redAllianceTeamNumbers').get().val()
         blue = fb.child('Matches').child(number).child('blueAllianceTeamNumbers').get().val()
         message = msg1 + msg2
-        message += '| Red: ' + ''.join(map(lambda t: str(t), red))                
-        message += '| Blue: ' + ''.join(map(lambda t: str(t), blue))                
+        message += '| Red: ' + ''.join(map(lambda t: str(t), red))
+        message += '| Blue: ' + ''.join(map(lambda t: str(t), blue))
+        #notifies how many matches away the inputted match is
         payload = Payload(alert = message, sound = 'default', badge = 1)
         apns.gateway_server.send_notification(token, payload)
-
-def sendNotiForUsers(data):
-        if data.get('data') == None: return
-        currentMatchNum = int(data.get('data'))
-        users = fb.child('AppTokens').get().val() or {}
-        [sendNotiForUser(u, currentMatchNum) for u in users.values()]
 
 def sendNotiForUser(usr, currentMatchNum):
         token = usr['Token']
@@ -30,7 +25,16 @@ def sendNotiForUser(usr, currentMatchNum):
         print(starred)
         observedMs = filter(lambda n: (n - currentMatchNum) <= 2 and (n - currentMatchNum) >= 0, starred)
         print(observedMs)
+        #notifies user for every starred match- based on sendNoti
         [sendNoti(n, currentMatchNum, token) for n in observedMs]
 
+def sendNotiForUsers(data):
+        if data.get('data') == None: return
+        currentMatchNum = int(data.get('data'))
+        users = fb.child('AppTokens').get().val() or {}
+        #notifies multiple users- based on sendNotiForUser
+        [sendNotiForUser(u, currentMatchNum) for u in users.values()]
+
 def startNotiStream():
+        #starts the stream
         fb.child('currentMatchNum').stream(sendNotiForUsers)
