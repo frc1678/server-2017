@@ -12,12 +12,13 @@ class FirstTIMDProcess(multiprocessing.Process):
         self.calculatedTIMDsList = calculatedTIMDsList
         self.calculator = calculator
         warnings.simplefilter('error', RuntimeWarning)
+    
     #Does calculations if complete, otherwise doesn't, and adds TIMD to list of used TIMDs
     def run(self):
         if not self.calculator.su.timdIsCompleted(self.timd):
-            print('TIMD is not complete for team ' + str(self.timd.teamNumber) + ' in match ' + str(self.timd.matchNumber))
+            print('TIMD is not complete for team', str(self.timd.teamNumber), 'in match', str(self.timd.matchNumber))
             self.calculatedTIMDsList.append(self.timd)
         else:
-            print('Beginning first calculations for team ' + str(self.timd.teamNumber) + ' in match ' + str(self.timd.matchNumber))
+            print('Beginning first calculations for team', str(self.timd.teamNumber), 'in match', str(self.timd.matchNumber))
             calcs.TIMDCalcDict(self.timd, self.calculator)
             self.calculatedTIMDsList.append(self.timd)

@@ -107,7 +107,7 @@ while(True):
 		try:
 			skip(videoFolder, destFolder, int(cmd[1]))
 		except:
-			print traceback.format_exc()
+			print(traceback.format_exc())
 	elif cmd[0] == 'help':
 		print('setdest [FILEPATH] - Reset the file path to which you want videos to be moved')
 		print('setvid [FILEPATH] - Reset the file path to which unnamed videos will be stored')

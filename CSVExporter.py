@@ -50,13 +50,13 @@ def predict():
 	teamNums = [team['team_number'] for team in teams]
 	teamsDict = readOPRData()
 	teamsDict = {k : v for k, v in teamsDict.items() if int(k) in teamNums}
-	print teamsDict
+	print(teamsDict)
 	# comp.updateTeamsAndMatchesFromFirebase()
 	with open('./newton2017data.csv', 'w') as f:
 		writer = csv.DictWriter(f, fieldnames = wantedKeys)
 		writer.writeheader()
 		for key, value in teamsDict.items():
-			print key
+			print(key)
 			writer.writerow({k : teamsDict[key][k] for k in wantedKeys})
 
 # predict()

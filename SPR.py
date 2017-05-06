@@ -56,8 +56,8 @@ class ScoutPrecision(object):
 				consolidationGroups[key].append(v)
 			else:
 				consolidationGroups[key] = [v]
-		print len(consolidationGroups.items())
-		print len({k : v for k,v in consolidationGroups.items() if len(v) > 1}.items())
+		print(len(consolidationGroups.items()))
+		print(len({k : v for k,v in consolidationGroups.items() if len(v) > 1}.items()))
 		return {k : v for k,v in consolidationGroups.items() if len(v) > 1}
 
 	#Note: the next 3 functions compare data in tempTIMDs to find scout accuracy
@@ -140,9 +140,11 @@ class ScoutPrecision(object):
 					#Position is a string, so can't be compared, due to the averaging later
 					#Without averaging, one person could be declared correct for no reason
 					if key != 'position':
-						values = []
-						for aDict in dicts:
-							values += [aDict[key]]
+						values = list(filter(lambda aDict: [aDict[key]], dicts))
+						#same thing as
+						# values = []
+						# for aDict in dicts:
+						#	 values += [aDict[key]]
 						valueFrequencies = map(values.count, values)
 						commonValue = values[valueFrequencies.index(max(valueFrequencies))]
 						if values.count(commonValue) <= len(values) / 2:
@@ -158,11 +160,13 @@ class ScoutPrecision(object):
 			#Combines all tempTIMDs for the same match
 			g = self.consolidateTIMDs(temp)
 			#Makes a list of scouts with data
-			priorScouts = []
-			for timd in g.values():
-				for ind in timd:
-					priorScouts += [ind['scoutName']]
-			priorScouts = list(set(priorScouts))
+			priorScouts = list(filter(lambda timd: filter(lambda ind: ind['scoutName'], timd), g.values()))
+			#same thing as
+			# priorScouts = []
+			# for timd in g.values():
+			# 	 for ind in timd:
+			#		 priorScouts += [ind['scoutName']]
+			priorScouts = set(priorScouts) #updates priorScouts so that one scoutName cannot appear more than once
 			for scout in priorScouts:
 				self.disagreementBreakdown.update({scout: {}})
 			#Removes any data from previous calculations from sprs
@@ -275,7 +279,7 @@ class ScoutPrecision(object):
 	#Returns the first scout key that doesn't have a current user
 	def findEmptySpotsForScout(self, scoutRotatorDict, available):
 		emptyScouts = filter(lambda k: scoutRotatorDict[k].get('currentUser') == None, scoutRotatorDict.keys())
-		emptyScouts += filter(lambda k: scoutRotatorDict[k].get('currentUser') == ', scoutRotatorDict.keys())
+		emptyScouts += filter(lambda k: scoutRotatorDict[k].get('currentUser') == '', scoutRotatorDict.keys())
 		emptyScouts += filter(lambda k: scoutRotatorDict[k].get('currentUser') not in available, scoutRotatorDict.keys())
 		return emptyScouts
 

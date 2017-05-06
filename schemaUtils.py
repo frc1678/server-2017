@@ -13,8 +13,7 @@ class SchemaUtils(object):
         try:
             return [team for team in self.comp.teams if team.number == teamNumber][0]
         except:
-            print(str(teamNumber) +  "doesn't exist.")
-            return
+            print(str(teamNumber), 'does not exist.')
 
     def getMatchesForTeam(self, team):
         return [m for m in self.comp.matches if team.number in m.redAllianceTeamNumbers + m.blueAllianceTeamNumbers]
@@ -36,7 +35,7 @@ class SchemaUtils(object):
 
     #Match utility functions
     def getMatchForNumber(self, matchNumber):
-        if not len([match for match in self.comp.matches if match.number == matchNumber]): print('Match ' + str(matchNumber) + "doesn't exist.")
+        if not len([match for match in self.comp.matches if match.number == matchNumber]): print('Match', str(matchNumber), 'does not exist.')
         return [match for match in self.comp.matches if match.number == matchNumber][0]
 
     def teamsInMatch(self, match):
@@ -69,7 +68,7 @@ class SchemaUtils(object):
 
     def getTeamAllianceIsRedInMatch(self, team, match):
         if team.number == -1 or team.number in match.redAllianceTeamNumbers: return True
-        if team.number in match.blueAllianceTeamNumbers: return False
+        elif team.number in match.blueAllianceTeamNumbers: return False
         else:
             raise ValueError(str(team.number) not in 'Q' + str(match.number))
 

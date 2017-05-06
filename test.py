@@ -5,23 +5,24 @@ from Math import Calculator
 
 
 pbc = PyrebaseCommunicator()
- 
-# timds = pbc.firebase.child('TeamInMatchDatas').get().val()
-# for key, timd in timds.items():
-# 	superNotesVal = timd.get('superNotes')
-	# if superNotesVal:
-	# 	supNotes = superNotesVal.get('finalNotes') if superNotesVal.get('finalNotes') else superNotesVal.get('firstNotes')
-	# 	timd['superNotes'] = supNotes
-	# print type(timd.get('superNotes'))
-	# print key
-	# if type(timd.get('superNotes')) == dict:
-		# print 'DICT'
-		# pbc.firebase.child('TeamInMatchDatas').child(key).child('superNotes').set(timd.get('superNotes').get('firstNotes'))	
+'''
+ timds = pbc.firebase.child('TeamInMatchDatas').get().val()
+ for key, timd in timds.items():
+ 	 superNotesVal = timd.get('superNotes')
+	 if superNotesVal:
+	 	 supNotes = superNotesVal.get('finalNotes') if superNotesVal.get('finalNotes') else superNotesVal.get('firstNotes')
+	 	 timd['superNotes'] = supNotes
+	 print(type(timd.get('superNotes')))
+	 print(key)
+	 if type(timd.get('superNotes')) == dict:
+		 print('DICT')
+		 pbc.firebase.child('TeamInMatchDatas').child(key).child('superNotes').set(timd.get('superNotes').get('firstNotes'))	
 
-# matches = pbc.firebase.child('Matches').get().val()
-# for m in matches[1:]:
-# 	if m.get('redAllianceTeamNumbers') == None:
-# 		print m
+ matches = pbc.firebase.child('Matches').get().val()
+ for m in matches[1:]:
+ 	 if m.get('redAllianceTeamNumbers') == None:
+		 print(m)
+'''
 teams = [
 	{
 		'pitSelectedImageName': '6060_2017-04-06 17:48:16.6290 -0700',
@@ -627,5 +628,5 @@ teams = [
 ]
 
 dic = {n['number'] : n for n in teams}
-print dic
+print(dic)
 pbc.firebase.child('Teams').set(dic)

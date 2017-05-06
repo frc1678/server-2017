@@ -4,6 +4,7 @@ from schemaUtils import SchemaUtils
 import DataModel 
 import firebaseCommunicator as f
 import Math
+
 #Taking data from TBA, setting up the schemaUtils class, and defining variables to use later on
 comp = DataModel.Competition(f.PyrebaseCommunicator())
 calculator = Math.Calculator(comp)
@@ -15,7 +16,7 @@ listOfTeams = TBA.makeEventTeamsRequest()
 
 #Creates the base array to be added to later
 matrix = np.zeros((len(listOfTeams), len(listOfTeams)), dtype = np.int)
-print listOfTeams
+print(listOfTeams)
 
 #Enumerates each team from the list of teams into teamsToListPlacement
 for listPlacement in range(0, (len(listOfTeams) - 1)): teamsToListPlacement[listOfTeams[listPlacement]] = listPlacement
@@ -31,4 +32,4 @@ for match in listOfMatches:
 				matrix[teamsToListPlacement.get(team)][teamsToListPlacement.get(allianceTeam)] += 1
 
 #Solves the error of same teams adding to the matrix twice
-for num in range(0, len(listOfTeams) - 1): matrix[num][num] -= 9
+map(lambda num: matrix[num][num] -= 9, range(len(listOfTeams - 1)))
