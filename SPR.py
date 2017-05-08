@@ -9,7 +9,7 @@ import pprint
 
 #Scout Performance Analysis
 class ScoutPrecision(object):
-	'Scores and ranks scouts and assigns them to robots'
+	'''Scores and ranks scouts and assigns them to robots'''
 	def __init__(self):
 		super(ScoutPrecision, self).__init__()
 		self.sprs = {}
@@ -57,8 +57,8 @@ class ScoutPrecision(object):
 			else:
 				consolidationGroups[key] = [v]
 		print(len(consolidationGroups.items()))
-		print(len({k : v for k,v in consolidationGroups.items() if len(v) > 1}.items()))
-		return {k : v for k,v in consolidationGroups.items() if len(v) > 1}
+		print(len({k : v for k, v in consolidationGroups.items() if len(v) > 1}.items()))
+		return {k : v for k, v in consolidationGroups.items() if len(v) > 1}
 
 	#Note: the next 3 functions compare data in tempTIMDs to find scout accuracy
 	#The comparison to determine correct values is done in dataChecker
@@ -101,6 +101,9 @@ class ScoutPrecision(object):
 				values = []
 				for aDict in dicts:
 					values += [aDict[key]]
+				#same thing as
+				# values = list(filter(lambda aDict: [aDict[key]], dicts))
+				
 				#See descriptions in findOddScoutForDataPoint for this section (comparing data on each key)
 				valueFrequencies = map(values.count, values)
 				commonValue = values[valueFrequencies.index(max(valueFrequencies))]
@@ -140,11 +143,12 @@ class ScoutPrecision(object):
 					#Position is a string, so can't be compared, due to the averaging later
 					#Without averaging, one person could be declared correct for no reason
 					if key != 'position':
-						values = list(filter(lambda aDict: [aDict[key]], dicts))
+						values = []
+						for aDict in dicts:
+							values += [aDict[key]]
 						#same thing as
-						# values = []
-						# for aDict in dicts:
-						#	 values += [aDict[key]]
+						# values = list(filter(lambda aDict: [aDict[key]], dicts))
+						
 						valueFrequencies = map(values.count, values)
 						commonValue = values[valueFrequencies.index(max(valueFrequencies))]
 						if values.count(commonValue) <= len(values) / 2:
@@ -160,12 +164,13 @@ class ScoutPrecision(object):
 			#Combines all tempTIMDs for the same match
 			g = self.consolidateTIMDs(temp)
 			#Makes a list of scouts with data
-			priorScouts = list(filter(lambda timd: filter(lambda ind: ind['scoutName'], timd), g.values()))
+			priorScouts = []
+			for timd in g.values():
+			 	for ind in timd:
+					priorScouts += [ind['scoutName']]
 			#same thing as
-			# priorScouts = []
-			# for timd in g.values():
-			# 	 for ind in timd:
-			#		 priorScouts += [ind['scoutName']]
+			# priorScouts = list(filter(lambda timd: filter(lambda ind: ind['scoutName'], timd), g.values()))
+			
 			priorScouts = set(priorScouts) #updates priorScouts so that one scoutName cannot appear more than once
 			for scout in priorScouts:
 				self.disagreementBreakdown.update({scout: {}})
@@ -234,6 +239,9 @@ class ScoutPrecision(object):
 			scoutsPGrp = groupFunc(singleTripleCombos)
 		else:
 			scoutsPGrp = groupFunc(grpCombosList)
+		#same?
+		# scoutsPGrp = groupFunc(singleTripleCombos) if len(singleTripleCombos) > 0 else groupFunc(grpCombosList)
+		
 		#Since scout groups are reversed, smaller groups come first, so are picked first, so tend to have better scouts
 		scoutsPGrp.reverse()
 		#Used to make better scouts more likely to be picked
@@ -264,14 +272,14 @@ class ScoutPrecision(object):
 			newMember = availableForGroup[random.randint(0, len(availableForGroup) - 1)]
 			availableForGroup = filter(lambda m: m != newMember, availableForGroup)
 			toReturn += [newMember]
-		return (toReturn, availableForGroup)
+		return toReturn, availableForGroup
 
 	#Picks a random member of a group, and also returns a list of mambers not picked
 	def getRandomIndividuals(self, freqs):
 		index = random.randint(0, len(freqs) - 1)
 		scout = freqs[index]
 		freqs = filter(lambda name: name != scout, freqs)
-		return(scout, freqs)
+		return scout, freqs
 
 	def getScoutNumFromName(self, name, scoutsInRotation):
 		return filter(lambda k: scoutsInRotation[k].get('mostRecentUser') == name, scoutsInRotation.keys())[0]
