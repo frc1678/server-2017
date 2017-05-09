@@ -167,6 +167,27 @@ class Match(object):
 		self.foulPointsGainedBlue = None
 		self.__dict__.update(args)
 
+class CalculatedTeamInMatchData(object):
+	'''docstring for CalculatedTeamInMatchData'''
+	def __init__(self, **args):
+		#initializes actual CalculatedTIMDs
+		super(CalculatedTeamInMatchData, self).__init__()
+		self.numRPs = None
+		self.liftoffAbility = None
+		self.numHighShotsTele = None
+		self.numHighShotsAuto = None
+		self.numLowShotsTele = None
+		self.numLowShotsAuto = None
+		self.numGearsPlacedTele = None
+		self.numGearsPlacedAuto = None
+		self.wasDisfunctional = None
+		self.avgKeyShotTime = None
+		self.avgHopperShotTime = None
+		self.drivingAbility = None
+		self.gearAbility = None
+		self.disfunctionalPercentage = None
+		self.__dict__.update(args)
+
 class TeamInMatchData(object):
 	'''An FRC TeamInMatchData Object'''
 	def __init__(self, **args):
@@ -230,25 +251,4 @@ class TeamInMatchData(object):
 				'position' : None
 			}
 		]
-		self.__dict__.update(args)
-
-class CalculatedTeamInMatchData(object):
-	'docstring for CalculatedTeamInMatchData'
-	def __init__(self, **args):
-		#initializes actual CalculatedTIMDs
-		super(CalculatedTeamInMatchData, self).__init__()
-		self.numRPs = None
-		self.liftoffAbility = None
-		self.numHighShotsTele = None
-		self.numHighShotsAuto = None
-		self.numLowShotsTele = None
-		self.numLowShotsAuto = None
-		self.numGearsPlacedTele = None
-		self.numGearsPlacedAuto = None
-		self.wasDisfunctional = None
-		self.avgKeyShotTime = None
-		self.avgHopperShotTime = None
-		self.drivingAbility = None
-		self.gearAbility = None
-		self.disfunctionalPercentage = None
 		self.__dict__.update(args)
