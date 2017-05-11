@@ -101,7 +101,7 @@ class ScoutPrecision(object):
 				values = []
 				for aDict in dicts:
 					values += [aDict[key]]
-				#same thing as
+				#Same thing as
 				# values = list(filter(lambda aDict: [aDict[key]], dicts))
 				
 				#See descriptions in findOddScoutForDataPoint for this section (comparing data on each key)
@@ -146,7 +146,7 @@ class ScoutPrecision(object):
 						values = []
 						for aDict in dicts:
 							values += [aDict[key]]
-						#same thing as
+						#Same thing as
 						# values = list(filter(lambda aDict: [aDict[key]], dicts))
 						
 						valueFrequencies = map(values.count, values)
@@ -168,7 +168,7 @@ class ScoutPrecision(object):
 			for timd in g.values():
 			 	for ind in timd:
 					priorScouts += [ind['scoutName']]
-			#same thing as
+			#Same thing as
 			# priorScouts = list(filter(lambda timd: filter(lambda ind: ind['scoutName'], timd), g.values()))
 			
 			priorScouts = set(priorScouts) #updates priorScouts so that one scoutName cannot appear more than once
@@ -224,7 +224,7 @@ class ScoutPrecision(object):
 		#It is reversed so the scouts with lower spr are later, causing them to be repeated more
 		rankedScouts = sorted(self.sprs.keys(), key = lambda k: self.sprs[k])
 		#Lower sprs, so higher number list index scouts are repeated more frequently, but less if there are more scouts
-		func = lambda s: [s] * (rankedScouts.index(s) + 1) * ((100/(len(rankedScouts) + 1)) + 1)
+		func = lambda s: [s] * (rankedScouts.index(s) + 1) * ((100 / (len(rankedScouts) + 1)) + 1)
 		return utils.extendList(map(func, available))
 
 	def organizeScouts(self, available, currentTeams, scoutSpots):
@@ -239,7 +239,7 @@ class ScoutPrecision(object):
 			scoutsPGrp = groupFunc(singleTripleCombos)
 		else:
 			scoutsPGrp = groupFunc(grpCombosList)
-		#same?
+		#Same thing?
 		# scoutsPGrp = groupFunc(singleTripleCombos) if len(singleTripleCombos) > 0 else groupFunc(grpCombosList)
 		
 		#Since scout groups are reversed, smaller groups come first, so are picked first, so tend to have better scouts

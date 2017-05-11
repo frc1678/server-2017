@@ -16,6 +16,7 @@ from FirstTIMDProcess import FirstTIMDProcess
 from schemaUtils import SchemaUtils
 from CrashReporter import reportOverestimate
 import csv
+
 class Calculator(object):
     '''Does math with scouted data'''
     def __init__(self, competition):
