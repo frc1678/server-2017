@@ -31,11 +31,11 @@ def CSVExport(comp, name, keys = []):
 			keys = sorted(defaultKeys, key = lambda k: (k != 'number', k.lower()))
 			writer.writerow({k : tDict[k] for k in keys})
 
-#This function makes no sense
-def readOPRData():
+#Creates a dictionary of teams and their keys are the data associated with them
+def readOPRData(dataFilePath):
 	teamsDict = {}
 	wantedKeys = ['team Number', 'auto Fuel High','auto Scored Gears', 'teleop Scored Gears', 'teleop Takeoff Points']
-	with open('./ChampionshipHouston-Table 1.csv') as csvfile:
+	with open(dataFilePath) as csvfile:
 		reader = csv.DictReader(csvfile)
 		first = True
 		keys = []
@@ -44,39 +44,23 @@ def readOPRData():
 	return teamsDict
 
 #Gets data from tba and firebase to make csv file
-def predict():
+def CSVExportTeamOPRDataForComp(dataFilePath, dataOutputFilePath):
 	wantedKeys = ['team Number', 'auto Fuel High','auto Scored Gears', 'teleop Scored Gears', 'teleop Takeoff Points']
 	teams = TBACommunicator().makeEventTeamsRequest()
 	teamNums = [team['team_number'] for team in teams]
-	teamsDict = readOPRData()
+	teamsDict = readOPRData(dataFilePath)
 	teamsDict = {k : v for k, v in teamsDict.items() if int(k) in teamNums}
 	print(teamsDict)
 	# comp.updateTeamsAndMatchesFromFirebase()
-	with open('./newton2017data.csv', 'w') as f:
+	with open(dataOutputFilePath, 'w') as f:
 		writer = csv.DictWriter(f, fieldnames = wantedKeys)
 		writer.writeheader()
 		for key, value in teamsDict.items():
 			print(key)
 			writer.writerow({k : teamsDict[key][k] for k in wantedKeys})
 
-# predict()
+# CSVExportTeamOPRDataForComp('./ChampionshipHouston-Table 1.csv','./newton2017data.csv)
 
-#These functions are exports for specific competitions
-def CSVExportMini(comp, name):
-	miniKeys = []
-	CSVExport(comp, 'MINI', keys = miniKeys)
-
-def CSVExportAll(comp):
-	CSVExport(comp, 'ALL', keys = Team().__dict__.keys() + Team().calculatedData.__dict__.keys())
-
-def CSVExportSAC(comp):
-	keys = []
-	CSVExport(comp, 'SAC', keys = keys)
-
-def CSVExportCVR(comp):
-	keys = []
-	CSVExport(comp, 'CVR', keys = keys)
-
-def CSVExportCMP(comp):
-	keys = []
-	CSVExport(comp, 'CHAMPS', keys = Team().__dict__.keys() + Team().calculatedData.__dict__.keys())
+#General export function for all of your basic data export needs
+def CSVExportGeneral(comp, name):
+	CSVExport(comp, name, keys = Team().__dict__.keys() + Team().calculatedData.__dict__.keys())
