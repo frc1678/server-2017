@@ -7,6 +7,7 @@ apns = APNs(use_sandbox = True, cert_file = './apn-cert.pem')
 PBC = firebaseCommunicator.PyrebaseCommunicator()
 fb = PBC.firebase
 
+#Notifies how many matches away the inputted match is
 def sendNoti(number, c, token):
         msg1 = 'Match ' + str(number) + ' is'
         msg2 = str(abs(number - c)) + ' matches away!' if (abs(number - c)) != 1 else ' up next!' if (abs(number - c)) == 0 else 'match away!' 
@@ -15,26 +16,26 @@ def sendNoti(number, c, token):
         message = msg1 + msg2
         message += '| Red: ' + ''.join(map(lambda t: str(t), red))
         message += '| Blue: ' + ''.join(map(lambda t: str(t), blue))
-        #notifies how many matches away the inputted match is
         payload = Payload(alert = message, sound = 'default', badge = 1)
         apns.gateway_server.send_notification(token, payload)
 
+#Notifies user for every starred match- based on sendNoti
 def sendNotiForUser(usr, currentMatchNum):
         token = usr['Token']
         starred = usr.get('StarredMatches').values() if 'StarredMatches' in usr.keys() else []
         print(starred)
         observedMs = filter(lambda n: (n - currentMatchNum) <= 2 and (n - currentMatchNum) >= 0, starred)
         print(observedMs)
-        #notifies user for every starred match- based on sendNoti
         [sendNoti(n, currentMatchNum, token) for n in observedMs]
 
+#Notifies multiple users- based on sendNotiForUser
 def sendNotiForUsers(data):
         if data.get('data') == None: return
         currentMatchNum = int(data.get('data'))
         users = fb.child('AppTokens').get().val() or {}
-        #notifies multiple users- based on sendNotiForUser
         [sendNotiForUser(u, currentMatchNum) for u in users.values()]
 
+#Starts the stream
 def startNotiStream():
-        #starts the stream
         fb.child('currentMatchNum').stream(sendNotiForUsers)
+
