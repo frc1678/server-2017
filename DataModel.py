@@ -88,10 +88,9 @@ class CalculatedTeamData(object):
 		self.allRotorsAbility = None
 		self.lfmDisabledPercentage = None
 		self.lfmIncapacitatedPercentage = None
-	  	self.lmfAvgGearsPlacedAuto = None
+	  	self.lfmAvgGearsPlacedAuto = None
 	  	self.lfmAvgHighShotsAuto = None
 	  	self.lfmAvgLowShotsAuto = None
-	  	self.lfmBaselineReachedPercentage = None
 	  	self.lfmAvgGearsPlacedTele = None
 	  	self.lfmAvgGearLoaderIntakesTele = None
 	  	self.lfmAvgHighShotsTele = None
