@@ -242,12 +242,21 @@ class Calculator(object):
         return autoRotors * 60 + teleRotors * 40
 
     #OVERALL DATA
+
+    #Standard Deviation: Variation of a set of data values, or lowercase sigma (σ)
+    #σ = sqrt((Σ * (|x - x¯|^2)) / n)       (x¯ = mean or x-bar)
+    #Z-score: Number of standard deviations something is from the mean
+    #Z-Score = (X - μ) / σ       (μ = population parameter of mean)
+    #R score: Method of testing college students academically in Quebec which we use for team and robot abilities
+    #R score = (Z-score + ISG + C) * D       (ISG = Indicator of Group Strength, C & D are constants)
+
     def liftoffAbilityForTIMD(self, timd):
         team = self.su.getTeamForNumber(timd.teamNumber)
         index = sorted(self.su.getTIMDsForTeam(team), key = lambda t: t.matchNumber).index(timd)
         return 50 * timd.didLiftoff 
 
-    def rValuesForAverageFunctionForDict(self, averageFunction, d): #Gets Z-score for each super data point for all teams
+    #Gets Z-score for each super data point for all teams
+    def rValuesForAverageFunctionForDict(self, averageFunction, d):
         values = map(averageFunction, self.cachedComp.teamsWithMatchesCompleted)
         if not values:
             return

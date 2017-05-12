@@ -239,8 +239,6 @@ class ScoutPrecision(object):
 			scoutsPGrp = groupFunc(singleTripleCombos)
 		else:
 			scoutsPGrp = groupFunc(grpCombosList)
-		#Same thing?
-		# scoutsPGrp = groupFunc(singleTripleCombos) if len(singleTripleCombos) > 0 else groupFunc(grpCombosList)
 		
 		#Since scout groups are reversed, smaller groups come first, so are picked first, so tend to have better scouts
 		scoutsPGrp.reverse()

@@ -40,7 +40,7 @@ def doSPRsAndAssignments(data):
 		if data.get('data') == None: return
 		#Gets scouting data from firebase
 		newMatchNumber = str(fb.child('currentMatchNum').get().val())
-		print('Setting scouts for match ' + str(newMatchNumber))
+		print('Setting scouts for match', str(newMatchNumber))
 		scoutDict = fb.child('scouts').get().val()
 		#Gets the teams we need to scout for in the upcoming match
 		blueTeams = fb.child('Matches').child(newMatchNumber).get().val()['blueAllianceTeamNumbers']
@@ -52,7 +52,7 @@ def doSPRsAndAssignments(data):
 		SPR.sprZScores(PBC)
 		newAssignments = SPR.assignScoutsToRobots(available, redTeams + blueTeams, fb.child('scouts').get().val())
 		print(newAssignments)
-		#and it is put on firebase
+		#And it is put on firebase
 		fb.child('scouts').update(newAssignments)
 	except:
 		print(traceback.format_exc())
@@ -65,15 +65,15 @@ def tabletHandoutStream():
 	resetAvailability()
 	fb.child('currentMatchNum').stream(doSPRsAndAssignments)
 
+def startAtNewMatch(newMatchNum):
+	if fb.child('currentMatchNum').get().val() > oldMatchNum:
+		doSPRsAndAssignments(newMatchNum)
+
 #Use this for running the server again (e.g. after a crash) to avoid assigning scouts to new robots or tablets
 def alreadyAssignedStream():
 	global oldMatchNum
 	oldMatchNum = fb.child('currentMatchNum').get().val()
 	fb.child('currentMatchNum').stream(startAtNewMatch)
-
-def startAtNewMatch(newMatchNum):
-	if fb.child('currentMatchNum').get().val() > oldMatchNum:
-		doSPRsAndAssignments(newMatchNum)
 
 #Use this if you are restarting the server and need to reassign scouts but scouts already have tablets
 #Also useful for unexpected changes in availability
@@ -100,8 +100,10 @@ def findScoutDisagreements():
 def sortScoutDisagreements():
 	findScoutDisagreements()
 	totalDisagreements = {}
-	for scout in SPR.disagreementBreakdown:
-		totalDisagreements.update({scout: sum(SPR.disagreementBreakdown[scout].values())})
+	map(lambda scout: totalDisagreements.update({scout: sum(SPR.disagreementBreakdown[scout].values())}))
+	#Same thing as
+	# for scout in SPR.disagreementBreakdown:
+	#	 totalDisagreements.update({scout: sum(SPR.disagreementBreakdown[scout].values())})
 	pprint.pprint(totalDisagreements)
 	pprint.pprint(sorted(totalDisagreements.items(), key = lambda scout: scout[1]))
 	pprint.pprint(sorted(SPR.sprs.items(), key = lambda scout: scout[1]))
