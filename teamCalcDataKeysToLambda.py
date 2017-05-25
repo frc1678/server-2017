@@ -3,6 +3,9 @@ import DataModel
 import pdb
 import traceback
 #3527 5869
+def mapFuncForCalcAvgsForTeam(team, func, **calcDatas):		
+	[team.calculatedData.__dict__.update({k : func(dataFunc)}) for k, dataFunc in calcDatas.items()]
+
 def firstCalculationDict(team, calc):
     cd = team.calculatedData
     mapFuncForCalcAvgsForTeam(team, lambda f: calc.getAverageForDataFunctionForTeam(team, f), 
@@ -97,7 +100,7 @@ def TIMDCalcDict(timd, calc):
         timd.calculatedData = DataModel.CalculatedTeamInMatchData()
     team = calc.su.getTeamForNumber(timd.teamNumber)
     match = calc.su.getMatchForNumber(timd.matchNumber)
-    c = timd.calculatedData
+	c = timd.calculatedData
     c.numGearsPlacedAuto = calc.getTotalValueForValueDict(timd.gearsPlacedByLiftAuto)
     c.numGearsPlacedTele = calc.getTotalValueForValueDict(timd.gearsPlacedByLiftTele)
     c.avgKeyShotTime = calc.getAvgKeyShotTimeForTIMD(timd, 'Key')
@@ -156,6 +159,3 @@ def matchDict(match, calc):
     match.calculatedData.redWinChance = calc.winChanceForMatchForAllianceIsRed(match, True)
     match.calculatedData.predictedBlueRPs = calc.predictedRPsForAllianceForMatch(False, match)
     match.calculatedData.predictedRedRPs = calc.predictedRPsForAllianceForMatch(True, match)
-
-def mapFuncForCalcAvgsForTeam(team, func, **calcDatas):		
-	[team.calculatedData.__dict__.update({k : func(dataFunc)}) for k, dataFunc in calcDatas.items()]
