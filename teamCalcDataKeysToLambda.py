@@ -100,7 +100,7 @@ def TIMDCalcDict(timd, calc):
         timd.calculatedData = DataModel.CalculatedTeamInMatchData()
     team = calc.su.getTeamForNumber(timd.teamNumber)
     match = calc.su.getMatchForNumber(timd.matchNumber)
-	c = timd.calculatedData
+    c = timd.calculatedData
     c.numGearsPlacedAuto = calc.getTotalValueForValueDict(timd.gearsPlacedByLiftAuto)
     c.numGearsPlacedTele = calc.getTotalValueForValueDict(timd.gearsPlacedByLiftTele)
     c.avgKeyShotTime = calc.getAvgKeyShotTimeForTIMD(timd, 'Key')
