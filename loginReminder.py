@@ -2,7 +2,7 @@ import time
 from slackclient import SlackClient
 
 def loginRemind(*usernames):
-	sc = SlackClient('xoxp-49302180423-49316952386-140114605008-32492dbe60a2bb10d0f3d5cd92194ccc')
+	sc = SlackClient('slackKey')
 	loginReminderChannels = list(filter(lambda u: u, usernames))
 
 	while(True):
