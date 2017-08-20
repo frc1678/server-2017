@@ -132,11 +132,11 @@ class CalculatedMatchData(object):
 		self.allRotorsTurningChanceBlue = random.random()
 		self.__dict__.update(args)
 
-# (superSecret, url) = ('qVIARBnAD93iykeZSGG8mWOwGegminXUUGF2q0ee', 'https://1678-scouting-2016.firebaseio.com/')
-(superSecret, url) = ('93Ybz7MldpSj6HQHW1zb4ddcGGmpCMlNlOBoI9V3', 'https://scouting-2017-5f51c.firebaseio.com/')
+(superSecret, url) = ('authenticationCode', 'https://1678-scouting-2016.firebaseio.com/')
+
 
 pyre = pbc()
-auth = fb.FirebaseAuthentication(superSecret, '1678programming@gmail.com', True, True)
+auth = fb.FirebaseAuthentication(superSecret, 'ourEmail', True, True)
 testScouts = 'a b c d e f g h i j k l m n o p q r'.split()
 firebase = fb.FirebaseApplication(url, auth)
 cm = 1
