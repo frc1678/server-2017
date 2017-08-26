@@ -1,3 +1,4 @@
+#Last Updated: 8/26/17
 from apns import APNs, Frame, Payload
 import pyrebase as pyb
 import pdb
@@ -38,4 +39,3 @@ def sendNotiForUsers(data):
 #Starts the stream
 def startNotiStream():
         fb.child('currentMatchNum').stream(sendNotiForUsers)
-

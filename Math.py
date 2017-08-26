@@ -1,3 +1,4 @@
+#Last Updated: 8/26/17
 import math
 import time
 from operator import attrgetter
@@ -248,9 +249,9 @@ class Calculator(object):
     #Z Score: Number of standard deviations something is from the mean
     #http://stattrek.com/statistics/dictionary.aspx?definition=z%20score
     #Z Score = (X - μ) / σ       (μ = population parameter of mean)
-    #R Score: Method of testing college students academically in Quebec which we use for team and robot abilities
-    #http://www.goforaplus.com/en/understanding-r-score/
-    #R Score = (Z Score + ISG + C) * D       (ISG = Indicator of Group Strength, C & D are constants)
+        #R Score: Method of testing college students academically in Quebec which we use for team and robot abilities
+        #http://www.goforaplus.com/en/understanding-r-score/
+        #R Score = (Z Score + ISG + C) * D       (ISG = Indicator of Group Strength, C & D are constants)
 
     def liftoffAbilityForTIMD(self, timd):
         team = self.su.getTeamForNumber(timd.teamNumber)
@@ -349,7 +350,7 @@ class Calculator(object):
         functionalPercentage = (1 - team.calculatedData.disfunctionalPercentage)
         return functionalPercentage * (driving + liftoffAbility + autoBonus + teleBonus)
 
-    #PROBABILITIES
+    #PROBABILITIES - Needs to be accurate
     def winChanceForMatchForAllianceIsRed(self, match, allianceIsRed):
         alliance = self.su.getAllianceForMatch(match, allianceIsRed)
         predictedScore  = self.predictedScoreForMatchForAlliance(match, allianceIsRed)

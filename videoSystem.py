@@ -1,3 +1,4 @@
+#Last Updated: 8/26/17
 import shutil
 import sys
 import os
@@ -83,7 +84,8 @@ try:
 except:
 	videoFolder = ''
 	destFolder = ''
-print('Video system 2017. Type help for details.')
+
+print("Video system 2017. Type 'help' for a list of commands.")
 
 #Loop looks for input and runs commands
 while(True):
@@ -113,4 +115,4 @@ while(True):
 		print('setvid [FILEPATH] - Reset the file path to which unnamed videos will be stored')
 		print('replay - Delete last recording (RUN THIS BEFORE RECORDING ANYTHING ELSE)')
 		print('done - Run the video mover and organize all video files by match (run at the end of the day)')
-		print('skip - Skip specific videos from download')
+		print('skip - Skip specific videos and folders from download')

@@ -1,3 +1,4 @@
+#Last Updated: 8/26/17
 import smtplib
 import threading
 from slackclient import SlackClient
@@ -13,7 +14,7 @@ def reportServerCrash(message):
 		'chat.postMessage',
 		channel = '@' + u,
 		text = message
-	), ['bimbunky', 'tesseract', 'peterc'])
+	), [''])
 
 #Sends slack message to listed user
 def reportOverestimate(message):
@@ -22,4 +23,4 @@ def reportOverestimate(message):
 		'chat.postMessage',
 		channel = '@' + u,
 		text = message
-	), ['bimbunky'])
+	), [''])

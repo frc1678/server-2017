@@ -1,3 +1,4 @@
+#Last Updated: 8/26/17
 import pyrebase
 import DataModel
 import SPR
@@ -11,7 +12,7 @@ import pprint
 PBC = firebaseCommunicator.PyrebaseCommunicator()
 fb = PBC.firebase
 
-scouts = 'aidan alex amandaOrKatie ayush carter evan gemma jack janet jesse jon justin jishnu kyle mingyo mx rachel vera sage sam wesley zoe'.split()
+scouts = 'scouts'.split()
 SPR = SPR.ScoutPrecision()
 
 #Creates list of availability values in firebase for each scout

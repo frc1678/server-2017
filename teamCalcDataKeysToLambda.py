@@ -1,8 +1,9 @@
+#Last Updated: 8/26/17
 import utils
 import DataModel
 import pdb
 import traceback
-#3527 5869
+
 def mapFuncForCalcAvgsForTeam(team, func, **calcDatas):		
 	[team.calculatedData.__dict__.update({k : func(dataFunc)}) for k, dataFunc in calcDatas.items()]
 

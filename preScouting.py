@@ -1,3 +1,4 @@
+#Last Updated: 8/26/17
 from firebaseCommunicator import PyrebaseCommunicator
 import numpy as np
 import csv
