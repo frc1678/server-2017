@@ -89,21 +89,21 @@ class CalculatedTeamData(object):
 		self.allRotorsAbility = None
 		self.lfmDisabledPercentage = None
 		self.lfmIncapacitatedPercentage = None
-	  	self.lfmAvgGearsPlacedAuto = None
-	  	self.lfmAvgHighShotsAuto = None
-	  	self.lfmAvgLowShotsAuto = None
-	  	self.lfmAvgGearsPlacedTele = None
-	  	self.lfmAvgGearLoaderIntakesTele = None
-	  	self.lfmAvgHighShotsTele = None
-	  	self.lfmAvgLowShotsTele = None
-	  	self.lfmAvgKeyShotTime = None
-	  	self.lfmAvgLiftoffTime = None
-	  	self.lfmLiftoffPercentage = None
-	  	self.lfmAvgAgility = None
-	  	self.lfmAvgSpeed = None
-	  	self.lfmAvgBallControl = None
-	  	self.lfmAvgGearControl = None
-	  	self.lfmAvgDefense = None
+		self.lfmAvgGearsPlacedAuto = None
+		self.lfmAvgHighShotsAuto = None
+		self.lfmAvgLowShotsAuto = None
+		self.lfmAvgGearsPlacedTele = None
+		self.lfmAvgGearLoaderIntakesTele = None
+		self.lfmAvgHighShotsTele = None
+		self.lfmAvgLowShotsTele = None
+		self.lfmAvgKeyShotTime = None
+		self.lfmAvgLiftoffTime = None
+		self.lfmLiftoffPercentage = None
+		self.lfmAvgAgility = None
+		self.lfmAvgSpeed = None
+		self.lfmAvgBallControl = None
+		self.lfmAvgGearControl = None
+		self.lfmAvgDefense = None
 		self.__dict__.update(args) #DON'T DELETE THIS FOR ANY CLASS
 
 class Team(object):
