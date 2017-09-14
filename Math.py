@@ -156,7 +156,7 @@ class Calculator(object):
         return sum(map(lambda v: (v.get('numShots') or 0), shotKey)) * weightage if weightage != None and weightage > 0 else 0
 
     def getShotPointsForMatchForAlliance(self, timds, allianceIsRed, match):
-        baselinePts = 5 * sum(map(lambda t: t.didReachBaselineAuto, timds))
+        baselinePts = 5 * sum(map(lambda t: True, timds))
         liftoffPts = 50 * sum(map(lambda t: t.didLiftoff, timds))
         fields = self.su.getFieldsForAllianceForMatch(allianceIsRed, match)
         gearPts = fields[2] * 60 + fields[3] * 40
@@ -244,11 +244,11 @@ class Calculator(object):
 
     #OVERALL DATA
 
-    #Standard Deviation: Variation of a set of data values, or lowercase sigma (σ)
-    #σ = sqrt((Σ * (|x - x̄|^2)) / n)       (x̄ = mean or x-bar, ^2 = squared or **2 in python)
+    #Standard Deviation: Variation of a set of data values, or lowercase sigma
+    #Lowercase sigma = sqrt((Sum * (|x - mean|^2)) / n)       (^2 = squared or **2 in python)
     #Z Score: Number of standard deviations something is from the mean
     #http://stattrek.com/statistics/dictionary.aspx?definition=z%20score
-    #Z Score = (X - μ) / σ       (μ = population parameter of mean)
+    #Z Score = (X - Population Parameter of the mean) / Lowercase sigma
         #R Score: Method of testing college students academically in Quebec which we use for team and robot abilities
         #http://www.goforaplus.com/en/understanding-r-score/
         #R Score = (Z Score + ISG + C) * D       (ISG = Indicator of Group Strength, C & D are constants)
