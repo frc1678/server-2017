@@ -28,6 +28,9 @@ APNServer.startNotiStream()
 
 #Scout assignment streams:
 
+#NOTE: availability child on firebase should have each scout with an availability of 1 or 0
+	#If that isn't the case, use scoutRotator.tabletHandoutStream() for resetAvailability()
+
 #Use this if tablets need assigned to scouts by the server, and will then be given to the correct scouts
 #This means at the beginning of a competition day
 scoutRotator.tabletHandoutStream()
@@ -37,6 +40,8 @@ scoutRotator.tabletHandoutStream()
 
 #Use this if you are restarting the server and need to reassign scouts but scouts already have tablets
 #Also useful for unexpected changes in availability
+#NOTE: Only use if availability child on Firebase has each scout with a value of 1 or 0
+
 # scoutRotator.simpleStream()
 
 def checkForMissingData():
