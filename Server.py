@@ -1,5 +1,5 @@
 #By Bryton Moeller (2015-2016)
-#Last Updated: 8/26/17
+#Last Updated: 9/22/17
 import sys
 import traceback
 import DataModel
@@ -28,7 +28,7 @@ APNServer.startNotiStream()
 
 #Scout assignment streams:
 
-#NOTE: availability child on firebase should have each scout with an availability of 1 or 0
+#Note: availability child on firebase should have each scout with an availability of 1 or 0
 	#If that isn't the case, use scoutRotator.tabletHandoutStream() for resetAvailability()
 
 #Use this if tablets need assigned to scouts by the server, and will then be given to the correct scouts
@@ -40,7 +40,7 @@ scoutRotator.tabletHandoutStream()
 
 #Use this if you are restarting the server and need to reassign scouts but scouts already have tablets
 #Also useful for unexpected changes in availability
-#NOTE: Only use if availability child on Firebase has each scout with a value of 1 or 0
+#Note: Only use if availability child on Firebase has each scout with a value of 1 or 0
 
 # scoutRotator.simpleStream()
 
