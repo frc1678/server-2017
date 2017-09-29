@@ -1,4 +1,4 @@
-#Last Updated: 8/26/17
+#Last Updated: 9/28/17
 import pyrebase
 import DataModel
 import SPR
@@ -22,8 +22,8 @@ def resetAvailability():
 
 #Creates firebase objects for 18 scouts
 def resetScouts():
-	scouts = {'scout' + str(num) : {'currentUser': '', 'scoutStatus': ''} for num in range(1, 19)}
-	fb.child('scouts').set(scouts)
+	scoutsList = {'scout' + str(num) : {'currentUser': '', 'scoutStatus': ''} for num in range(1, 19)}
+	fb.child('scouts').set(scoutsList)
 
 #Main function for scout assignment
 def doSPRsAndAssignments(data):
@@ -48,12 +48,10 @@ def doSPRsAndAssignments(data):
 		redTeams = fb.child('Matches').child(newMatchNumber).get().val()['redAllianceTeamNumbers']
 		#Finds and assigns available scouts
 		available = [k for (k, v) in fb.child('availability').get().val().items() if v == 1]
-		print(available)
-		print("I got here")
 		#Grades scouts and assigns them to robots
 		SPR.calculateScoutPrecisionScores(fb.child('TempTeamInMatchDatas').get().val(), available)
 		SPR.sprZScores(PBC)
-		newAssignments = SPR.assignScoutsToRobots(available, redTeams + blueTeams, fb.child('scouts').get().val())
+		newAssignments = SPR.assignScoutsToRobots(available, redTeams + blueTeams, scoutDict)
 		print(newAssignments)
 		#And it is put on firebase
 		fb.child('scouts').update(newAssignments)
