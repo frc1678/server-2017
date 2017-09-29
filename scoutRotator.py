@@ -43,7 +43,7 @@ def doSPRsAndAssignments(data):
 		newMatchNumber = str(fb.child('currentMatchNum').get().val())
 		print('Setting scouts for match', str(newMatchNumber))
 		scoutDict = fb.child('scouts').get().val()
-		#Gets the teams we need to scout for in the upcoming match
+		#Gets the teams we need to scout for the upcoming match
 		blueTeams = fb.child('Matches').child(newMatchNumber).get().val()['blueAllianceTeamNumbers']
 		redTeams = fb.child('Matches').child(newMatchNumber).get().val()['redAllianceTeamNumbers']
 		#Finds and assigns available scouts
