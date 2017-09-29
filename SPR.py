@@ -18,15 +18,15 @@ class ScoutPrecision(object):
 		#These keys are the names of sections of the tempTIMDs on which scouts will be graded
 		#The value is the weight, since some data points are more important than others
 		self.gradingKeys = {
-			'numGearGroundIntakesTele': 1.0,
-			'numGearLoaderIntakesTele': 1.0,
+			'numGroundGearIntakesTele': 1.0,
+			'numHumanGearIntakesTele': 1.0,
 			'numGearsEjectedTele': 1.0,
 			'numGearsFumbledTele': 1.0,
 			'didLiftoff': 3.0,
 			'didBecomeIncapacitated': 2.0,
 			'didStartDisabled': 2.0,
-			'numHoppersOpenedAuto': 1.5,
-			'numHoppersOpenedTele': 1.5
+			'numHoppersUsedAuto': 1.5,
+			'numHoppersUsedTele': 1.5
 		}
 		self.gradingDicts = {
 			'gearsPlacedByLiftTele': 1.2,
@@ -71,6 +71,7 @@ class ScoutPrecision(object):
 		scouts = filter(lambda v: v, map(lambda k: k.get('scoutName'), tempTIMDs))
 		#Finds values (at an inputted key) in tempTIMDs
 		values = filter(lambda v: v != None, map(lambda t: t[key] if t.get('scoutName') else None, tempTIMDs))
+		print(values)
 		#Finds the most common value in the list of values, or the average if none of them is the majority
 		valueFrequencies = map(values.count, values)
 		if values:

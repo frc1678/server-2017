@@ -12,7 +12,7 @@ import pprint
 PBC = firebaseCommunicator.PyrebaseCommunicator()
 fb = PBC.firebase
 
-scouts = 'scouts'.split()
+scouts = 'a b c d e f g h i j k l m n o p q r'.split()
 SPR = SPR.ScoutPrecision()
 
 #Creates list of availability values in firebase for each scout
@@ -48,6 +48,8 @@ def doSPRsAndAssignments(data):
 		redTeams = fb.child('Matches').child(newMatchNumber).get().val()['redAllianceTeamNumbers']
 		#Finds and assigns available scouts
 		available = [k for (k, v) in fb.child('availability').get().val().items() if v == 1]
+		print(available)
+		print("I got here")
 		#Grades scouts and assigns them to robots
 		SPR.calculateScoutPrecisionScores(fb.child('TempTeamInMatchDatas').get().val(), available)
 		SPR.sprZScores(PBC)
@@ -108,3 +110,4 @@ def sortScoutDisagreements():
 	pprint.pprint(totalDisagreements)
 	pprint.pprint(sorted(totalDisagreements.items(), key = lambda scout: scout[1]))
 	pprint.pprint(sorted(SPR.sprs.items(), key = lambda scout: scout[1]))
+
