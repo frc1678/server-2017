@@ -193,7 +193,10 @@ class ScoutPrecision(object):
 			avgScout = {}
 			for scout in self.disagreementBreakdown.keys():
 				for key in self.disagreementBreakdown[scout].keys():
-					self.disagreementBreakdown[scout].update({key: float(self.disagreementBreakdown[scout][key]) / float(self.getTotalTIMDsForScoutName(scout, temp))})
+					try:
+						self.disagreementBreakdown[scout].update({key: float(self.disagreementBreakdown[scout][key]) / float(self.getTotalTIMDsForScoutName(scout, temp))})
+					except:
+						pass
 			for scout in self.disagreementBreakdown.keys():
 				for key in self.disagreementBreakdown[scout].keys():
 					avgScout.update({key: (avgScout.get(key) or []) + [self.disagreementBreakdown[scout][key]]})
@@ -235,10 +238,16 @@ class ScoutPrecision(object):
 		#Creates list of groupings that the scouts could be in, with as many scouts as are available and have spaces, for 6 robots with a max group size of 3
 		grpCombos = utils.sum_to_n(min(len(available), scoutSpots), 6, 3)
 		grpCombosList = [combo for combo in grpCombos]
-		#Picks a random grouping of scouts that, if possible, doesn't have 2 scouts to a robot
-		singleTripleCombos = filter(lambda l: 2 not in l, grpCombosList)
-		if len(singleTripleCombos) > 0:
-			scoutsPGrp = groupFunc(singleTripleCombos)
+		#Picks a random grouping of scouts that, if possible, has an even number of scouts per team
+		NoOneCombos = filter(lambda l: 1 not in l, grpCombosList)
+		NoTwoCombos = filter(lambda l: 2 not in l, NoOneCombos)
+		print(grpCombosList)
+		print(NoOneCombos)
+		print(NoTwoCombos)
+		if len(NoTwoCombos) > 0:
+			scoutsPGrp = groupFunc(NoTwoCombos)
+		elif len(NoOneCombos) > 0:
+			scoutsPGrp = groupFunc(NoOneCombos)
 		else:
 			scoutsPGrp = groupFunc(grpCombosList)
 		
