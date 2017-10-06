@@ -1,5 +1,5 @@
 #By Bryton Moeller (2015-2016)
-#Last Updated: 9/22/17
+#Last Updated: 10/5/17
 import sys
 import traceback
 import DataModel
@@ -25,6 +25,8 @@ shouldSlack = True
 consolidator = dataChecker.DataChecker()
 consolidator.start()
 APNServer.startNotiStream()
+fb = PBC.firebase
+fb.child('availabilityUpdated').set(0)
 
 #Scout assignment streams:
 
