@@ -1,4 +1,4 @@
-#Last Updated: 9/28/17
+#Last Updated: 10/5/17
 import utils
 import CacheModel as cache
 import Math
@@ -324,13 +324,15 @@ class ScoutPrecision(object):
 
 	#Finds a spot and a robot for an inputted available scout
 	def assignScoutToRobot(self, availableScout, teams, scoutRotatorDict, available, names):
+		namesToNumbers = [' ','Jon','Jim','Bob','Bill','Joe','Bran','Ken','Mat','Dog','End','Mrs','Hi','Death','The','Adhoc','Pro','001','Ergo']
 		#If the available scout already has a spot on firebase, all that needs to be updated is the robot they scout for
 		if availableScout in names:
 			scoutNum = self.getScoutNumFromName(availableScout, scoutRotatorDict)
 			scoutRotatorDict[scoutNum].update({'team': teams[availableScout], 'currentUser': availableScout, 'scoutStatus': 'requested'})
 		#If they don't, it needs to find an empty scout spot in firebase and put the available scout there (if there is an empty spot, which there always should be)
-		elif self.findEmptySpotsForScout(scoutRotatorDict, available):
-			newSpace = self.findEmptySpotsForScout(scoutRotatorDict, available)[0]
+		else:
+			newSpace = 'scout' + str(namesToNumbers.index(availableScout))
+			print(newSpace)
 			scoutRotatorDict[newSpace].update({'team': teams[availableScout], 'currentUser': availableScout, 'scoutStatus': 'requested'})
 		return scoutRotatorDict
 
