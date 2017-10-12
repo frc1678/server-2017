@@ -1,4 +1,4 @@
-#Last Updated: 10/5/17
+#Last Updated: 10/11/17
 import CSVExporter
 import DataModel
 import firebaseCommunicator
@@ -17,7 +17,7 @@ while(True):
 	if cmd[0] == 'exp':
 		try:
 			if cmd[1] == 'all':
-				CSVExporter.CSVExportAll(comp)
+				CSVExporter.CSVExportGeneral(comp, "ALL")
 				comp.PBC.sendExport('EXPORT-ALL.csv')
 			elif cmd[1] == 'min':
 				CSVExportMini(comp)
