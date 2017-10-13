@@ -1,4 +1,4 @@
-#Last Updated: 8/26/17
+#Last Updated: 10/12/17
 import pyrebase
 import numpy as np
 import utils
@@ -164,9 +164,10 @@ class DataChecker(multiprocessing.Process):
 				try:
 					firebase.child('TeamInMatchDatas').child(key).update(self.joinValues(key))
 					index += 1
+					print("TIMD: " + str(key) + " consolidated")
 				except:
 					continue
-			print('consolidated')
+			print('Consolidation Complete')
 			time.sleep(10)
 
 DataChecker().start()
