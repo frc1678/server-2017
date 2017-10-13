@@ -1,4 +1,4 @@
-#Last Updated: 8/26/17
+#Last Updated: 10/12/17
 import firebaseCommunicator
 import utils
 
@@ -198,12 +198,12 @@ class TeamInMatchData(object):
 		self.matchNumber = None
 		self.scoutName = None
 		self.superNotes = None
-		self.numHoppersOpenedTele = None
-		self.numGearGroundIntakesTele = None
-		self.numGearLoaderIntakesTele = None
+		self.numHoppersUsedTele = None
+		self.numGroundGearIntakesTele = None
+		self.numHumanGearIntakesTele = None
 		self.numGearsEjectedTele = None
 		self.numGearsFumbledTele = None
-		self.numHoppersOpenedAuto = None
+		self.numHoppersUsedAuto = None
 		self.didLiftoff = None
 		self.liftoffTime = None
 		self.didStartDisabled = None
