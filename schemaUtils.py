@@ -1,4 +1,4 @@
-#Last Updated: 8/26/17
+#Last Updated: 10/12/17
 import DataModel
 import pdb
 
@@ -102,7 +102,7 @@ class SchemaUtils(object):
         return calculatedData.liftoffAbility != None
 
     def timdIsCompleted(self, timd):
-        return timd.rankSpeed != None and timd.numGearGroundIntakesTele != None
+        return timd.rankSpeed != None and timd.numGroundGearIntakesTele != None
 
     def matchHasValuesSet(self, match):
         return match.redScore != None and match.blueScore != None
