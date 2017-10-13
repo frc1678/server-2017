@@ -1,4 +1,4 @@
-#Last Updated: 8/26/17
+#Last Updated: 10/12/17
 import math
 import time
 from operator import attrgetter
@@ -617,4 +617,4 @@ class Calculator(object):
             # self.autoGear()
             self.writeCalculationDiagnostic(endTime - startTime)
         else:
-            print('No Data')
+            print('No calculations to do...')
