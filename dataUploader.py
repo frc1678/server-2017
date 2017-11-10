@@ -2,7 +2,6 @@ import pyrebase
 import random
 import time
 import DataModel
-from firebaseCommunicator import PyrebaseCommunicator as pbc
 
 #Makes a lot of random data and sets data on firebase for testing
 
@@ -132,8 +131,6 @@ class CalculatedMatchData(object):
 		self.allRotorsTurningChanceBlue = random.random()
 		self.__dict__.update(args)
 
-(superSecret, url) = ('authenticationCode', 'https://1678-scouting-2016.firebaseio.com/')
-
 config = {
 	'apiKey': 'mykey',
 	'authDomain': '1678-scouting-2016.firebaseapp.com',
@@ -149,8 +146,8 @@ while(True):
 	match = pyre.child('/Matches', cm).get().val()
 	m = Match(number = cm, redAllianceTeamNumbers = match['redAllianceTeamNumbers'], blueAllianceTeamNumbers = match['blueAllianceTeamNumbers'])
 	# pyrebase.set('/Matches/', str(cm), m.__dict__)
-	for t in match['redAllianceTeamNumbers'] + match['blueAllianceTeamNumbers']:
-		pyre.child('TeamInMatchDatas').child(str(t) + 'Q' + str(match['number'])).set(TeamInMatchData().__dict__)
+	for team in match['redAllianceTeamNumbers'] + match['blueAllianceTeamNumbers']:
+		pyre.child('TeamInMatchDatas').child(str(team) + 'Q' + str(match['number'])).set(TeamInMatchData().__dict__)
 		time.sleep(4)
 	print('Done with match' + str(cm))
 	cm += 1
