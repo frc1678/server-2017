@@ -1,11 +1,10 @@
-#Last Updated: 8/26/17
-from firebase import firebase as fb
+import pyrebase
 import random
 import time
 import DataModel
 from firebaseCommunicator import PyrebaseCommunicator as pbc
 
-#Makes a lot of random data and puts on firebase for testing other things
+#Makes a lot of random data and sets data on firebase for testing
 
 class CalculatedTeamInMatchData(object):
 	'''docstring for CalculatedTeamInMatchData'''
@@ -135,19 +134,24 @@ class CalculatedMatchData(object):
 
 (superSecret, url) = ('authenticationCode', 'https://1678-scouting-2016.firebaseio.com/')
 
-
-pyre = pbc()
-auth = fb.FirebaseAuthentication(superSecret, 'ourEmail', True, True)
+config = {
+	'apiKey': 'mykey',
+	'authDomain': '1678-scouting-2016.firebaseapp.com',
+	# 'authDomain': 'scouting-2017-5f51c.firebaseapp.com',
+	'databaseURL': 'https://www.1678-scouting-2016.firebaseio.com/'
+	# 'databaseURL': 'https://www.scouting-2017-5f51c.firebaseio.com/'
+}
+app = pyrebase.initialize_app(config)
+pyre = app.database()
 testScouts = 'a b c d e f g h i j k l m n o p q r'.split()
-firebase = fb.FirebaseApplication(url, auth)
 cm = 1
 while(True):
-	match = firebase.get('/Matches', cm)
+	match = pyre.child('/Matches', cm).get().val()
 	m = Match(number = cm, redAllianceTeamNumbers = match['redAllianceTeamNumbers'], blueAllianceTeamNumbers = match['blueAllianceTeamNumbers'])
-	# firebase.put('/Matches/', str(cm), m.__dict__)
+	# pyrebase.set('/Matches/', str(cm), m.__dict__)
 	for t in match['redAllianceTeamNumbers'] + match['blueAllianceTeamNumbers']:
-		pyre.firebase.child('TeamInMatchDatas').child(str(t) + 'Q' + str(match['number'])).update(TeamInMatchData().__dict__)
+		pyre.child('TeamInMatchDatas').child(str(t) + 'Q' + str(match['number'])).set(TeamInMatchData().__dict__)
 		time.sleep(4)
-	print('done with match')
+	print('Done with match' + str(cm))
 	cm += 1
 	time.sleep(20)
