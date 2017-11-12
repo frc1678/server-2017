@@ -1,4 +1,4 @@
-#Last Updated: 8/26/17
+#Last Updated: 11/11/17
 from firebaseCommunicator import PyrebaseCommunicator
 import numpy as np
 import csv
@@ -20,6 +20,7 @@ teams = [t for t in teamKeys if t in teamNums]
 keys = ['incapacitatedPercentage', 'disabledPercentage', 'liftoffPercentage', 'avgAgility', 'avgSpeed', 'avgGearGroundIntakesTele' , 'avgGearLoaderIntakesTele', 'avgBallControl', 'avgGearControl', 'avgDefense', 'disfunctionalPercentage', 'avgGearsPlacedAuto', 'avgGearsPlacedTele', 'avgHoppersOpenedAuto', 'avgHoppersOpenedTele', 'avgGearsEjectedTele', 'avgLiftoffTime', 'avgGearsFumbledTele']
 print(len(teams))
 
+#Best Averages Ever (Sarcastic- Please Change for 2018)
 def setAverages(dic, timds, **args):
 	for k, v in args.items():
 		vals = [v(t) for t in timds if v(t) != None]
@@ -39,6 +40,7 @@ for team in teams:
 	teamsDict[team] = {
 		'number' : team
 	}
+	#Gets every value for each key and value in temptimds if the temptimd data matches the team number and puts the values in a list
 	timds = [v for k, v in temptimds.items() if int(k.split('Q')[0]) == team]
 	setAverages(teamsDict[team], timds,
         incapacitatedPercentage = lambda tm: tm.get('didBecomeIncapacitated'),
