@@ -1,6 +1,5 @@
 #Last Updated: 10/5/17
 import utils
-import CacheModel as cache
 import Math
 import random
 import numpy as np

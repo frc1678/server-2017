@@ -9,9 +9,9 @@ PBC = firebaseCommunicator.PyrebaseCommunicator()
 fb = PBC.firebase
 
 #Notifies how many matches away the inputted match is
-def sendNoti(number, c, token):
+def sendNoti(number, match, token):
         msg1 = 'Match ' + str(number) + ' is'
-        msg2 = str(abs(number - c)) + ' matches away!' if (abs(number - c)) != 1 else ' up next!' if (abs(number - c)) == 0 else 'match away!' 
+        msg2 = str(abs(number - match)) + ' matches away!' if (abs(number - match)) != 1 else ' up next!' if (abs(number - match)) == 0 else 'match away!' 
         red = fb.child('Matches').child(number).child('redAllianceTeamNumbers').get().val()
         blue = fb.child('Matches').child(number).child('blueAllianceTeamNumbers').get().val()
         message = msg1 + msg2
