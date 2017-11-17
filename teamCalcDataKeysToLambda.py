@@ -19,8 +19,8 @@ def firstCalculationDict(team, calc):
         liftoffPercentage = lambda tm: tm.didLiftoff, 
         avgAgility = lambda tm: tm.rankAgility, 
         avgSpeed = lambda tm: tm.rankSpeed,
-        avgGearGroundIntakesTele = lambda tm: tm.numGearGroundIntakesTele, 
-        avgGearLoaderIntakesTele = lambda tm: tm.numGearLoaderIntakesTele,
+        avgGearGroundIntakesTele = lambda tm: tm.numGroundGearIntakesTele, 
+        avgGearLoaderIntakesTele = lambda tm: tm.numHumanGearIntakesTele,
         avgBallControl = lambda tm: tm.rankBallControl, 
         avgGearControl = lambda tm: tm.rankGearControl,
         avgDefense = lambda tm: tm.rankDefense if tm.rankDefense else None, 
@@ -30,12 +30,11 @@ def firstCalculationDict(team, calc):
         disfunctionalPercentage = lambda tm: tm.calculatedData.wasDisfunctional,
         avgGearsPlacedAuto = lambda tm: tm.calculatedData.numGearsPlacedAuto, 
         avgGearsPlacedTele = lambda tm: tm.calculatedData.numGearsPlacedTele,
-        avgHoppersOpenedAuto = lambda tm: tm.numHoppersOpenedAuto, 
-        avgHoppersOpenedTele = lambda tm: tm.numHoppersOpenedTele, 
+        avgHoppersOpenedAuto = lambda tm: tm.numHoppersUsedAuto, 
+        avgHoppersOpenedTele = lambda tm: tm.numHoppersUsedTele, 
         avgGearsEjectedTele = lambda tm: tm.numGearsEjectedTele,
         avgLiftoffTime = lambda tm: tm.liftoffTime, 
         avgGearsFumbledTele = lambda tm: tm.numGearsFumbledTele,
-        gearAbility = lambda tm: tm.calculatedData.gearAbility
         )
     mapFuncForCalcAvgsForTeam(team, lambda f: calc.getStandardDeviationForDataFunctionForTeam(team, f), 
         sdLiftoffAbility = lambda tm: tm.calculatedData.liftoffAbility,
@@ -52,7 +51,7 @@ def firstCalculationDict(team, calc):
         lfmAvgLowShotsAuto = lambda tm : tm.calculatedData.numLowShotsAuto,
         lmfAvgGearsPlacedAuto = lambda tm: tm.calculatedData.numGearsPlacedAuto,
         lfmAvgGearsPlacedTele = lambda tm : tm.calculatedData.numGearsPlacedTele,
-        lfmAvgGearLoaderIntakesTele = lambda tm : tm.numGearLoaderIntakesTele,
+        lfmAvgGearLoaderIntakesTele = lambda tm : tm.numHumanGearIntakesTele,
         lfmAvgHighShotsTele = lambda tm : tm.calculatedData.numHighShotsTele,
         lfmAvgLowShotsTele = lambda tm : tm.calculatedData.numLowShotsTele,
         lfmAvgKeyShotTime = lambda tm : tm.calculatedData.avgKeyShotTime,
@@ -110,7 +109,6 @@ def TIMDCalcDict(timd, calc):
     c.numHighShotsAuto = calc.weightFuelShotsForDataPoint(timd, match, 'autoFuelHigh', timd.highShotTimesForBoilerAuto)
     c.numLowShotsTele = calc.weightFuelShotsForDataPoint(timd, match, 'teleopFuelLow', timd.lowShotTimesForBoilerTele)
     c.numLowShotsAuto = calc.weightFuelShotsForDataPoint(timd, match, 'autoFuelLow', timd.lowShotTimesForBoilerAuto)
-    c.gearAbility = calc.gearAbility(timd)
     c.liftoffAbility = calc.liftoffAbilityForTIMD(timd)
     c.wasDisfunctional = utils.convertFirebaseBoolean(timd.didStartDisabled + utils.convertFirebaseBoolean(timd.didBecomeIncapacitated))
     c.disfunctionalPercentage = utils.convertFirebaseBoolean(timd.didStartDisabled) + 0.5 * utils.convertFirebaseBoolean(timd.didBecomeIncapacitated)
