@@ -79,7 +79,6 @@ class CalculatedTeamData(object):
 		self.firstPickRotorBonusChance = None
 		self.autoShootingPositions = None
 		self.gearScoringPositionsAuto = None
-		self.gearAbility = None
 		self.RScoreAgility = None
 		self.RScoreDefense = None
 		self.RScoreSpeed = None
@@ -184,7 +183,6 @@ class CalculatedTeamInMatchData(object):
 		self.avgKeyShotTime = None
 		self.avgHopperShotTime = None
 		self.drivingAbility = None
-		self.gearAbility = None
 		self.disfunctionalPercentage = None
 		self.__dict__.update(args)
 
