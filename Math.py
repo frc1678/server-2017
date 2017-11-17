@@ -229,9 +229,6 @@ class Calculator(object):
         index = filter(lambda g: gears >= g, inc)
         return inc.index(max(index)) + 1 if len(index) else 0
 
-    def gearAbility(self, timd):
-        return 18.4206506797 * (timd.calculatedData.numGearsPlacedAuto) + (timd.calculatedData.numGearsPlacedTele)
-
     def getStdDevGearPointsForAlliance(self, alliance):
         totalGearsAuto = sum(map(lambda t: t.calculatedData.avgGearsPlacedAuto or 0, alliance))
         totalGears = self.getTotalAverageGearsForAlliance(alliance)
@@ -310,7 +307,7 @@ class Calculator(object):
         team = self.su.replaceWithAverageIfNecessary(team)
         ourTeam = self.su.replaceWithAverageIfNecessary(self.su.getTeamForNumber(self.ourTeamNum)) or self.averageTeam
         shots = self.getTotalAverageShotPointsForTeam(team)
-        gears = team.calculatedData.gearAbility or 0
+        gears = 3 * ((team.calculatedData.avgGearsPlacedAuto or 0) + (team.calculatedData.avgGearsPlacedTele or 0))
         autoBonus = (team.calculatedData.avgGearsPlacedAuto or 0) * 20
         liftoff = team.calculatedData.liftoffAbility or 0
         return gears + shots + liftoff + autoBonus
