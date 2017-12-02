@@ -56,8 +56,6 @@ class ScoutPrecision(object):
 				consolidationGroups[key].append(v)
 			else:
 				consolidationGroups[key] = [v]
-		print(len(consolidationGroups.items()))
-		print(len({k : v for k, v in consolidationGroups.items() if len(v) > 1}.items()))
 		return {k : v for k, v in consolidationGroups.items() if len(v) > 1}
 
 	#Note: the next 3 functions compare data in tempTIMDs to find scout accuracy
@@ -70,7 +68,6 @@ class ScoutPrecision(object):
 		scouts = filter(lambda v: v, map(lambda k: k.get('scoutName'), tempTIMDs))
 		#Finds values (at an inputted key) in tempTIMDs
 		values = filter(lambda v: v != None, map(lambda t: t[key] if t.get('scoutName') else None, tempTIMDs))
-		print(values)
 		#Finds the most common value in the list of values, or the average if none of them is the majority
 		valueFrequencies = map(values.count, values)
 		if values:
@@ -240,9 +237,6 @@ class ScoutPrecision(object):
 		#Picks a random grouping of scouts that, if possible, has an even number of scouts per team
 		NoOneCombos = filter(lambda l: 1 not in l, grpCombosList)
 		NoTwoCombos = filter(lambda l: 2 not in l, NoOneCombos)
-		print(grpCombosList)
-		print(NoOneCombos)
-		print(NoTwoCombos)
 		if len(NoTwoCombos) > 0:
 			scoutsPGrp = groupFunc(NoTwoCombos)
 		elif len(NoOneCombos) > 0:
@@ -331,7 +325,6 @@ class ScoutPrecision(object):
 		#If they don't, it needs to find an empty scout spot in firebase and put the available scout there (if there is an empty spot, which there always should be)
 		else:
 			newSpace = 'scout' + str(namesToNumbers.index(availableScout))
-			print(newSpace)
 			scoutRotatorDict[newSpace].update({'team': teams[availableScout], 'currentUser': availableScout, 'scoutStatus': 'requested'})
 		return scoutRotatorDict
 

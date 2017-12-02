@@ -164,10 +164,8 @@ class DataChecker(multiprocessing.Process):
 				try:
 					firebase.child('TeamInMatchDatas').child(key).update(self.joinValues(key))
 					index += 1
-					print("TIMD: " + str(key) + " consolidated")
 				except:
 					continue
-			print('Consolidation Complete')
 			time.sleep(10)
 
 DataChecker().start()

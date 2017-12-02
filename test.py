@@ -1,11 +1,4 @@
-#Last Updated: 8/26/17
-import DataModel
-from firebaseCommunicator import PyrebaseCommunicator
-import csv
-from Math import Calculator
 
-
-pbc = PyrebaseCommunicator()
 '''
  timds = pbc.firebase.child('TeamInMatchDatas').get().val()
  for key, timd in timds.items():
@@ -627,7 +620,3 @@ teams = [
 		'pitDidDemonstrateCheesecakePotentissal': False
 	}
 ]
-
-dic = {n['number'] : n for n in teams}
-print(dic)
-pbc.firebase.child('Teams').set(dic)

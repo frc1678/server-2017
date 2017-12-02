@@ -3,6 +3,8 @@ import utils
 import DataModel
 import pdb
 import traceback
+import firebaseCommunicator
+PBC = firebaseCommunicator.PyrebaseCommunicator()
 
 def mapFuncForCalcAvgsForTeam(team, func, **calcDatas):		
 	[team.calculatedData.__dict__.update({k : func(dataFunc)}) for k, dataFunc in calcDatas.items()]
@@ -113,7 +115,7 @@ def TIMDCalcDict(timd, calc):
     c.wasDisfunctional = utils.convertFirebaseBoolean(timd.didStartDisabled + utils.convertFirebaseBoolean(timd.didBecomeIncapacitated))
     c.disfunctionalPercentage = utils.convertFirebaseBoolean(timd.didStartDisabled) + 0.5 * utils.convertFirebaseBoolean(timd.didBecomeIncapacitated)
     c.numRPs = calc.RPsGainedFromMatchForAlliance(team.number in match.redAllianceTeamNumbers, match)
-
+    
 def averageTeamDict(calc):
     a = calc.averageTeam
     mapFuncForCalcAvgsForTeam(calc.averageTeam, lambda f: calc.getAverageOfDataFunctionAcrossCompetition(f),

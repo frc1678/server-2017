@@ -13,6 +13,7 @@ import dataChecker
 import scoutRotator
 import scheduleUpdater
 import APNServer
+import pprint
 
 PBC = firebaseCommunicator.PyrebaseCommunicator()
 comp = DataModel.Competition(PBC)
@@ -54,7 +55,9 @@ def checkForMissingData():
 		missingDataFile.write(str(missingDatas))
 
 while(True):
-	print('\nCalcs Cycle', str(cycle) + '...')
+	print("\033[0;37m")
+	print('\033[1;32mCalcs Cycle ' + str(cycle) + '...')
+	print("\033[0;37m")
 	if cycle % 5 == 1:
 		PBC.cacheFirebase()
 	while(True):

@@ -1,6 +1,7 @@
 #Last Updated: 10/12/17
 import math
 import time
+import random
 from operator import attrgetter
 import numpy as np
 import scipy as sp
@@ -206,7 +207,7 @@ class Calculator(object):
         return dict(zip(range(13), map(lambda g: self.probabilityForGearsPlacedForNumberForTeam(team, g, gearFunc), range(13))))
 
     def getAllGearProbabilitiesForTeams(self, gearFunc):
-        dic = {team.number : self.getAllGearProbabilitiesForTeam(team, gearFunc) for team in self.cachedComp.teamsWithMatchesCompleted}
+        dic = {team.number : self.getAllGearProbabilitiesForTeam(team, gearFunc) for team in self.cachedComp.teamsWithMatchesCompleted if team.calculatedData.avgAgility}
         func = lambda k: map(lambda v: (v.get(k) or 0.0), dic.values())
         dic[self.averageTeam.number] = {k : np.mean(func(k)) if func(k) else 0 for k in range(13)}
         return dic
@@ -258,12 +259,15 @@ class Calculator(object):
     #Gets Z-score for each super data point for all teams
     def rValuesForAverageFunctionForDict(self, averageFunction, d):
         values = map(averageFunction, self.cachedComp.teamsWithMatchesCompleted)
+        for index, value in enumerate(values):
+            if value == None:
+                values[index] = 0
         if not values:
             return
         if not np.std(values):
             zscores = [0.0 for v in values] #Don't calculate z-score if the standard deviation is 0
         else:
-            zscores = stats.zscore(values)
+            zscores = list(stats.zscore(values))
         [utils.setDictionaryValue(d, self.cachedComp.teamsWithMatchesCompleted[i].number, zscores[i]) for i in range(len(self.cachedComp.teamsWithMatchesCompleted))]
 
     def drivingAbilityForTeam(self, team):
@@ -391,7 +395,7 @@ class Calculator(object):
 
     def probabilityForGearsPlacedForNumberForTeam(self, team, number, gearFunc):
         gearTimds = map(gearFunc, self.su.getCompletedTIMDsForTeam(team))
-        return (gearTimds.count(number) / float(len(gearTimds))) or 0
+        return (float(gearTimds.count(number)) / float(len(gearTimds))) or 0
 
     def getAllRotorsTurningChanceForAllianceWithNumbers(self, allianceNumbers):
         return self.getAllRotorsTurningChanceForAlliance(self.su.teamsForTeamNumbersOnAlliance(allianceNumbers))
@@ -480,7 +484,7 @@ class Calculator(object):
 
     #CACHING
     def cacheFirstTeamData(self):
-        print('Caching First Team Data...')
+        print('> Caching First Team Data...')
         for team in self.comp.teams:
             self.doCachingForTeam(team)
         self.doCachingForTeam(self.averageTeam)
@@ -494,7 +498,7 @@ class Calculator(object):
                      (lambda t: t.calculatedData.avgDefense or 0, self.cachedComp.defenseZScores)]
 
     def cacheSecondTeamData(self):
-        print('Caching Second Team Data...')
+        print('> Caching Second Team Data...')
         [self.rValuesForAverageFunctionForDict(func, dictionary) for (func, dictionary) in self.rScoreParams()]
         map(self.doSecondCachingForTeam, self.comp.teams)
         try:
@@ -552,16 +556,16 @@ class Calculator(object):
                 team.calculatedData = DataModel.CalculatedTeamData()
             t = team.calculatedData
             firstCalculationDict(team, self)
-            print('Completed first calcs for', str(team.number))
+            print('> Completed first calcs for ' + str(team.number))
 
     def doSecondCalculationsForTeam(self, team):
         if len(self.su.getCompletedMatchesForTeam(team)):
             secondCalculationDict(team, self)
-            print('Completed second calculations for team', str(team.number))
+            print('> Completed second calculations for team ' + str(team.number))
 
     def doFirstCalculationsForMatch(self, match): #This entire thing being looped is what takes a while
         matchDict(match, self)
-        print('Completed calculations for match', str(match.number))
+        print('> Completed calculations for match ' + str(match.number))
 
     def doFirstTeamCalculations(self):
         map(self.doFirstCalculationsForTeam, self.comp.teams)
@@ -606,6 +610,7 @@ class Calculator(object):
             self.cacheSecondTeamData()
             self.doMatchesCalculations()
             self.doSecondTeamCalculations()
+            print('> Calculations finished, adding data to firebase')
             PBC.addCalculatedTIMDatasToFirebase(self.su.getCompletedTIMDsInCompetition())
             PBC.addCalculatedTeamDatasToFirebase(self.cachedComp.teamsWithMatchesCompleted)
             PBC.addCalculatedMatchDatasToFirebase(self.comp.matches)
@@ -614,4 +619,4 @@ class Calculator(object):
             # self.autoGear()
             self.writeCalculationDiagnostic(endTime - startTime)
         else:
-            print('No calculations to do...')
+            print('> No calculations to do...')

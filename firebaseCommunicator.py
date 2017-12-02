@@ -11,9 +11,11 @@ class PyrebaseCommunicator(object):
 		super(PyrebaseCommunicator, self).__init__()
 		self.JSONmatches = []
 		self.JSONteams = []
-		self.url = 'scouting-2017-5f51c'
+		# self.url = 'scouting-2017-5f51c'
 		# self.url = 'jesus-is-bread'
 		# self.url = '1678-scouting-2016'
+		# self.url = '1678-extreme-testing' 
+		self.url = 'testing-so-extreme-it-hurts'
 		config = {
 			'apiKey': 'mykey',
 			'authDomain': self.url + '.firebaseapp.com',
@@ -66,21 +68,21 @@ class PyrebaseCommunicator(object):
 	def addCalculatedTeamDatasToFirebase(self, teams):
 		firebaseDict = {}
 		[firebaseDict.update(self.addCalculatedTeamDataToFirebase(team)) for team in teams]
-		print('Uploading Teams to Firebase...')
+		print('> Uploading Teams to Firebase...')
 		self.firebase.child('Teams').update(firebaseDict)
 
 	#Adds calculated data for each inputted match to firebase
 	def addCalculatedMatchDatasToFirebase(self, matches):
 		firebaseDict = {}
 		[firebaseDict.update(self.addCalculatedMatchDataToFirebase(match)) for match in matches]
-		print('Uploading Matches to Firebase...')
+		print('> Uploading Matches to Firebase...')
 		self.firebase.child('Matches').update(firebaseDict)
 
 	#Adds calculated data for each inputted TIMD to firebase
 	def addCalculatedTIMDatasToFirebase(self, timds):
 		firebaseDict = {}
 		[firebaseDict.update(self.addCalculatedTIMDataToFirebase(timd)) for timd in timds]
-		print('Uploading TIMDs to Firebase...')
+		print('> Uploading TIMDs to Firebase...')
 		self.firebase.child('TeamInMatchDatas').update(firebaseDict)
 
 	#Puts all teams from local JSON list (probably from TBA) onto firebase
