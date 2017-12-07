@@ -1,4 +1,4 @@
-#Last Updated: 11/11/17
+#Last Updated: 12/7/17
 import CSVExporter
 import DataModel
 import firebaseCommunicator
@@ -24,6 +24,7 @@ while(True):
 		except Exception as e:
 			print(traceback.format_exc())
 	elif cmd[0] == 'sns':
+		#idea for faster method- under TempTIMDs, have data organized by match, and under that, the data, so we don't have to iterate through every TIMD
 		scoutSentData = []
 		scoutNotSentData = []
 		tempTIMDs = fb.child('TempTeamInMatchDatas').get().val()
@@ -44,8 +45,8 @@ while(True):
 			if item not in scoutSentData:
 				scoutNotSentData.append(item)
 		scoutNotSent = ''
-		for item in scoutNotSentData: 
-			scoutNotSentUpdated = scoutNotSent + item
+		for scout in scoutNotSentData: 
+			scoutNotSentUpdated += scout
 		if scoutNotSent != scoutNotSentData:
 			print('Scouts that have not inputted data in match', str(curMatch), '-', scoutNotSentUpdated)
 		else:
@@ -57,5 +58,5 @@ while(True):
 		print('sns - Prints scout not sent for current match')
 		print('test - prints Test Completed.')
 	else:
-		print(str(cmd[0]), 'is not a valid function. Type help for help.')
+		print("'" + str(cmd[0]) + "'" + ' is not a valid function. Type help for help.')
 	time.sleep(1)
