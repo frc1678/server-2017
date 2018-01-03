@@ -5,13 +5,13 @@ import datetime
 import numpy as np
 import pyrebase
 
-class PyrebaseCommunicator(object):
+class PyrebaseCommunicator(object)
 	'''docstring for PyrebaseCommunicator'''
 	def __init__(self):
 		super(PyrebaseCommunicator, self).__init__()
 		self.JSONmatches = []
 		self.JSONteams = []
-		self.url = 'scouting-2017-5f51c'
+		self.url = 'error-server'
 		config = {
 			'apiKey': 'mykey',
 			'authDomain': self.url + '.firebaseapp.com',

@@ -267,7 +267,7 @@ class Calculator(object):
         if not np.std(values):
             zscores = [0.0 for v in values] #Don't calculate z-score if the standard deviation is 0
         else:
-            zscores = list(stats.zscore(values))
+            zscores = stats.zscore(values)
         [utils.setDictionaryValue(d, self.cachedComp.teamsWithMatchesCompleted[i].number, zscores[i]) for i in range(len(self.cachedComp.teamsWithMatchesCompleted))]
 
     def drivingAbilityForTeam(self, team):

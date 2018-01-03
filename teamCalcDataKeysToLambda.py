@@ -16,7 +16,7 @@ def firstCalculationDict(team, calc):
         avgHighShotsAuto = lambda tm: tm.calculatedData.numHighShotsAuto,
         avgLowShotsAuto = lambda tm: tm.calculatedData.numLowShotsAuto, 
         avgLowShotsTele = lambda tm: tm.calculatedData.numLowShotsTele, 
-        incapacitatedPercentage = lambda tm: tm.didBecomeIncapacitated,
+        incapacitatedPercentage = lambda tm: tm.wasIncapacitated,
         disabledPercentage = lambda tm: tm.didStartDisabled,
         liftoffPercentage = lambda tm: tm.didLiftoff, 
         avgAgility = lambda tm: tm.rankAgility, 
